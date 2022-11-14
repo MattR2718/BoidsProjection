@@ -1,6 +1,8 @@
 # Development of program
 
 ## 14/11/22
+---
+###  **Basic Program**
 Create basic program to check build is working
 
 ```cpp
@@ -10,7 +12,8 @@ int main() {
     std::cout << "Hello, world!\n";
 }
 ```
-
+---
+### **Shape Test**
 Create a basic test program which draws a circle to the screen
 
 ```cpp
@@ -54,6 +57,10 @@ int main()
 
 ```
 ![Test Circle](imgs/testCircle.JPG)
+
+-----
+
+## **Pixel Array**
 
 Since my program will be drawing to the screen using a pixel array I will now change the basic program to that
 
@@ -114,3 +121,44 @@ int main()
 ```
 
 ![Test Pixel Array Drawing](imgs/testPixelArray.JPG)
+
+---
+### **FPS**
+Add fps counter in order to track efficiency and make sure program runs at acceptible speeds
+
+```cpp
+//Create variable to store fps, clock to calculate fps and times to store change in time
+float fps;
+sf::Clock fps_clock = sf::Clock();
+sf::Time previous_time = fps_clock.getElapsedTime();
+sf::Time current_time;
+//Load font from file and throw exeption if not found
+sf::Font font;
+if(!font.loadFromFile("../fonts/arial.ttf")){
+    throw std::invalid_argument("FONT NOT FOUND");
+}
+```
+
+```cpp
+void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font){
+    sf::Text text;
+	// select the font
+	text.setFont(font);
+	// set the string to display
+	text.setString(std::to_string(fps));
+	// set the character size
+	text.setCharacterSize(30);
+	// set the color
+	text.setFillColor(sf::Color::Red);
+	//Set position
+	text.setPosition(sf::Vector2f(0, 0));
+	window.draw(text);
+}
+```
+```cpp
+//Calculate fps from change in time and draw to screen
+current_time = fps_clock.getElapsedTime();
+fps = 1.f / (current_time.asSeconds() - previous_time.asSeconds());
+displayFPS(window, fps, font);
+previous_time = current_time;
+```
