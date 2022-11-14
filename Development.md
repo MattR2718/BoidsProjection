@@ -53,5 +53,5 @@ int main()
 }
 
 ```
-![Test Circle](imgs\testCircle.JPG)
+![Test Circle](imgs/testCircle.JPG)
 
