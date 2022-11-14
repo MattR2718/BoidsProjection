@@ -2,12 +2,28 @@
 
 #include <SFML/Graphics.hpp>
 
+
+void initPixels(sf::Uint8 *arr, const int length){
+    for (int i = 0; i < length; i += 4){
+        arr[i] = 0;
+        arr[i + 1] = i % (255 * 4);
+        arr[i + 2] = 0;
+        arr[i + 3] = 255;
+    }
+}
+
 int main()
 {
+    constexpr int WIDTH = 800;
+    constexpr int HEIGHT = 800;
+
     //Create a window that the program will draw to
-    sf::RenderWindow window(sf::VideoMode(600, 600), "Boids Projection");
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Boids Projection");
     //Limit the windows frame rate to 30
     window.setFramerateLimit(30);
+
+    sf::Uint8* pixels  = new sf::Uint8[WIDTH * HEIGHT * 4];
+    initPixels(pixels, WIDTH * HEIGHT * 4);
 
     //Run program while window is open
     while (window.isOpen())
@@ -22,15 +38,14 @@ int main()
             }
         }
 
-        //Clear window with black colour
-        window.clear(sf::Color::Black);
+        sf::Image image;
+        image.create(WIDTH, HEIGHT, pixels);
+        sf::Texture texture;
+        texture.loadFromImage(image);
+        sf::Sprite sprite(texture);
+        //sprite.setTexture(texture);
+        window.draw(sprite);
 
-        //Create a circle to draw to screen
-        sf::CircleShape shape(300);
-        //Set shape colour
-        shape.setFillColor(sf::Color::Green);
-        //Draw shape to screen
-        window.draw(shape);
         //End the current frame
         window.display();
     }
