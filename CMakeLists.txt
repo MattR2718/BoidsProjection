@@ -5,6 +5,6 @@ list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\
 find_package(SFML CONFIG REQUIRED COMPONENTS graphics system window)
 include_directories(${SFML_INCLUDE_DIR})
 
-add_executable(BoidsProjection main.cpp)
+add_executable(BoidsProjection src/main.cpp src/drawable.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-network sfml-graphics sfml-window)

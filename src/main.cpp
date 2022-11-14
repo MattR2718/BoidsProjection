@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "../include/drawable.h"
+
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -64,6 +66,12 @@ int main()
                 window.close();
             }
         }
+
+
+        //Tests that drawable is working
+        //Draws a single pixel to the screen at (100, 100)
+        Drawable d(100, 100, 100);
+        d.draw(pixels, WIDTH);
 
         //Create an sf::image which will be load the pixels
         sf::Image image;
