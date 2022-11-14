@@ -163,6 +163,8 @@ displayFPS(window, fps, font);
 previous_time = current_time;
 ```
 
+![FPS Counter Image](imgs/testFps.JPG)
+
 ---
 ### **Basic Drawable**
 
