@@ -5,7 +5,7 @@
 #include <imgui-SFML.h>
 
 #include "../include/drawable.h"
-
+#include "../include/point.h"
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -84,7 +84,7 @@ int main()
 
         //Tests that drawable is working
         //Draws a single pixel to the screen at (100, 100)
-        Drawable d(100, 100, 100);
+        Point d(100, 100, 100, 100);
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Colours");

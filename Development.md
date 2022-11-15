@@ -293,3 +293,65 @@ ImGui::SFML::Render(window);
 ```
 
 ![Imgui Random Dots](imgs/testColourPicker.JPG)
+
+---
+### **Create Point Class**
+_point.h_
+```cpp
+#ifndef POINT_H
+#define POINT_H
+
+#include <iostream>
+#include <SFML/Graphics.hpp>
+
+#include "drawable.h"
+
+class Point: public Drawable{
+
+public:
+    //Vaariables
+
+
+    //Methods
+    Point(int x_, int y_, int z_, int rad_, int r_ = 255, int g_ = 255, int b_ = 255);
+    void draw(sf::Uint8 *arr, const int width);
+
+private:
+    //Variables
+    int rad;
+
+    //Methods
+
+
+
+};
+
+
+
+#endif
+```
+
+_point.cpp_
+```cpp
+#include "../include/point.h"
+
+Point::Point(int x_, int y_, int z_, int rad_, int r_, int g_, int b_) : Drawable{x_, y_, z_, r_, g_, b_}{
+    this->rad = rad_;
+}
+
+void Point::draw(sf::Uint8 *arr, const int width){
+    for(int i = -5; i < 6; i++){
+        for(int j = -5; j < 6; j++){
+            int index = ((this->y + j) * width + (this->x + i));
+
+            if(index > -1 && index < 800){
+                arr[index] = this->r;
+                arr[index + 1] = this->g;
+                arr[index + 2] = this->b;
+            }
+        }
+    }
+}
+```
+
+![Broken Point](imgs/brokenPoint.JPG)
