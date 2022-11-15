@@ -233,3 +233,63 @@ void Drawable::setPosition(int x_, int y_, int z_){
     this->z = z_;
 }
 ```
+
+---
+## 15/11/22
+---
+### **ImGui Setup**
+Update CMakeLists.txt to link to imgui
+```cmake
+cmake_minimum_required(VERSION 3.0.0)
+project(BoidsProjection VERSION 0.1.0)
+
+list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\sfml")
+find_package(SFML CONFIG REQUIRED COMPONENTS graphics system window)
+include_directories(${SFML_INCLUDE_DIR})
+
+list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\imgui")
+list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\ImGui-SFML")
+find_package(imgui CONFIG REQUIRED)
+find_package(ImGui-SFML CONFIG REQUIRED)
+
+add_executable(BoidsProjection src/main.cpp src/drawable.cpp)
+
+target_link_libraries(${PROJECT_NAME}
+    imgui::imgui
+    sfml-graphics sfml-system sfml-window
+    ImGui-SFML::ImGui-SFML
+)
+```
+
+Add imgui code to _main.cpp_ in correct places to initialise, create and get input from gui
+
+```cpp
+//Init imgui
+ImGui::SFML::Init(window);
+
+//Process imgui events
+ImGui::SFML::ProcessEvent(event);
+
+//Update imgui window
+ImGui::SFML::Update(window, deltaClock.restart());
+
+//Create imgui window to allow colour picking
+ImGui::Begin("Colours");
+ImGui::ColorEdit3("Dot", (float*)&colour);
+ImGui::End();
+//Set colour to the colour picked from colour picker
+d.setColour(round(colour[0] * 255), round(colour[1] * 255), round(colour[2] * 255));
+
+//Draw d at 1000 random positions
+for(int i = 0; i < 1000; i++){
+    int x = rand() % WIDTH;
+    int y = rand() % HEIGHT;
+    d.setPosition(x, y, 0);
+    d.draw(pixels, WIDTH);
+}
+
+//Render imgui windows
+ImGui::SFML::Render(window);
+```
+
+![Imgui Random Dots](imgs/testColourPicker.JPG)

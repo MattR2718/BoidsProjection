@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
+#include <imgui.h>
+#include <imgui-SFML.h>
 
 #include "../include/drawable.h"
 
@@ -38,10 +40,15 @@ int main()
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Boids Projection");
     //Limit the windows frame rate to 30
     window.setFramerateLimit(30);
+    //Init imgui
+    ImGui::SFML::Init(window);
 
     //Create a pixel array which will contain the pixels drawn to the screen
     sf::Uint8* pixels  = new sf::Uint8[WIDTH * HEIGHT * 4];
     initPixels(pixels, WIDTH * HEIGHT * 4);
+
+    //Colour for drawable object
+    float colour[3] = { 255, 255, 255 };
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -54,6 +61,7 @@ int main()
         throw std::invalid_argument("FONT NOT FOUND");
     }
 
+    sf::Clock deltaClock;
     //Run program while window is open
     while (window.isOpen())
     {
@@ -61,17 +69,37 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
+            //Process imgui events
+            ImGui::SFML::ProcessEvent(event);
             //If close requested then close window
             if (event.type == sf::Event::Closed){
                 window.close();
             }
         }
+        //Update imgui window
+        ImGui::SFML::Update(window, deltaClock.restart());
 
+        //Start by clearing pixels
+        initPixels(pixels, WIDTH * HEIGHT * 4);
 
         //Tests that drawable is working
         //Draws a single pixel to the screen at (100, 100)
         Drawable d(100, 100, 100);
-        d.draw(pixels, WIDTH);
+        
+        //Create imgui window to allow colour picking
+        ImGui::Begin("Colours");
+        ImGui::ColorEdit3("Dot", (float*)&colour);
+        ImGui::End();
+        //Set colour to the colour picked from colour picker
+        d.setColour(round(colour[0] * 255), round(colour[1] * 255), round(colour[2] * 255));
+
+        //Draw d at 1000 random positions
+        for(int i = 0; i < 1000; i++){
+            int x = rand() % WIDTH;
+            int y = rand() % HEIGHT;
+            d.setPosition(x, y, 0);
+            d.draw(pixels, WIDTH);
+        }
 
         //Create an sf::image which will be load the pixels
         sf::Image image;
@@ -89,6 +117,8 @@ int main()
         displayFPS(window, fps, font);
         previous_time = current_time;
 
+        //Render imgui windows
+        ImGui::SFML::Render(window);
         //End the current frame
         window.display();
     }

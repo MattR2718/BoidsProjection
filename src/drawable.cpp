@@ -20,6 +20,7 @@ void Drawable::setColour(int r_, int g_, int b_){
     this->r = r_;
     this->g = g_;
     this->b = b_;
+    //std::cout<<this->r<<' '<<this->g<<' '<<this->b<<'\n';
 }
 
 void Drawable::setPosition(int x_, int y_, int z_){

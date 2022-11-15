@@ -1,6 +1,7 @@
 #ifndef DRAWABLE_H
 #define DRAWABLE_H
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 class Drawable{
