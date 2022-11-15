@@ -343,7 +343,6 @@ void Point::draw(sf::Uint8 *arr, const int width){
     for(int i = -5; i < 6; i++){
         for(int j = -5; j < 6; j++){
             int index = ((this->y + j) * width + (this->x + i));
-
             if(index > -1 && index < 800){
                 arr[index] = this->r;
                 arr[index + 1] = this->g;
@@ -353,5 +352,21 @@ void Point::draw(sf::Uint8 *arr, const int width){
     }
 }
 ```
+The points are stuck at the very top left
 
 ![Broken Point](imgs/brokenPoint.JPG)
+
+Loop was too small so not all indexes were being allowed.  
+Change to width*width for the for loop to allow all points on screen  
+Should change to width * height to allow for window size to be defined at a single point in program and still work
+
+```cpp
+if(index > -1 && index < width*width){
+    arr[index * 4] = this->r;
+    arr[index * 4 + 1] = this->g;
+    arr[index * 4+ 2] = this->b;
+}
+```
+
+![Fixed Simple Point](imgs/fixedSimplePoint.JPG)
+
