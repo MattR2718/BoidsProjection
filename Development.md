@@ -370,3 +370,47 @@ if(index > -1 && index < width*width){
 
 ![Fixed Simple Point](imgs/fixedSimplePoint.JPG)
 
+---
+### **Circular Points**
+
+Currently points are just squares with sized of 10  
+The points would look much better if they were circular  
+Circular points can be implemented using Bresenhams circle drawing algorithm
+```cpp
+//Plot all 8 points, one in each octant of the circle
+void Point::plotCircle(sf::Uint8 *pixels, const int width, int x, int y){
+    auto plot = [&](const int j, const int i){
+        if(i < 0 || i > width || j < 0 || j > 800){return;}
+        pixels[(i * width + j) * 4] = this->r;
+        pixels[(i * width + j) * 4 + 1] = this->g;
+        pixels[(i * width + j) * 4 + 2] = this->b;
+    };
+    plot(this->x + x, this->y + y);
+    plot(this->x - x, this->y + y);
+    plot(this->x + x, this->y - y);
+    plot(this->x - x, this->y - y);
+    plot(this->x - y, this->y + x);
+    plot(this->x + y, this->y - x);
+    plot(this->x - y, this->y - x);
+    plot(this->x + y, this->y + x);
+}
+
+void Point::draw(sf::Uint8 *pixels, const int width){
+    int x = 0;
+    int y = this->rad;
+    int decPar = 3 - 2 * this->rad;
+    plotCircle(pixels, width, x, y);
+    while( y >= x){
+        x++;
+        if(decPar > 0){
+            y--;
+            decPar = decPar + 4 * (x - y) + 10;
+        }else{
+            decPar = decPar + 4 * x + 6;
+        }
+        plotCircle(pixels, width, x, y);
+    }
+}
+```
+
+![Point Drawn As Empty Circles](imgs/pointCircles.JPG)

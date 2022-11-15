@@ -48,7 +48,7 @@ int main()
     initPixels(pixels, WIDTH * HEIGHT * 4);
 
     //Colour for drawable object
-    float colour[3] = { 255, 255, 255 };
+    float colour[3] = { 1, 1, 1 };
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -84,7 +84,7 @@ int main()
 
         //Tests that drawable is working
         //Draws a single pixel to the screen at (100, 100)
-        Point d(100, 100, 100, 100);
+        Point d(100, 100, 100, 20);
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Colours");
@@ -98,6 +98,7 @@ int main()
             int x = rand() % WIDTH;
             int y = rand() % HEIGHT;
             d.setPosition(x, y, 0);
+            d.setRadius(rand() % 20);
             d.draw(pixels, WIDTH);
         }
 
