@@ -414,3 +414,59 @@ void Point::draw(sf::Uint8 *pixels, const int width){
 ```
 
 ![Point Drawn As Empty Circles](imgs/pointCircles.JPG)
+
+---
+### **Fill Points**
+
+To fill thr points we can draw lines across thw circle every time we calculate new x and y values for the edge of the circle
+
+
+```cpp
+auto plotLine = [&](const int x1, const int x2, const int y){
+    int px1 = x1, px2 = x2;
+    if(px1 > px2){ px1 = x2; px2 = x1; }
+    for(int c = px1; c < px2; c++){
+        plot(c, y);
+    }
+};
+
+if(this->fill){
+    plotLine(this->x - y, this->x + y, this->y + x);
+    plotLine(this->x - x, this->x + x, this->y + y);
+    plotLine(this->x - x, this->x + x, this->y - y);
+    plotLine(this->x - y, this->x + y, this->y - y);
+}
+```
+
+This code produces incorrect filling of the points, the top half of the circle is drawn upwards rather than down to fill the circle
+
+![Broken Point Fill](imgs/brokenPointFill.JPG)
+
+The incorrect line of code was drawing the line at this->y - y, since y was negative this meant the code was drawing above the centre position  
+The correct code subtracts x from the y position to fill the correct rows of the circle
+```cpp
+//plotLine(this->x - y, this->x + y, this->y - y);
+plotLine(this->x - y, this->x + y, this->y - x);
+```
+The lines are drawn to fill according to this diagram of how bresenhams circle algorithm draws a circle  
+Lines connect all points on the same y value  
+![Bresenham Circle Algorithm Diagram](imgs/bresenhamOctants.jpg)
+
+The correct code produces circles which have all been filled
+![Filled Points](imgs/fixedPointFill.JPG)
+
+---
+### **Randomise and Fill**
+Added the ability to randomise the positions of all test points as well as toggle fill to imgui window
+```cpp
+if(ImGui::Button("Randomise")){
+    for(auto& p : points){
+        int x = rand() % WIDTH;
+        int y = rand() % HEIGHT;
+        p.setPosition(x, y, 0);
+    }
+}
+ImGui::Checkbox("Fill", &fill);
+```
+
+![Randomise and Fill ImGui Window](imgs/randomiseAndFillImGuiWindow.JPG)

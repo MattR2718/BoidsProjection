@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -47,8 +48,21 @@ int main()
     sf::Uint8* pixels  = new sf::Uint8[WIDTH * HEIGHT * 4];
     initPixels(pixels, WIDTH * HEIGHT * 4);
 
+    //Create vector and fill with objects to test with
+    std::vector<Point> points;
+    Point d(100, 100, 100, 20);
+    for(int i = 0; i < 1000; i++){
+        int x = rand() % WIDTH;
+        int y = rand() % HEIGHT;
+        d.setPosition(x, y, 0);
+        d.setRadius(rand() % 20);
+        points.push_back(d);
+    }
+
     //Colour for drawable object
     float colour[3] = { 1, 1, 1 };
+    //Boolean to store whether to fill test points
+    bool fill = false;
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -60,6 +74,8 @@ int main()
     if(!font.loadFromFile("../fonts/arial.ttf")){
         throw std::invalid_argument("FONT NOT FOUND");
     }
+
+    bool randomise = true;
 
     sf::Clock deltaClock;
     //Run program while window is open
@@ -81,25 +97,27 @@ int main()
 
         //Start by clearing pixels
         initPixels(pixels, WIDTH * HEIGHT * 4);
-
-        //Tests that drawable is working
-        //Draws a single pixel to the screen at (100, 100)
-        Point d(100, 100, 100, 20);
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Colours");
         ImGui::ColorEdit3("Dot", (float*)&colour);
+        if(ImGui::Button("Randomise")){
+            for(auto& p : points){
+                int x = rand() % WIDTH;
+                int y = rand() % HEIGHT;
+                p.setPosition(x, y, 0);
+            }
+        }
+        ImGui::Checkbox("Fill", &fill);
         ImGui::End();
-        //Set colour to the colour picked from colour picker
-        d.setColour(round(colour[0] * 255), round(colour[1] * 255), round(colour[2] * 255));
 
-        //Draw d at 1000 random positions
-        for(int i = 0; i < 1000; i++){
-            int x = rand() % WIDTH;
-            int y = rand() % HEIGHT;
-            d.setPosition(x, y, 0);
-            d.setRadius(rand() % 20);
-            d.draw(pixels, WIDTH);
+        //Loop through all points and draw them
+        //Update colours in case user has changed the colour
+        for(auto& point : points){
+            //Set colour to the colour picked from colour picker
+            point.setColour(round(colour[0] * 255), round(colour[1] * 255), round(colour[2] * 255));
+            point.setFill(fill);
+            point.draw(pixels, WIDTH, HEIGHT);
         }
 
         //Create an sf::image which will be load the pixels
