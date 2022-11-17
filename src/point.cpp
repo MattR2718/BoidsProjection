@@ -22,17 +22,21 @@ void Point::setOutlineColour(int r_, int g_, int b_){
     this->outb = b_;
 }
 
+//TODO FIX POINTS CANNOT BE DRAWN OVER WHOLE SCREEN
+
 //Plot all 8 points, one in each octant of the circle
 void Point::plotCircle(sf::Uint8 *pixels, const int width, const int height, int x, int y){
     //Lambda finction to plot a single pixel in the pixel array
     auto plot = [&](const int j, const int i, bool outline = false){
-        if(i < 0 || i > width || j < 0 || j > height){return;}
+        if(i < 0 || i >= width || j < 0 || j >= height){return;}
         int r, g, b;
         if(!outline){ r = this->outr; g = this->outg; b = this->outb; }
         else{ r = this->r; g = this->g; b = this->b; }
-        pixels[(i * width + j) * 4] = r;
-        pixels[(i * width + j) * 4 + 1] = g;
-        pixels[(i * width + j) * 4 + 2] = b;
+        if(((j * width + i) * 4) > width * height * 4 || ((j * width + i) * 4) < 0){
+        std::cout<<"i: "<<i<<" j: "<<j<<" index: "<<(j * width + i) * 4<<" length: "<<width * height * 4<<" width: "<<width<<" height: "<<height<<'\n';}
+        pixels[(j * width + i) * 4] = r;
+        pixels[(j * width + i) * 4 + 1] = g;
+        pixels[(j * width + i) * 4 + 2] = b;
     };
     //Plots points accordint to bresenhams algorithm
     plot(this->x + x, this->y + y);

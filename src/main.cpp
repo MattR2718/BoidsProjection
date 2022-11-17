@@ -34,7 +34,7 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 
 int main()
 {
-    constexpr int WIDTH = 800;
+    constexpr int WIDTH = 1000;
     constexpr int HEIGHT = 800;
 
     //Create a window that the program will draw to

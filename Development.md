@@ -518,3 +518,53 @@ auto plotLine = [&](const int x1, const int x2, const int y){
 ![Fixed Point Outline](imgs/fixedPointOutline.JPG)
 
 This solution is not the best solution as it leaves the top and botton of the circle quite bare and also doesn't allow for variable outline width.  This solution works for now and can easily be changed at a later point if that becomes a necessity.
+
+### **Fixing Window Size Crash**
+When the window size is changed in the source code the program crashes if the width gets bigger than 800 and if it is less than 800, the points are only drawn in a width x width square on the window
+
+![Broken Width Window](imgs/brokenWidthWindow.JPG)
+
+Runing the program under the debugger yields this error in the _point.cpp_ file.  
+The error means I am trying to access memory which hasn't been allocated for this array and so the index (i * width + j) * 4 is greater than then length of the array or is negative
+
+![Resize Window Error Message](imgs/resizeWindowErrorMessage.JPG)
+
+By logging the relevant variable I can work out the values when the program crashes  
+>i: 812 j: 193 index: 3248772 length: 3200000
+
+The error is with the equation for calculating the index of the point in the array. The correct equation for the index if (j * width + i) * 4 whereas I have mistyped (i * width + j) * 4.
+
+After this fix the program still crashed when running. Continuing to log the output I discovered that the program attempts to access outside of the pixel array multiple times.
+
+>i: 492 j: 800 index: 3201968 length: 3200000 width: 1000 height: 800  
+i: 484 j: 800 index: 3201936 length: 3200000 width: 1000 height: 800  
+i: 493 j: 800 index: 3201972 length: 3200000 width: 1000 height: 800  
+i: 483 j: 800 index: 3201932 length: 3200000 width: 1000 height: 800  
+i: 740 j: 800 index: 3202960 length: 3200000 width: 1000 height: 800  
+i: 720 j: 800 index: 3202880 length: 3200000 width: 1000 height: 800  
+i: 741 j: 800 index: 3202964 length: 3200000 width: 1000 height: 800  
+i: 719 j: 800 index: 3202876 length: 3200000 width: 1000 height: 800  
+i: 96 j: 800 index: 3200384 length: 3200000 width: 1000 height: 800  
+i: 72 j: 800 index: 3200288 length: 3200000 width: 1000 height: 800  
+i: 104 j: 800 index: 3200416 length: 3200000 width: 1000 height: 800  
+i: 92 j: 800 index: 3200368 length: 3200000 width: 1000 height: 800  
+i: 104 j: 800 index: 3200416 length: 3200000 width: 1000 height: 800  
+i: 92 j: 800 index: 3200368 length: 3200000 width: 1000 height: 800  
+i: 760 j: 800 index: 3203040 length: 3200000 width: 1000 height: 800  
+
+This always happend when j = 800 which should never happen. The reason it is happening is because my check for whether a coordinate is valid is incorrect and allowing invalid coordinates to get through. 
+
+The original line of code was:
+```cpp
+if(i < 0 || i > width || j < 0 || j > height){return;}
+```
+Whereas the correct line should be
+```cpp
+if(i < 0 || i >= width || j < 0 || j >= height){return;}
+```
+The reason for this is because width and height are the numbers of rows and columns however, the indexes for accessing the array start at zero, this means that a coordinate such as (width, height) is invalid and the bottom right coordinate is actually (width - 1, height -1)
+
+After this fix the program runs but is still not drawing over the whole screen.
+
+![Fixed Resize, Broken Draw Area](imgs/fixedResizeButBrokenDrawCoverage.JPG)
+
