@@ -60,7 +60,8 @@ int main()
     }
 
     //Colour for drawable object
-    float colour[3] = { 1, 1, 1 };
+    float fillColour[3] = { 1, 1, 1 };
+    float outlineColour[3] = { 1, 1, 1 };
     //Boolean to store whether to fill test points
     bool fill = false;
 
@@ -100,7 +101,8 @@ int main()
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Colours");
-        ImGui::ColorEdit3("Dot", (float*)&colour);
+        ImGui::ColorEdit3("Fill", (float*)&fillColour);
+        ImGui::ColorEdit3("Outline", (float*)&outlineColour);
         if(ImGui::Button("Randomise")){
             for(auto& p : points){
                 int x = rand() % WIDTH;
@@ -115,7 +117,8 @@ int main()
         //Update colours in case user has changed the colour
         for(auto& point : points){
             //Set colour to the colour picked from colour picker
-            point.setColour(round(colour[0] * 255), round(colour[1] * 255), round(colour[2] * 255));
+            point.setColour(round(fillColour[0] * 255), round(fillColour[1] * 255), round(fillColour[2] * 255));
+            point.setOutlineColour(round(outlineColour[0] * 255), round(outlineColour[1] * 255), round(outlineColour[2] * 255));
             point.setFill(fill);
             point.draw(pixels, WIDTH, HEIGHT);
         }

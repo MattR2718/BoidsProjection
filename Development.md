@@ -470,3 +470,51 @@ ImGui::Checkbox("Fill", &fill);
 ```
 
 ![Randomise and Fill ImGui Window](imgs/randomiseAndFillImGuiWindow.JPG)
+
+---
+## 17/11/22
+### **Change Point Fill Colour**
+
+Currently all points have the same fill colour and outline colour, this makes them difficult to differentiate when they are stacked over eachother which can be solved by adding an outline to them  
+Adding an outline is the same as changing the colour of the points that are plotted in the lines which are being drawn across the circles to fill them
+
+```cpp
+auto plot = [&](const int j, const int i, bool outline = false){
+    if(i < 0 || i > width || j < 0 || j > height){return;}
+    int r, g, b;
+    if(!outline){ r = this->outr; g = this->outg; b = this->outb; }
+    else{ r = this->r; g = this->g; b = this->b; }
+    pixels[(i * width + j) * 4] = r;
+    pixels[(i * width + j) * 4 + 1] = g;
+    pixels[(i * width + j) * 4 + 2] = b;
+};
+```
+
+![Broken Outline Points](imgs/brokenOutlineColour.JPG)
+
+Currently the lines are being drawn from the leftmost x value to one before the rightmost which is causing the left hand side not to be drawn  
+```cpp
+auto plotLine = [&](const int x1, const int x2, const int y){
+    int px1 = x1, px2 = x2;
+    if(px1 > px2){ px1 = x2; px2 = x1; }
+    for(int c = px1; c < px2; c++){
+        plot(c, y, true);
+    }
+};
+```
+
+Changing the starting of the loop to int c = px1 + 1 fixes the issue  
+
+```cpp
+auto plotLine = [&](const int x1, const int x2, const int y){
+    int px1 = x1, px2 = x2;
+    if(px1 > px2){ px1 = x2; px2 = x1; }
+    for(int c = px1 + 1; c < px2; c++){
+        plot(c, y, true);
+    }
+};
+```
+
+![Fixed Point Outline](imgs/fixedPointOutline.JPG)
+
+This solution is not the best solution as it leaves the top and botton of the circle quite bare and also doesn't allow for variable outline width.  This solution works for now and can easily be changed at a later point if that becomes a necessity.
