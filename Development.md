@@ -606,3 +606,19 @@ auto plot = [&](const int i, const int j, bool outline = false)
 Now the whole screen is covered by points when they are plotted in random positions
 
 ![Full Coverage Points](imgs/fixedPointsNotCoveringScreen.JPG)
+
+---
+### **Variable Number Of Points**
+
+Adding a slider to allow the number of points being drawn for the user allows me to test the programs efficiency.  
+Running in a debug build, the program is pretty smooth with a couple thousand points however, increasing the number up to 10000 does cause the fps to drop by quite a lot.
+
+![Variable Number Of Points Debug](imgs/variableNumPointsDebugTest.JPG)
+
+Running the program in a Release build produces much better performance as it is much more optimised. This means that at 10000 points being drawn, the program runs perfectly fine.
+
+![Variable Number Of Points Release](imgs/variableNumPointsReleaseTest.JPG)
+
+It is not until 100,000 points being drawn that the Release build drops to similar levels to debug mode at 10,000 points
+
+![Variable Number Of Points Release 100000](imgs/variableNumPointsReleaseTest100000.JPG)

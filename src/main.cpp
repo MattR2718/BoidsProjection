@@ -32,6 +32,21 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 	window.draw(text);
 }
 
+auto populatePoints(std::vector<Point>& points, const int numPoints, const int width, const int height){
+    while(points.size() < numPoints){
+        Point p(100, 100, 100, 100);
+        int x = rand() % width;
+        int y = rand() % height;
+        p.setRadius(rand() % 30);
+        p.setPosition(x, y, 0);
+        points.push_back(p);
+    }
+
+    if(points.size() > numPoints){
+        points.erase(points.begin() + numPoints, points.end());
+    }
+}
+
 int main()
 {
     constexpr int WIDTH = 1000;
@@ -48,22 +63,24 @@ int main()
     sf::Uint8* pixels  = new sf::Uint8[WIDTH * HEIGHT * 4];
     initPixels(pixels, WIDTH * HEIGHT * 4);
 
-    //Create vector and fill with objects to test with
-    std::vector<Point> points = { };
-    Point d(100, 100, 100, 20);
-    for(int i = 0; i < 1000; i++){
-        int x = rand() % WIDTH;
-        int y = rand() % HEIGHT;
-        d.setPosition(x, y, 0);
-        d.setRadius(rand() % 20);
-        points.push_back(d);
-    }
-
     //Colour for drawable object
     float fillColour[3] = { 1, 1, 1 };
     float outlineColour[3] = { 1, 1, 1 };
     //Boolean to store whether to fill test points
     bool fill = false;
+    //Integer to store number of points to plot
+    int numPoints = 1000;
+
+    //Create vector and fill with objects to test with
+    std::vector<Point> points = { };
+    Point d(100, 100, 100, 20);
+    for(int i = 0; i < numPoints; i++){
+        int x = rand() % WIDTH;
+        int y = rand() % HEIGHT;
+        d.setPosition(x, y, 0);
+        d.setRadius(rand() % 30);
+        points.push_back(d);
+    }
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -111,7 +128,10 @@ int main()
             }
         }
         ImGui::Checkbox("Fill", &fill);
+        ImGui::SliderInt("Num Points", &numPoints, 0, 5000);
         ImGui::End();
+
+        populatePoints(points, numPoints, WIDTH, HEIGHT);
 
         //Loop through all points and draw them
         //Update colours in case user has changed the colour
