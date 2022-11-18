@@ -622,3 +622,116 @@ Running the program in a Release build produces much better performance as it is
 It is not until 100,000 points being drawn that the Release build drops to similar levels to debug mode at 10,000 points
 
 ![Variable Number Of Points Release 100000](imgs/variableNumPointsReleaseTest100000.JPG)
+
+## **Implementing Rotation**
+
+First I need 3 variables to store the angles of rotation of the camera as well as a map to store the values of the trig functions since they do not need to be calculated for every object, just when the camera moves.  
+The values in the map have to be initialised since the _.at()_ function used in the set trig values does not allow initialisation and will throw an error if attempting to ccess an invalid position. This is better than using the _[ ]_ accessor since this can create new records in the map which could lead to errors doing arithmetic on empty map values.
+
+```cpp
+//Floats to store the rotation angle of the cameras
+float tx = 0, ty = 0, tz = 0;
+//Map to store values for trig finctions
+std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
+                                                {"sy", sin(degToRad(ty))},
+                                                {"sz", sin(degToRad(tz))},
+                                                {"cx", cos(degToRad(tx))},
+                                                {"cy", cos(degToRad(ty))},
+                                                {"cz", cos(degToRad(tz))}};
+```
+
+Functions to convert between degrees and radians, and to calculate the values of the trig function
+
+```cpp
+template <typename T>
+auto degToRad(T angle){
+        return float(angle) * PI / 180.f;
+}
+
+template <typename T, typename U>
+void setTrigValues(const T tx, const T ty, const T tz, U tfunct){
+    tfunct.at("sx") = sin(degToRad(tx));
+    tfunct.at("sy") = sin(degToRad(ty));
+    tfunct.at("sz") = sin(degToRad(tz));
+
+    tfunct.at("cx") = cos(degToRad(tx));
+    tfunct.at("cy") = cos(degToRad(ty));
+    tfunct.at("cz") = cos(degToRad(tz));
+}
+```
+
+Then I need to implement keyboard input to allow for the camera to be rotated.
+
+```cpp
+if (event.type == sf::Event::Closed){
+    window.close();
+}else if (event.type == sf::Event::KeyPressed) {
+    switch(event.key.code) {
+        case(sf::Keyboard::Down): {
+            tx += 1;
+        }
+        break;
+        case(sf::Keyboard::Up): {
+            tx -= 1;
+        }
+        break;
+        case(sf::Keyboard::Left): {
+            ty += 1;
+        }
+        break;
+        case(sf::Keyboard::Right): {
+            ty -= 1;
+        }
+        break;
+        case(sf::Keyboard::Comma):{
+            tz += 1;
+        }
+        break;
+        case(sf::Keyboard::Period):{
+            tz -= 1;
+        }
+        break;
+        case(sf::Keyboard::Space): {
+            tx = 26;
+            ty = 40;
+            tz = 0;
+        }
+        break;
+        default:{
+            std::cout<<"Key Code Pressed: "<<event.key.code<<'\n';
+        }
+        break;
+    }
+}
+```
+
+All rotations are multiplied out to produce a single calculation that can be completed for each component of the coordinate
+
+
+```cpp
+template<typename T, typename U>
+void Drawable::rotX(T tx, T ty, T tz, U trigfunct){
+    //x * cosy * cosz - y * cosy * sinz + z * siny
+    this->px = this->x * trigfunct.at("cy") * trigfunct.at("cz") - this->y * trigfunct.at("cy")* trigfunct.at("sz") + this->z * trigfunct.at("sy");
+}
+
+template<typename T, typename U>
+void Drawable::rotY(T tx, T ty, T tz, U trigfunct){
+    //x * (sinx * siny * cosx + cosx * sinz) - y * (sinx * siny * sinz - cosx * cosz) - z * sinx * cosy
+    this->py = this->x * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("cx") + trigfunct.at("cx") * trigfunct.at("sx")) - this->y * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("sz") - trigfunct.at("cx") * trigfunct.at("cz")) - this->z * trigfunct.at("sx") * trigfunct.at("cy");
+}
+
+template<typename T, typename U>
+void Drawable::rotZ(T tx, T ty, T tz, U trigfunct){
+    //x * (sinx * siny - cosx * cosz * siny) + y * (cosx * siny * sinz + sinx * cosz) + z * cosx * cosy
+    this->pz = this->x * (trigfunct.at("sx") * trigfunct.at("sy") - trigfunct.at("cx") * trigfunct.at("cz") * trigfunct.at("sy")) + this->y * (trigfunct.at("cx") * trigfunct.at("sy") * trigfunct.at("sz") + trigfunct.at("sx") * trigfunct.at("cx")) + this->z * trigfunct.at("cx") * trigfunct.at("cy");
+}
+
+template<typename T, typename U>
+void Drawable::rotAll(T tx, T ty, T tz, U trigfunct){
+    this->rotX(tx, ty, tz, trigfunct);
+    this->rotY(tx, ty, tz, trigfunct);
+    this->rotZ(tx, ty, tz, trigfunct);
+}
+```
+

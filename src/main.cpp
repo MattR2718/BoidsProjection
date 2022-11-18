@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -7,6 +9,8 @@
 
 #include "../include/drawable.h"
 #include "../include/point.h"
+
+#define PI 3.14159
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -47,6 +51,22 @@ auto populatePoints(std::vector<Point>& points, const int numPoints, const int w
     }
 }
 
+template <typename T>
+auto degToRad(T angle){
+        return float(angle) * PI / 180.f;
+}
+
+template <typename T, typename U>
+void setTrigValues(const T tx, const T ty, const T tz, U tfunct){
+    tfunct.at("sx") = sin(degToRad(tx));
+    tfunct.at("sy") = sin(degToRad(ty));
+    tfunct.at("sz") = sin(degToRad(tz));
+
+    tfunct.at("cx") = cos(degToRad(tx));
+    tfunct.at("cy") = cos(degToRad(ty));
+    tfunct.at("cz") = cos(degToRad(tz));
+}
+
 int main()
 {
     constexpr int WIDTH = 1000;
@@ -70,6 +90,15 @@ int main()
     bool fill = false;
     //Integer to store number of points to plot
     int numPoints = 1000;
+    //Floats to store the rotation angle of the cameras
+    float tx = 0, ty = 0, tz = 0;
+    //Map to store values for trig finctions
+    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
+                                                    {"sy", sin(degToRad(ty))},
+                                                    {"sz", sin(degToRad(tz))},
+                                                    {"cx", cos(degToRad(tx))},
+                                                    {"cy", cos(degToRad(ty))},
+                                                    {"cz", cos(degToRad(tz))}};
 
     //Create vector and fill with objects to test with
     std::vector<Point> points = { };
@@ -108,6 +137,43 @@ int main()
             //If close requested then close window
             if (event.type == sf::Event::Closed){
                 window.close();
+            }else if (event.type == sf::Event::KeyPressed) {
+                switch(event.key.code) {
+                    case(sf::Keyboard::Down): {
+                        tx += 1;
+                    }
+                    break;
+                    case(sf::Keyboard::Up): {
+                        tx -= 1;
+                    }
+                    break;
+                    case(sf::Keyboard::Left): {
+                        ty += 1;
+                    }
+                    break;
+                    case(sf::Keyboard::Right): {
+                        ty -= 1;
+                    }
+                    break;
+                    case(sf::Keyboard::Comma):{
+                        tz += 1;
+                    }
+                    break;
+                    case(sf::Keyboard::Period):{
+                        tz -= 1;
+                    }
+                    break;
+                    case(sf::Keyboard::Space): {
+                        tx = 26;
+                        ty = 40;
+                        tz = 0;
+                    }
+                    break;
+                    default:{
+                        std::cout<<"Key Code Pressed: "<<event.key.code<<'\n';
+                    }
+                    break;
+                }
             }
         }
         //Update imgui window
@@ -140,6 +206,7 @@ int main()
             point.setColour(round(fillColour[0] * 255), round(fillColour[1] * 255), round(fillColour[2] * 255));
             point.setOutlineColour(round(outlineColour[0] * 255), round(outlineColour[1] * 255), round(outlineColour[2] * 255));
             point.setFill(fill);
+            //TODO IN DRAW USE PX< PY AND PZ VALUES FOR DRAWING AND FINISH ROTATIONS
             point.draw(pixels, WIDTH, HEIGHT);
         }
 

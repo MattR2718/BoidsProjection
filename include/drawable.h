@@ -20,9 +20,18 @@ private:
 protected:
     //Variables
     int x, y, z;
+    int px, py, pz;
     int r, g, b;
 
     //Methods
+    template<typename T, typename U>
+    void rotX(T tx, T ty, T tz, U trigfunct);
+    template<typename T, typename U>
+    void rotY(T tx, T ty, T tz, U trigfunct);
+    template<typename T, typename U>
+    void rotZ(T tx, T ty, T tz, U trigfunct);
+    template<typename T, typename U>
+    void rotAll(T tx, T ty, T tz, U trigfunct);
 
 };
 
