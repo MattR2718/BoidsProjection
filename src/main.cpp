@@ -49,7 +49,7 @@ int main()
     initPixels(pixels, WIDTH * HEIGHT * 4);
 
     //Create vector and fill with objects to test with
-    std::vector<Point> points;
+    std::vector<Point> points = { };
     Point d(100, 100, 100, 20);
     for(int i = 0; i < 1000; i++){
         int x = rand() % WIDTH;

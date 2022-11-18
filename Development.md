@@ -568,3 +568,41 @@ After this fix the program runs but is still not drawing over the whole screen.
 
 ![Fixed Resize, Broken Draw Area](imgs/fixedResizeButBrokenDrawCoverage.JPG)
 
+---
+## 18/11/22
+### **Fixing Not Drawing To Whole Screen**
+
+Start by filling points with a single point which is meant to be drawn where points are currently not being drawn
+
+```cpp
+constexpr int WIDTH = 600;
+constexpr int HEIGHT = 800;
+
+std::vector<Point> points = {Point(500, 600, 0, 100)};
+```
+
+With the above window size and point coordinates the point is drawn here
+
+![Half Circle](imgs/halfOffCircle.JPG)
+
+With the same window size but a differenc coordinate position the circle is drawn here
+
+![Full Circle](imgs/fullCircle.JPG)
+
+Here what should be the y coordinate has decreased but the x potition on screen has changed
+
+The problem is with my plot function parameters. The parameters are in toe order j(y), i(x) but when called the function is given them in order x(i), y(j)
+
+```cpp 
+auto plot = [&](const int j, const int i, bool outline = false){
+```
+
+This is easily fixed by switching the order of the parameters to
+
+```cpp
+auto plot = [&](const int i, const int j, bool outline = false)
+```
+
+Now the whole screen is covered by points when they are plotted in random positions
+
+![Full Coverage Points](imgs/fixedPointsNotCoveringScreen.JPG)
