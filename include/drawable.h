@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <tuple>
 #include <SFML/Graphics.hpp>
 
 class Drawable{
@@ -16,6 +17,10 @@ public:
     void draw(sf::Uint8 *arr, const int width, T& tx, T& ty, T& tz, std::map<std::string, float> & trigfunct);
     void setColour(int r, int g, int b);
     void setPosition(int x_, int y_, int z_);
+    std::tuple<int, int, int> getPXYZ();
+
+
+    void rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct);
 
 private:
 
@@ -34,7 +39,7 @@ protected:
     template<typename T, typename U>
     void rotZ(T tx, T ty, T tz, U trigfunct);
     /* template<typename T, typename U> */
-    void rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct);
+    /* void rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct); */
 
 };
 

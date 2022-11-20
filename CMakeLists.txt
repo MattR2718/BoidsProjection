@@ -10,10 +10,20 @@ list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\
 find_package(imgui CONFIG REQUIRED)
 find_package(ImGui-SFML CONFIG REQUIRED)
 
-add_executable(BoidsProjection src/main.cpp src/drawable.cpp src/point.cpp)
+list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\gtest")
+find_package(GTest)
+include_directories(${GTEST_INCLUDE_DIRS})
+
+add_executable(${PROJECT_NAME} src/main.cpp src/drawable.cpp src/point.cpp)
+add_executable(test tests/testRotate.cpp src/drawable.cpp src/point.cpp)
 
 target_link_libraries(${PROJECT_NAME}
     imgui::imgui
     sfml-graphics sfml-system sfml-window
     ImGui-SFML::ImGui-SFML
+)
+
+target_link_libraries(test
+    GTest::GTest 
+    GTest::Main
 )
