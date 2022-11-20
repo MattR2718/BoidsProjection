@@ -2,6 +2,7 @@
 #define POINT_H
 
 #include <iostream>
+#include <map>
 #include <SFML/Graphics.hpp>
 
 #include "drawable.h"
@@ -13,11 +14,12 @@ public:
     int fill = true;
 
     //Methods
-    Point(int x_, int y_, int z_, int rad_ = 20, int r_ = 255, int g_ = 255, int b_ = 255);
+    Point(int x_, int y_, int z_, int width, int height, int rad_ = 20, int r_ = 255, int g_ = 255, int b_ = 255);
     void setRadius(int rad_);
     void setFill(bool b);
     void setOutlineColour(int r_, int g_, int b_);
-    void draw(sf::Uint8 *pixels, const int width, const int height);
+    /* template<typename T, typename U> */
+    void draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct);
 
 private:
     //Variables

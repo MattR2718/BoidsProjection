@@ -1,8 +1,8 @@
 #include "../include/drawable.h"
 
-Drawable::Drawable(int x_, int y_, int z_, int r_, int g_, int b_){
+Drawable::Drawable(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_){
     this->x = x_;
-    this->y = y_;
+    this->y = -y_; /* Y is negative to make towards the top of the screen positive rather than negative*/
     this->z = z_;
     this->px = x_;
     this->py = y_;
@@ -10,10 +10,14 @@ Drawable::Drawable(int x_, int y_, int z_, int r_, int g_, int b_){
     this->r = r_;
     this->g = g_;
     this->b = b_;
+    this->offsetx = width / 2;
+    this->offsety = height / 2;
 }
 
-void Drawable::draw(sf::Uint8 *arr, const int width){
-    int index = (this->y * width + this->x) * 4;
+template<typename T, typename U>
+void Drawable::draw(sf::Uint8 *arr, const int width, T& tx, T& ty, T& tz, std::map<std::string, float> & trigfunct){
+    this->rotAll(tx, ty, tz, trigfunct)
+    int index = (this->py * width + this->px) * 4;
     arr[index] = this->r;
     arr[index + 1] = this->g;
     arr[index + 2] = this->b;
@@ -50,8 +54,8 @@ void Drawable::rotZ(T tx, T ty, T tz, U trigfunct){
     this->pz = this->x * (trigfunct.at("sx") * trigfunct.at("sy") - trigfunct.at("cx") * trigfunct.at("cz") * trigfunct.at("sy")) + this->y * (trigfunct.at("cx") * trigfunct.at("sy") * trigfunct.at("sz") + trigfunct.at("sx") * trigfunct.at("cx")) + this->z * trigfunct.at("cx") * trigfunct.at("cy");
 }
 
-template<typename T, typename U>
-void Drawable::rotAll(T tx, T ty, T tz, U trigfunct){
+/* template<typename T, typename U> */
+void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct){
     this->rotX(tx, ty, tz, trigfunct);
     this->rotY(tx, ty, tz, trigfunct);
     this->rotZ(tx, ty, tz, trigfunct);

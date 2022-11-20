@@ -735,3 +735,46 @@ void Drawable::rotAll(T tx, T ty, T tz, U trigfunct){
 }
 ```
 
+---
+## 20/11/22
+### **Rotate Points**
+
+Call rotAll function at start of draw function and alter draw function to draw at this->px and this->py rather than this->x and this->y referring to projected x and projected y  
+This results in the points being able to be rotated about a point
+
+![Rotated Points](imgs/rotatedRandomPoints.JPG)
+
+These rotated points are hard to follow if the rotations are correct so I will draw 4 points, an origin and a point along each axis to check rotations
+
+
+![Top Right Points](imgs/xyzTopLeftOrigin.JPG)
+
+
+Currently all points are being drawn from the top left however, I want the center of the screen to be the origin. This means I have to add an offset to the draw function of half the width and half the height.
+
+
+Implementing the offset moves the points to the center of the screen however, the check to make sure nothing is being drawn offscreen and therefore out of the range of the array only works for drawing from top left.
+
+![Center Drawn Cutoff](imgs/offsetCutoff.JPG)
+
+
+The current check for within bounds is:
+```cpp
+if(i < 0 || i >= width || j < 0 || j >= height){return;}
+```
+
+The correct check should be:
+```cpp
+if(i < -this->offsetx || i >= this->offsetx || j < -this->offsety || j >= this->offsety){return;}
+```
+
+Points are being rotated however the x axis rotation appears incorrect.  
+On the drawn diagram below, all points should be being rotated about the x axis, blue line, which means all points along the blue line should not move, the point drawn along the x axis however is being moved which means there is a problem.
+
+![Incorrect X Axis Rotations](imgs/incorrectXAxisRotation.JPG)
+
+To check whether this is the only problem I can implement unit tests to test the rotation code.
+
+---
+#### **Unit Tests Addition**
+

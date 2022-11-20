@@ -38,7 +38,7 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 
 auto populatePoints(std::vector<Point>& points, const int numPoints, const int width, const int height){
     while(points.size() < numPoints){
-        Point p(100, 100, 100, 100);
+        Point p(100, 100, 100, width, height, 100);
         int x = rand() % width;
         int y = rand() % height;
         p.setRadius(rand() % 30);
@@ -57,7 +57,7 @@ auto degToRad(T angle){
 }
 
 template <typename T, typename U>
-void setTrigValues(const T tx, const T ty, const T tz, U tfunct){
+void setTrigValues(const T tx, const T ty, const T tz, U& tfunct){
     tfunct.at("sx") = sin(degToRad(tx));
     tfunct.at("sy") = sin(degToRad(ty));
     tfunct.at("sz") = sin(degToRad(tz));
@@ -101,15 +101,19 @@ int main()
                                                     {"cz", cos(degToRad(tz))}};
 
     //Create vector and fill with objects to test with
-    std::vector<Point> points = { };
-    Point d(100, 100, 100, 20);
+    Point O(0, 0, 0, WIDTH, HEIGHT, 20);
+    Point X(100, 0, 0, WIDTH, HEIGHT,  20);
+    Point Y(0, 100, 0, WIDTH, HEIGHT,  20);
+    Point Z(0, 0, 100, WIDTH, HEIGHT,  20);
+    std::vector<Point> points = { O, X, Y, Z };
+    /* Point d(100, 100, 100, 20);
     for(int i = 0; i < numPoints; i++){
         int x = rand() % WIDTH;
         int y = rand() % HEIGHT;
         d.setPosition(x, y, 0);
         d.setRadius(rand() % 30);
         points.push_back(d);
-    }
+    } */
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -141,32 +145,39 @@ int main()
                 switch(event.key.code) {
                     case(sf::Keyboard::Down): {
                         tx += 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Up): {
                         tx -= 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Left): {
                         ty += 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Right): {
                         ty -= 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Comma):{
-                        tz += 1;
+                        tz -= 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Period):{
-                        tz -= 1;
+                        tz += 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Space): {
-                        tx = 26;
-                        ty = 40;
+                        tx = 0;
+                        ty = 0;
                         tz = 0;
+                        setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     default:{
@@ -197,7 +208,7 @@ int main()
         ImGui::SliderInt("Num Points", &numPoints, 0, 5000);
         ImGui::End();
 
-        populatePoints(points, numPoints, WIDTH, HEIGHT);
+        //populatePoints(points, numPoints, WIDTH, HEIGHT);
 
         //Loop through all points and draw them
         //Update colours in case user has changed the colour
@@ -207,8 +218,10 @@ int main()
             point.setOutlineColour(round(outlineColour[0] * 255), round(outlineColour[1] * 255), round(outlineColour[2] * 255));
             point.setFill(fill);
             //TODO IN DRAW USE PX< PY AND PZ VALUES FOR DRAWING AND FINISH ROTATIONS
-            point.draw(pixels, WIDTH, HEIGHT);
+            point.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
         }
+
+        //std::cout<<"tx: "<<tx<<" ty: "<<ty<<" tz: "<<tz<<'\n';
 
         //Create an sf::image which will be load the pixels
         sf::Image image;

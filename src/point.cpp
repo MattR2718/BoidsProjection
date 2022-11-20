@@ -1,6 +1,6 @@
 #include "../include/point.h"
 
-Point::Point(int x_, int y_, int z_, int rad_, int r_, int g_, int b_) : Drawable{x_, y_, z_, r_, g_, b_}{
+Point::Point(int x_, int y_, int z_, int width, int height, int rad_, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
     this->setRadius(rad_);
     this->outr = this->r;
     this->outg = this->g;
@@ -26,23 +26,23 @@ void Point::setOutlineColour(int r_, int g_, int b_){
 void Point::plotCircle(sf::Uint8 *pixels, const int width, const int height, int x, int y){
     //Lambda finction to plot a single pixel in the pixel array
     auto plot = [&](const int i, const int j, bool outline = false){
-        if(i < 0 || i >= width || j < 0 || j >= height){return;}
+        if(i < -this->offsetx || i >= this->offsetx || j < -this->offsety || j >= this->offsety){return;}
         int r, g, b;
         if(!outline){ r = this->outr; g = this->outg; b = this->outb; }
         else{ r = this->r; g = this->g; b = this->b; }
-        pixels[(j * width + i) * 4] = r;
-        pixels[(j * width + i) * 4 + 1] = g;
-        pixels[(j * width + i) * 4 + 2] = b;
+        pixels[((j + this->offsety) * width + (i + this->offsetx)) * 4] = r;
+        pixels[((j + this->offsety) * width + (i + this->offsetx)) * 4 + 1] = g;
+        pixels[((j + this->offsety) * width + (i + this->offsetx)) * 4 + 2] = b;
     };
     //Plots points accordint to bresenhams algorithm
-    plot(this->x + x, this->y + y);
-    plot(this->x - x, this->y + y);
-    plot(this->x + x, this->y - y);
-    plot(this->x - x, this->y - y);
-    plot(this->x - y, this->y + x);
-    plot(this->x + y, this->y - x);
-    plot(this->x - y, this->y - x);
-    plot(this->x + y, this->y + x);
+    plot(this->px + x, this->py + y);
+    plot(this->px - x, this->py + y);
+    plot(this->px + x, this->py - y);
+    plot(this->px - x, this->py - y);
+    plot(this->px - y, this->py + x);
+    plot(this->px + y, this->py - x);
+    plot(this->px - y, this->py - x);
+    plot(this->px + y, this->py + x);
 
     //Lambda finction to fill the pixel array with a line
     auto plotLine = [&](const int x1, const int x2, const int y){
@@ -55,16 +55,18 @@ void Point::plotCircle(sf::Uint8 *pixels, const int width, const int height, int
 
     //If fill is set to true then draws lines across each point to fill in the circle
     if(this->fill){
-        plotLine(this->x - y, this->x + y, this->y + x);
-        plotLine(this->x - x, this->x + x, this->y + y);
-        plotLine(this->x - x, this->x + x, this->y - y);
-        plotLine(this->x - y, this->x + y, this->y - x);
+        plotLine(this->px - y, this->x + y, this->py + x);
+        plotLine(this->px - x, this->x + x, this->py + y);
+        plotLine(this->px - x, this->x + x, this->py - y);
+        plotLine(this->px - y, this->x + y, this->py - x);
     }
 
 }
 
-void Point::draw(sf::Uint8 *pixels, const int width, const int height){
-    //Bresenhams line drawing algorithm
+/* template<typename T, typename U> */
+void Point::draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct){
+    this->rotAll(tx, ty, tz, trigfunct);
+    //Bresenhams circle drawing algorithm
     int x = 0;
     int y = this->rad;
     int decPar = 3 - 2 * this->rad;
