@@ -39,10 +39,11 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 auto populatePoints(std::vector<Point>& points, const int numPoints, const int width, const int height){
     while(points.size() < numPoints){
         Point p(100, 100, 100, width, height, 100);
-        int x = rand() % width;
-        int y = rand() % height;
+        int x = rand() % (width - 400) - width / 2 + 200;
+        int y = rand() % (height - 400) - height / 2 + 200;
+        int z = rand() % (width - 400) - width / 2 + 200;
+        p.setPosition(x, y, z);
         p.setRadius(rand() % 30);
-        p.setPosition(x, y, 0);
         points.push_back(p);
     }
 
@@ -91,7 +92,7 @@ int main()
     //Integer to store number of points to plot
     int numPoints = 1000;
     //Floats to store the rotation angle of the cameras
-    float tx = 0, ty = 0, tz = 0;
+    float tx = 30, ty = 30, tz = 0;
     //Map to store values for trig finctions
     std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
                                                     {"sy", sin(degToRad(ty))},
@@ -106,14 +107,9 @@ int main()
     Point Y(0, 100, 0, WIDTH, HEIGHT,  20);
     Point Z(0, 0, 100, WIDTH, HEIGHT,  20);
     std::vector<Point> points = { O, X, Y, Z };
-    /* Point d(100, 100, 100, 20);
-    for(int i = 0; i < numPoints; i++){
-        int x = rand() % WIDTH;
-        int y = rand() % HEIGHT;
-        d.setPosition(x, y, 0);
-        d.setRadius(rand() % 30);
-        points.push_back(d);
-    } */
+    populatePoints(points, numPoints, WIDTH, HEIGHT);
+
+    bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -194,7 +190,7 @@ int main()
         initPixels(pixels, WIDTH * HEIGHT * 4);
         
         //Create imgui window to allow colour picking
-        ImGui::Begin("Colours");
+        ImGui::Begin("Points");
         ImGui::ColorEdit3("Fill", (float*)&fillColour);
         ImGui::ColorEdit3("Outline", (float*)&outlineColour);
         if(ImGui::Button("Randomise")){
@@ -206,9 +202,23 @@ int main()
         }
         ImGui::Checkbox("Fill", &fill);
         ImGui::SliderInt("Num Points", &numPoints, 0, 5000);
+        ImGui::Checkbox("Auto Rotate X", &autoRotatex);
+        ImGui::Checkbox("Auto Rotate Y", &autoRotatey);
+        ImGui::Checkbox("Auto Rotate Z", &autoRotatez);
         ImGui::End();
 
-        //populatePoints(points, numPoints, WIDTH, HEIGHT);
+        populatePoints(points, numPoints, WIDTH, HEIGHT);
+
+        if(autoRotatex){
+            tx += 1;
+        }
+        if(autoRotatey){
+            ty += 1;
+        }
+        if(autoRotatez){
+            tz += 1;
+        }
+        setTrigValues(tx, ty, tz, trigFunctions);
 
         //Loop through all points and draw them
         //Update colours in case user has changed the colour
@@ -217,7 +227,6 @@ int main()
             point.setColour(round(fillColour[0] * 255), round(fillColour[1] * 255), round(fillColour[2] * 255));
             point.setOutlineColour(round(outlineColour[0] * 255), round(outlineColour[1] * 255), round(outlineColour[2] * 255));
             point.setFill(fill);
-            //TODO IN DRAW USE PX< PY AND PZ VALUES FOR DRAWING AND FINISH ROTATIONS
             point.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
         }
 

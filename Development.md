@@ -1080,3 +1080,14 @@ After this change, the rotation tests all pass.
 ![Passed Rotation Tests](imgs/passedRotationTests.JPG)
 ![Passed Rotation Tests Brief](imgs/passedRotationTestsBrief.JPG)
 
+---
+
+### **Rotating Points Cube**
+
+After implementing all of the rotation code and generating random points, I can create a cube of random points which rotated about on screen.
+
+![Rotating Random Points Cube](imgs/randomPointsRotation.gif)
+
+After implementing the rotation code, the fill no longer works.
+
+![Rotating Random Points Cube Broken Fill](imgs/randomPointsRotationBrokenFill.gif)
