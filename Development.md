@@ -1091,3 +1091,33 @@ After implementing all of the rotation code and generating random points, I can 
 After implementing the rotation code, the fill no longer works.
 
 ![Rotating Random Points Cube Broken Fill](imgs/randomPointsRotationBrokenFill.gif)
+
+---
+## 21/11/22
+### **Fixing Fill**
+
+The current fill code looks like this.
+
+```cpp
+if(this->fill){
+    plotLine(this->px - y, this->x + y, this->py + x);
+    plotLine(this->px - x, this->x + x, this->py + y);
+    plotLine(this->px - x, this->x + x, this->py - y);
+    plotLine(this->px - y, this->x + y, this->py - x);
+}
+```
+
+When editing the code to fill fron the projected values i mussed the middle values which are the right hand side x values.
+
+Editing the code to this fixes the issue:
+
+```cpp
+if(this->fill){
+    plotLine(this->px - y, this->px + y, this->py + x);
+    plotLine(this->px - x, this->px + x, this->py + y);
+    plotLine(this->px - x, this->px + x, this->py - y);
+    plotLine(this->px - y, this->px + y, this->py - x);
+}
+```
+
+![Fixed Point Rotation Fill](imgs/fixedPointRotationFill.JPG)

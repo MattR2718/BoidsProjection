@@ -90,7 +90,7 @@ int main()
     //Boolean to store whether to fill test points
     bool fill = false;
     //Integer to store number of points to plot
-    int numPoints = 1000;
+    int numPoints = 100;
     //Floats to store the rotation angle of the cameras
     float tx = 30, ty = 30, tz = 0;
     //Map to store values for trig finctions
@@ -195,9 +195,10 @@ int main()
         ImGui::ColorEdit3("Outline", (float*)&outlineColour);
         if(ImGui::Button("Randomise")){
             for(auto& p : points){
-                int x = rand() % WIDTH;
-                int y = rand() % HEIGHT;
-                p.setPosition(x, y, 0);
+                int x = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
+            int y = rand() % (HEIGHT - 400) - HEIGHT / 2 + 200;
+            int z = rand() % (WIDTH - 400) - WIDTH/ 2 + 200;
+                p.setPosition(x, y, z);
             }
         }
         ImGui::Checkbox("Fill", &fill);

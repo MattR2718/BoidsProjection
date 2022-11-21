@@ -19,7 +19,8 @@ public:
     void setPosition(int x_, int y_, int z_);
     std::tuple<int, int, int> getPXYZ();
 
-
+    //template<typename T, typename U>
+    //void rotAll(T tx, T ty, T tz, U trigfunct);
     void rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct);
 
 private:

@@ -58,7 +58,8 @@ void Drawable::rotZ(T tx, T ty, T tz, U trigfunct){
     this->pz = this->x * (trigfunct.at("sx") * trigfunct.at("sy") - trigfunct.at("cx") * trigfunct.at("cz") * trigfunct.at("sy")) + this->y * (trigfunct.at("cx") * trigfunct.at("sy") * trigfunct.at("sz") + trigfunct.at("sx") * trigfunct.at("cz")) + this->z * trigfunct.at("cx") * trigfunct.at("cy");
 }
 
-/* template<typename T, typename U> */
+//template<typename T, typename U>
+//void Drawable::rotAll(T tx, T ty, T tz, U  trigfunct){
 void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct){
     this->rotX(tx, ty, tz, trigfunct);
     this->rotY(tx, ty, tz, trigfunct);

@@ -55,10 +55,10 @@ void Point::plotCircle(sf::Uint8 *pixels, const int width, const int height, int
 
     //If fill is set to true then draws lines across each point to fill in the circle
     if(this->fill){
-        plotLine(this->px - y, this->x + y, this->py + x);
-        plotLine(this->px - x, this->x + x, this->py + y);
-        plotLine(this->px - x, this->x + x, this->py - y);
-        plotLine(this->px - y, this->x + y, this->py - x);
+        plotLine(this->px - y, this->px + y, this->py + x);
+        plotLine(this->px - x, this->px + x, this->py + y);
+        plotLine(this->px - x, this->px + x, this->py - y);
+        plotLine(this->px - y, this->px + y, this->py - x);
     }
 
 }
