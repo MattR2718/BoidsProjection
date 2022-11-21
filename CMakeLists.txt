@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(BoidsProjection VERSION 0.1.0)
 
-list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\sfml")
+SET(CMAKE_TOOLCHAIN_FILE "C:\\Users\\matth\\vcpkg\\scripts\\buildsystem\\vcpkg.cmake")
+
 find_package(SFML CONFIG REQUIRED COMPONENTS graphics system window)
 include_directories(${SFML_INCLUDE_DIR})
 
-list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\imgui")
-list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\ImGui-SFML")
 find_package(imgui CONFIG REQUIRED)
 find_package(ImGui-SFML CONFIG REQUIRED)
 
-list(APPEND CMAKE_PREFIX_PATH "C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\share\\gtest")
 find_package(GTest)
 include_directories(${GTEST_INCLUDE_DIRS})
 
