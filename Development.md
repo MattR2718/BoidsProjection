@@ -1121,3 +1121,26 @@ if(this->fill){
 ```
 
 ![Fixed Point Rotation Fill](imgs/fixedPointRotationFill.JPG)
+
+
+---
+## 22/11/22
+### **Sort By Z Value**
+
+Currently the points are being drawn in the order that they were added to the vector. This means that quite often the points that should be hidden are being shown on top of points that are closer to the camera.  
+This can be solved by sorting the vector based on the projected z value so that the points that are furthest back are drawn first.  
+
+```cpp
+std::sort(points.begin(), points.end(), [&](Point a, Point b){ return a.pz<b.pz; });
+for(auto& p : points){
+    p.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+}
+```
+
+Simplifying to axis points and points along the x axis this produces this.
+
+![Sorted Points X Axis](imgs/sortedPointsZValueXAxis.gif)
+
+Readding back the random points produces this:
+
+![Sorted Points Random](imgs/sortedPointsZValueRandom.gif)

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <tuple>
 #include <string>
 
 #include <SFML/Graphics.hpp>
@@ -108,6 +109,10 @@ int main()
     Point Z(0, 0, 100, WIDTH, HEIGHT,  20);
     std::vector<Point> points = { O, X, Y, Z };
     populatePoints(points, numPoints, WIDTH, HEIGHT);
+
+    /* for(int x = 0; x < 101; x+= 10){
+        points.push_back(Point(x, 0, 0, WIDTH, HEIGHT, 20));
+    } */
 
     bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
@@ -228,10 +233,14 @@ int main()
             point.setColour(round(fillColour[0] * 255), round(fillColour[1] * 255), round(fillColour[2] * 255));
             point.setOutlineColour(round(outlineColour[0] * 255), round(outlineColour[1] * 255), round(outlineColour[2] * 255));
             point.setFill(fill);
-            point.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+            point.rotAll(tx, ty, tz, trigFunctions);
+            //point.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
         }
 
-        //std::cout<<"tx: "<<tx<<" ty: "<<ty<<" tz: "<<tz<<'\n';
+        std::sort(points.begin(), points.end(), [&](Point a, Point b){ return a.pz<b.pz; });
+        for(auto& p : points){
+            p.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+        }
 
         //Create an sf::image which will be load the pixels
         sf::Image image;

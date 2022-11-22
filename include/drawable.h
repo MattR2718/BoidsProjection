@@ -10,7 +10,7 @@ class Drawable{
 
 public:
     //Variables
-
+    int px, py, pz;
     //Methods
     Drawable(int x_, int y_, int z_, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255);
     template<typename T, typename U>
@@ -28,7 +28,7 @@ private:
 protected:
     //Variables
     int x, y, z;
-    int px, py, pz;
+    /* int px, py, pz; */
     int offsetx, offsety;
     int r, g, b;
 

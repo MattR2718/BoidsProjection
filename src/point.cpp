@@ -65,7 +65,7 @@ void Point::plotCircle(sf::Uint8 *pixels, const int width, const int height, int
 
 /* template<typename T, typename U> */
 void Point::draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct){
-    this->rotAll(tx, ty, tz, trigfunct);
+    //this->rotAll(tx, ty, tz, trigfunct);
     //Bresenhams circle drawing algorithm
     int x = 0;
     int y = this->rad;
