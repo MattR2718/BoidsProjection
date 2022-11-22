@@ -1,4 +1,4 @@
-#include "../include/line.h"
+#include "line.h"
 
 Line::Line(Point p1_, Point p2_, int width, int height, int r_, int g_, int b_) : Drawable{0, 0, 0, width, height, r_, g_, b_}{
     this->p1 = p1_;

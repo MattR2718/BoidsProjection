@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.22.0)
+
+add_library(drawables drawable.cpp point.cpp line.cpp)
+
+find_path(SFML_INCLUDES SFML/Graphics.hpp)
+message("SFMLINCLUDE = ${SFML_INCLUDES}")
+target_include_directories(drawables PUBLIC drawable.h point.h line.h ${SFML_INCLUDES})
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+target_link_libraries(${PROJECT_NAME}
+    imgui::imgui
+    sfml-graphics sfml-system sfml-window
+    ImGui-SFML::ImGui-SFML
+    drawables
+)

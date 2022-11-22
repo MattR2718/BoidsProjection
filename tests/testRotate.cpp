@@ -4,8 +4,8 @@
 #include <tuple>
 #include <gtest/gtest.h>
 
-#include "../include/drawable.h"
-#include "../include/point.h"
+#include "drawable.h"
+#include "point.h"
 
 #define PI 3.14159
 

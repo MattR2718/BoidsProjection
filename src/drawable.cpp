@@ -1,4 +1,4 @@
-#include "../include/drawable.h"
+#include "drawable.h"
 
 Drawable::Drawable(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_){
     this->x = x_;

@@ -9,9 +9,9 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
-#include "../include/drawable.h"
-#include "../include/point.h"
-#include "../include/line.h"
+#include "drawable.h"
+#include "point.h"
+#include "line.h"
 
 #define PI 3.14159
 
@@ -129,7 +129,7 @@ int main()
     sf::Time current_time;
     //Load font from file and throw exeption if not found
     sf::Font font;
-    if(!font.loadFromFile("../fonts/arial.ttf")){
+    if(!font.loadFromFile("../../fonts/arial.ttf")){
         throw std::invalid_argument("FONT NOT FOUND");
     }
 

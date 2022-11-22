@@ -1,4 +1,4 @@
-#include "../include/point.h"
+#include "point.h"
 
 Point::Point(int x_, int y_, int z_, int width, int height, int rad_, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
     this->setRadius(rad_);
