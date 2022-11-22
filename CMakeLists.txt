@@ -18,7 +18,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 # link_directories ("C:\\Users\\matth\\vcpkg\\installed\\x86-windows\\debug\\bin") 
 
-add_executable(${PROJECT_NAME} src/main.cpp src/drawable.cpp src/point.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/drawable.cpp src/point.cpp src/line.cpp)
 add_executable(test tests/testRotate.cpp src/drawable.cpp src/point.cpp)
 
 target_link_libraries(${PROJECT_NAME}

@@ -14,13 +14,13 @@ Drawable::Drawable(int x_, int y_, int z_, int width, int height, int r_, int g_
     this->offsety = height / 2;
 }
 
-template<typename T, typename U>
-void Drawable::draw(sf::Uint8 *arr, const int width, T& tx, T& ty, T& tz, std::map<std::string, float> & trigfunct){
-    this->rotAll(tx, ty, tz, trigfunct)
+
+void Drawable::draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct){
+    //this->rotAll(tx, ty, tz, trigfunct);
     int index = (this->py * width + this->px) * 4;
-    arr[index] = this->r;
-    arr[index + 1] = this->g;
-    arr[index + 2] = this->b;
+    pixels[index] = this->r;
+    pixels[index + 1] = this->g;
+    pixels[index + 2] = this->b;
 }
 
 void Drawable::setColour(int r_, int g_, int b_){

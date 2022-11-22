@@ -3,6 +3,7 @@
 #include <map>
 #include <tuple>
 #include <string>
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -10,6 +11,7 @@
 
 #include "../include/drawable.h"
 #include "../include/point.h"
+#include "../include/line.h"
 
 #define PI 3.14159
 
@@ -86,33 +88,37 @@ int main()
     initPixels(pixels, WIDTH * HEIGHT * 4);
 
     //Colour for drawable object
-    float fillColour[3] = { 1, 1, 1 };
-    float outlineColour[3] = { 1, 1, 1 };
+    float pointFillColour[3] = { 1, 1, 1 };
+    float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
     //Boolean to store whether to fill test points
     bool fill = false;
     //Integer to store number of points to plot
     int numPoints = 100;
+    bool drawLinePoints = false;
     //Floats to store the rotation angle of the cameras
-    float tx = 30, ty = 30, tz = 0;
+    float tx = 30, ty = -30, tz = 0;
     //Map to store values for trig finctions
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
+                                                    {"sy", std::sin(degToRad(ty))},
+                                                    {"sz", std::sin(degToRad(tz))},
+                                                    {"cx", std::cos(degToRad(tx))},
+                                                    {"cy", std::cos(degToRad(ty))},
+                                                    {"cz", std::cos(degToRad(tz))}};
 
     //Create vector and fill with objects to test with
     Point O(0, 0, 0, WIDTH, HEIGHT, 20);
-    Point X(100, 0, 0, WIDTH, HEIGHT,  20);
-    Point Y(0, 100, 0, WIDTH, HEIGHT,  20);
-    Point Z(0, 0, 100, WIDTH, HEIGHT,  20);
+    Point X(200, 0, 0, WIDTH, HEIGHT,  20, 255, 0, 0);
+    Point Y(0, 200, 0, WIDTH, HEIGHT,  20, 0, 255, 0);
+    Point Z(0, 0, 200, WIDTH, HEIGHT,  20, 0, 0, 255);
     std::vector<Point> points = { O, X, Y, Z };
     populatePoints(points, numPoints, WIDTH, HEIGHT);
 
-    /* for(int x = 0; x < 101; x+= 10){
-        points.push_back(Point(x, 0, 0, WIDTH, HEIGHT, 20));
-    } */
+    Line l(Point(0, 0, 0, WIDTH, HEIGHT, 10), Point(200, 200, 200, WIDTH, HEIGHT, 10), WIDTH, HEIGHT);
+    Line xAxis(X, O, WIDTH, HEIGHT);
+    Line yAxis(Y, O, WIDTH, HEIGHT);
+    Line zAxis(Z, O, WIDTH, HEIGHT);
+    std::vector<Line> lines { l, xAxis, yAxis, zAxis };
+
 
     bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
@@ -145,22 +151,22 @@ int main()
             }else if (event.type == sf::Event::KeyPressed) {
                 switch(event.key.code) {
                     case(sf::Keyboard::Down): {
-                        tx += 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
-                    }
-                    break;
-                    case(sf::Keyboard::Up): {
                         tx -= 1;
                         setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
+                    case(sf::Keyboard::Up): {
+                        tx += 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
+                    }
+                    break;
                     case(sf::Keyboard::Left): {
-                        ty += 1;
+                        ty -= 1;
                         setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Right): {
-                        ty -= 1;
+                        ty += 1;
                         setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
@@ -196,8 +202,8 @@ int main()
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Points");
-        ImGui::ColorEdit3("Fill", (float*)&fillColour);
-        ImGui::ColorEdit3("Outline", (float*)&outlineColour);
+        ImGui::ColorEdit3("Fill", (float*)&pointFillColour);
+        ImGui::ColorEdit3("Outline", (float*)&pointOutlineColour);
         if(ImGui::Button("Randomise")){
             for(auto& p : points){
                 int x = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
@@ -211,6 +217,10 @@ int main()
         ImGui::Checkbox("Auto Rotate X", &autoRotatex);
         ImGui::Checkbox("Auto Rotate Y", &autoRotatey);
         ImGui::Checkbox("Auto Rotate Z", &autoRotatez);
+        ImGui::End();
+
+        ImGui::Begin("Lines");
+        ImGui::Checkbox("Draw Line Points", &drawLinePoints);
         ImGui::End();
 
         populatePoints(points, numPoints, WIDTH, HEIGHT);
@@ -230,8 +240,8 @@ int main()
         //Update colours in case user has changed the colour
         for(auto& point : points){
             //Set colour to the colour picked from colour picker
-            point.setColour(round(fillColour[0] * 255), round(fillColour[1] * 255), round(fillColour[2] * 255));
-            point.setOutlineColour(round(outlineColour[0] * 255), round(outlineColour[1] * 255), round(outlineColour[2] * 255));
+            point.setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
+            point.setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
             point.setFill(fill);
             point.rotAll(tx, ty, tz, trigFunctions);
             //point.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
@@ -240,6 +250,11 @@ int main()
         std::sort(points.begin(), points.end(), [&](Point a, Point b){ return a.pz<b.pz; });
         for(auto& p : points){
             p.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+        }
+
+        for(auto& line : lines){
+            line.drawPoints = drawLinePoints;
+            line.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
         }
 
         //Create an sf::image which will be load the pixels
