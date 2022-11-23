@@ -4,6 +4,7 @@
 #include <tuple>
 #include <string>
 #include <cmath>
+#include <variant>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -81,7 +82,7 @@ int main()
     //Limit the windows frame rate to 30
     window.setFramerateLimit(30);
     //Init imgui
-    ImGui::SFML::Init(window);
+    if(!ImGui::SFML::Init(window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
 
     //Create a pixel array which will contain the pixels drawn to the screen
     sf::Uint8* pixels  = new sf::Uint8[WIDTH * HEIGHT * 4];
@@ -118,6 +119,9 @@ int main()
     Line yAxis(Y, O, WIDTH, HEIGHT);
     Line zAxis(Z, O, WIDTH, HEIGHT);
     std::vector<Line> lines { l, xAxis, yAxis, zAxis };
+
+    //TODO MOVE TO USING VARIANTS RATHER THAN SEPARATE VECTORS FOR EACH TYPE OF DRAWABLE
+    std::vector<std::variant<Drawable>> drawObjects = {O, X, Y, Z, xAxis, yAxis, zAxis, l};
 
 
     bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
@@ -236,7 +240,7 @@ int main()
         }
         setTrigValues(tx, ty, tz, trigFunctions);
 
-        //Loop through all points and draw them
+        /* //Loop through all points and draw them
         //Update colours in case user has changed the colour
         for(auto& point : points){
             //Set colour to the colour picked from colour picker
@@ -255,6 +259,14 @@ int main()
         for(auto& line : lines){
             line.drawPoints = drawLinePoints;
             line.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+        } */
+
+        for(auto& obj : drawObjects){
+            std::get<0>(obj).setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
+            //obj.setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
+            //obj.setFill(fill);
+            std::get<0>(obj).rotAll(tx, ty, tz, trigFunctions);
+            std::get<0>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
         }
 
         //Create an sf::image which will be load the pixels
