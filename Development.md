@@ -1288,3 +1288,59 @@ void Line::draw(sf::Uint8 *pixels, const int width, const int height, float tx, 
 ![Basic Axis Drawn](imgs/basicAxisDrawn.JPG)
 
 ![Lines Axis Example](imgs/linesAxisExample.gif)
+
+---
+### **Restructure into Library**
+
+Restructuring the build into a library which can be linked to the main executable and the test executable makes moving the code between projects as well as adding to it much simpler as it is only changed in one place.
+
+The new CMakeLists are:
+
+_CMakeLists.txt_
+```cpp
+cmake_minimum_required(VERSION 3.22.0)
+project(BoidsProjection VERSION 0.1.0)
+
+find_package(SFML CONFIG REQUIRED COMPONENTS graphics system window)
+include_directories(src)
+find_package(imgui CONFIG REQUIRED)
+find_package(ImGui-SFML CONFIG REQUIRED)
+
+add_subdirectory(src)
+add_subdirectory(tests)
+```
+
+_src/CMakeLists.txt_
+```cpp
+cmake_minimum_required(VERSION 3.22.0)
+
+add_library(drawables drawable.cpp point.cpp line.cpp)
+
+find_path(SFML_INCLUDES SFML/Graphics.hpp)
+target_include_directories(drawables PUBLIC drawable.h point.h line.h ${SFML_INCLUDES})
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+target_link_libraries(${PROJECT_NAME}
+    imgui::imgui
+    sfml-graphics sfml-system sfml-window
+    ImGui-SFML::ImGui-SFML
+    drawables
+)
+```
+
+_tests/CMakeLists.txt_
+```cpp
+cmake_minimum_required(VERSION 3.22.0)
+
+find_package(GTest)
+include_directories(${GTEST_INCLUDE_DIRS})
+
+add_executable(test testRotate.cpp)
+
+target_link_libraries(test
+    GTest::GTest 
+    GTest::Main
+    drawables
+)
+```
