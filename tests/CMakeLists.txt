@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.22.0)
 
-
 find_package(GTest)
 include_directories(${GTEST_INCLUDE_DIRS})
 
