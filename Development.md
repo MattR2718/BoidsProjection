@@ -1344,3 +1344,38 @@ target_link_libraries(test
     drawables
 )
 ```
+
+---
+## 24/11/22
+### **Switch To Using std::variant to Store Drawables**
+Using a std::variant to store all of the drawable items makes drawing them all to the screen much simpler as well as makes sorting the objects so they overlap correctly much easier.
+
+
+Since the definition of the vsctor of variants is long and will change as I develop the program I can define a type which acts the same as the vector which I can use throughout the program. Doing this means when I add more drawable objects, I only have to change the definitions once.
+```cpp
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line>>;
+```
+
+To draw the objects to the screen I first sort the vector and then call the specific functions for each object. In the future these could be moved to inside the objects so I do not have to check types.
+
+```cpp
+std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
+    return std::visit([](auto const& e){ return e.sortVal; }, x);
+});
+
+int pointCount = 0;
+
+for(auto& obj : drawObjects){
+    if(std::holds_alternative<Point>(obj)){
+        pointCount++;
+        std::get<Point>(obj).setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
+        std::get<Point>(obj).setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
+        std::get<Point>(obj).setFill(fill);
+        std::get<Point>(obj).rotAll(tx, ty, tz, trigFunctions);
+        std::get<Point>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+    }else if(std::holds_alternative<Line>(obj)){
+        std::get<Line>(obj).drawPoints = drawLinePoints;
+        std::get<Line>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+    }
+}
+```

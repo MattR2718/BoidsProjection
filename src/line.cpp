@@ -123,6 +123,8 @@ void Line::draw(sf::Uint8 *pixels, const int width, const int height, float tx, 
     this->p1.rotAll(tx, ty, tz, trigfunct);
     this->p2.rotAll(tx, ty, tz, trigfunct);
 
+    this->sortVal = (this->p1.sortVal < this->p2.sortVal) ? this->p2.sortVal : this->p1.sortVal ;
+
     //Draw line connecting two points using projected x and y
     drawLine(pixels, width, height);
 

@@ -64,4 +64,5 @@ void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>
     this->rotX(tx, ty, tz, trigfunct);
     this->rotY(tx, ty, tz, trigfunct);
     this->rotZ(tx, ty, tz, trigfunct);
+    this->sortVal = this->pz;
 }

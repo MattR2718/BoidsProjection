@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 #include <variant>
+#include <ranges>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -15,6 +16,8 @@
 #include "line.h"
 
 #define PI 3.14159
+
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line>>;
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -40,20 +43,27 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 	window.draw(text);
 }
 
-auto populatePoints(std::vector<Point>& points, const int numPoints, const int width, const int height){
-    while(points.size() < numPoints){
-        Point p(100, 100, 100, width, height, 100);
-        int x = rand() % (width - 400) - width / 2 + 200;
-        int y = rand() % (height - 400) - height / 2 + 200;
-        int z = rand() % (width - 400) - width / 2 + 200;
-        p.setPosition(x, y, z);
-        p.setRadius(rand() % 30);
-        points.push_back(p);
-    }
+auto populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT){
+    if(pointCount < numPoints){
+            for(int i = pointCount; i <= numPoints; i++){
+                drawObjects.push_back(Point(
+                    rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                    rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
+                    rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                    WIDTH, HEIGHT,
+                    rand() % 30
 
-    if(points.size() > numPoints){
-        points.erase(points.begin() + numPoints, points.end());
-    }
+                ));
+            }
+        }else if (pointCount > numPoints){
+            int ind = 0;
+            while((ind < drawObjects.size()) && (pointCount > numPoints)){
+                if(std::holds_alternative<Point>(drawObjects[ind])){
+                    drawObjects.erase(drawObjects.begin() + ind);
+                    pointCount--;
+                }else{ ind++; }
+            }
+        }
 }
 
 template <typename T>
@@ -111,8 +121,8 @@ int main()
     Point X(200, 0, 0, WIDTH, HEIGHT,  20, 255, 0, 0);
     Point Y(0, 200, 0, WIDTH, HEIGHT,  20, 0, 255, 0);
     Point Z(0, 0, 200, WIDTH, HEIGHT,  20, 0, 0, 255);
-    std::vector<Point> points = { O, X, Y, Z };
-    populatePoints(points, numPoints, WIDTH, HEIGHT);
+    //std::vector<Point> points = { O, X, Y, Z };
+    //populatePoints(points, numPoints, WIDTH, HEIGHT);
 
     Line l(Point(0, 0, 0, WIDTH, HEIGHT, 10), Point(200, 200, 200, WIDTH, HEIGHT, 10), WIDTH, HEIGHT);
     Line xAxis(X, O, WIDTH, HEIGHT);
@@ -121,8 +131,7 @@ int main()
     std::vector<Line> lines { l, xAxis, yAxis, zAxis };
 
     //TODO MOVE TO USING VARIANTS RATHER THAN SEPARATE VECTORS FOR EACH TYPE OF DRAWABLE
-    std::vector<std::variant<Drawable>> drawObjects = {O, X, Y, Z, xAxis, yAxis, zAxis, l};
-
+    DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l};
 
     bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
@@ -209,11 +218,13 @@ int main()
         ImGui::ColorEdit3("Fill", (float*)&pointFillColour);
         ImGui::ColorEdit3("Outline", (float*)&pointOutlineColour);
         if(ImGui::Button("Randomise")){
-            for(auto& p : points){
-                int x = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
-            int y = rand() % (HEIGHT - 400) - HEIGHT / 2 + 200;
-            int z = rand() % (WIDTH - 400) - WIDTH/ 2 + 200;
-                p.setPosition(x, y, z);
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Point>(obj)){
+                    int x = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
+                    int y = rand() % (HEIGHT - 400) - HEIGHT / 2 + 200;
+                    int z = rand() % (WIDTH - 400) - WIDTH/ 2 + 200;
+                    std::get<Point>(obj).setPosition(x, y, z);
+                }
             }
         }
         ImGui::Checkbox("Fill", &fill);
@@ -227,7 +238,7 @@ int main()
         ImGui::Checkbox("Draw Line Points", &drawLinePoints);
         ImGui::End();
 
-        populatePoints(points, numPoints, WIDTH, HEIGHT);
+        //populatePoints(points, numPoints, WIDTH, HEIGHT);
 
         if(autoRotatex){
             tx += 1;
@@ -240,34 +251,28 @@ int main()
         }
         setTrigValues(tx, ty, tz, trigFunctions);
 
-        /* //Loop through all points and draw them
-        //Update colours in case user has changed the colour
-        for(auto& point : points){
-            //Set colour to the colour picked from colour picker
-            point.setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
-            point.setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
-            point.setFill(fill);
-            point.rotAll(tx, ty, tz, trigFunctions);
-            //point.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
-        }
+        std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
+            return std::visit([](auto const& e){ return e.sortVal; }, x);
+        });
 
-        std::sort(points.begin(), points.end(), [&](Point a, Point b){ return a.pz<b.pz; });
-        for(auto& p : points){
-            p.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
-        }
-
-        for(auto& line : lines){
-            line.drawPoints = drawLinePoints;
-            line.draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
-        } */
+        int pointCount = 0;
 
         for(auto& obj : drawObjects){
-            std::get<0>(obj).setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
-            //obj.setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
-            //obj.setFill(fill);
-            std::get<0>(obj).rotAll(tx, ty, tz, trigFunctions);
-            std::get<0>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+            if(std::holds_alternative<Point>(obj)){
+                pointCount++;
+                std::get<Point>(obj).setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
+                std::get<Point>(obj).setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
+                std::get<Point>(obj).setFill(fill);
+                std::get<Point>(obj).rotAll(tx, ty, tz, trigFunctions);
+                std::get<Point>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+            }else if(std::holds_alternative<Line>(obj)){
+                std::get<Line>(obj).drawPoints = drawLinePoints;
+                std::get<Line>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+            }
         }
+
+        populateDrawPoints(drawObjects, pointCount, numPoints, WIDTH, HEIGHT);
+        
 
         //Create an sf::image which will be load the pixels
         sf::Image image;
