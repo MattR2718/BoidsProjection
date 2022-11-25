@@ -1379,3 +1379,33 @@ for(auto& obj : drawObjects){
     }
 }
 ```
+
+---
+## 25/11/22
+### **Switch to Switch Statement**
+
+Converting the if-else statement into a switch and moving the function calls into a single function inside of the object makes the main file much more maintainable and easier to understand.
+
+```cpp
+//Draw all objects to screen
+for(auto& obj : drawObjects){
+    switch(obj.index()){
+        case 0:{ //Drawable
+            break;
+        }
+        case 1:{ //Point
+            pointCount++;
+            std::get<Point>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, pointFillColour, pointOutlineColour, fill);
+            break;
+        }
+        case 2:{ //Line
+            std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints);
+            break;
+        };
+        default:{
+            std::cout<<"UNKNOWN TYPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
+            break;
+        }
+    }
+}
+```

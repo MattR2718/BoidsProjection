@@ -118,7 +118,7 @@ void Line::drawLine(sf::Uint8 *pixels, const int width, const int height){
 }
 
 
-void Line::draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct){
+void Line::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct){
     //Rotate points at each end of the line
     this->p1.rotAll(tx, ty, tz, trigfunct);
     this->p2.rotAll(tx, ty, tz, trigfunct);
@@ -135,4 +135,9 @@ void Line::draw(sf::Uint8 *pixels, const int width, const int height, float tx, 
         this->p1.draw(pixels, width, height, tx, ty, tz, trigfunct);
         this->p2.draw(pixels, width, height, tx, ty, tz, trigfunct);
     }
+}
+
+void Line::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints){
+    this->drawPoints = drawLinePoints;
+    this->draw(pixels, width, height, tx, ty, tz, trigfunct);
 }

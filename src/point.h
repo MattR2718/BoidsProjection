@@ -21,6 +21,8 @@ public:
     /* template<typename T, typename U> */
     void draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct);
 
+    void quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill);
+
 private:
     //Variables
     int rad;

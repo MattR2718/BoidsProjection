@@ -82,3 +82,11 @@ void Point::draw(sf::Uint8 *pixels, const int width, const int height, float tx,
         plotCircle(pixels, width, height, x, y);
     }
 }
+
+void Point::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill){
+    this->setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
+    this->setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
+    this->setFill(fill);
+    this->rotAll(tx, ty, tz, trigFunct);
+    this->draw(pixels, width, height, tx, ty, tz, trigFunct);
+}

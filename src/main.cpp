@@ -45,25 +45,25 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 
 auto populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT){
     if(pointCount < numPoints){
-            for(int i = pointCount; i <= numPoints; i++){
-                drawObjects.push_back(Point(
-                    rand() % (WIDTH - 400) - WIDTH / 2 + 200,
-                    rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
-                    rand() % (WIDTH - 400) - WIDTH / 2 + 200,
-                    WIDTH, HEIGHT,
-                    rand() % 30
+        for(int i = pointCount; i <= numPoints; i++){
+            drawObjects.push_back(Point(
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                WIDTH, HEIGHT,
+                rand() % 30
 
-                ));
-            }
-        }else if (pointCount > numPoints){
-            int ind = 0;
-            while((ind < drawObjects.size()) && (pointCount > numPoints)){
-                if(std::holds_alternative<Point>(drawObjects[ind])){
-                    drawObjects.erase(drawObjects.begin() + ind);
-                    pointCount--;
-                }else{ ind++; }
-            }
+            ));
         }
+    }else if (pointCount > numPoints){
+        int ind = 0;
+        while((ind < drawObjects.size()) && (pointCount > numPoints)){
+            if(std::holds_alternative<Point>(drawObjects[ind])){
+                drawObjects.erase(drawObjects.begin() + ind);
+                pointCount--;
+            }else{ ind++; }
+        }
+    }
 }
 
 template <typename T>
@@ -257,17 +257,25 @@ int main()
 
         int pointCount = 0;
 
+        //Draw all objects to screen
         for(auto& obj : drawObjects){
-            if(std::holds_alternative<Point>(obj)){
-                pointCount++;
-                std::get<Point>(obj).setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
-                std::get<Point>(obj).setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
-                std::get<Point>(obj).setFill(fill);
-                std::get<Point>(obj).rotAll(tx, ty, tz, trigFunctions);
-                std::get<Point>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
-            }else if(std::holds_alternative<Line>(obj)){
-                std::get<Line>(obj).drawPoints = drawLinePoints;
-                std::get<Line>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+            switch(obj.index()){
+                case 0:{ //Drawable
+                    break;
+                }
+                case 1:{ //Point
+                    pointCount++;
+                    std::get<Point>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, pointFillColour, pointOutlineColour, fill);
+                    break;
+                }
+                case 2:{ //Line
+                    std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints);
+                    break;
+                };
+                default:{
+                    std::cout<<"UNKNOWN TYPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
+                    break;
+                }
             }
         }
 
