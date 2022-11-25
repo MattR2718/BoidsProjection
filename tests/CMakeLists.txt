@@ -3,9 +3,17 @@ cmake_minimum_required(VERSION 3.22.0)
 find_package(GTest)
 include_directories(${GTEST_INCLUDE_DIRS})
 
-add_executable(test testRotate.cpp)
+add_executable(testRotate testRotate.cpp)
 
-target_link_libraries(test
+target_link_libraries(testRotate
+    GTest::GTest 
+    GTest::Main
+    drawables
+)
+
+add_executable(testBoxVerticies testBoxVerticies.cpp)
+
+target_link_libraries(testBoxVerticies
     GTest::GTest 
     GTest::Main
     drawables

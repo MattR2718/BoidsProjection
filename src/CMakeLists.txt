@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22.0)
 
-add_library(drawables drawable.cpp point.cpp line.cpp)
+add_library(drawables drawable.cpp point.cpp line.cpp box.cpp)
 
 find_path(SFML_INCLUDES SFML/Graphics.hpp)
 target_include_directories(drawables PUBLIC drawable.h point.h line.h ${SFML_INCLUDES})

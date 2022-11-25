@@ -14,10 +14,11 @@
 #include "drawable.h"
 #include "point.h"
 #include "line.h"
+#include "box.h"
 
 #define PI 3.14159
 
-using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line>>;
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box>>;
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -107,7 +108,7 @@ int main()
     int numPoints = 100;
     bool drawLinePoints = false;
     //Floats to store the rotation angle of the cameras
-    float tx = 30, ty = -30, tz = 0;
+    float tx = 0, ty = 30, tz = 0;
     //Map to store values for trig finctions
     std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
                                                     {"sy", std::sin(degToRad(ty))},
@@ -130,8 +131,10 @@ int main()
     Line zAxis(Z, O, WIDTH, HEIGHT);
     std::vector<Line> lines { l, xAxis, yAxis, zAxis };
 
-    //TODO MOVE TO USING VARIANTS RATHER THAN SEPARATE VECTORS FOR EACH TYPE OF DRAWABLE
-    DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l};
+    int boxSize = 300;
+    Box b(0, 0, 0, boxSize, WIDTH, HEIGHT);
+
+    DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, b};
 
     bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
@@ -164,22 +167,22 @@ int main()
             }else if (event.type == sf::Event::KeyPressed) {
                 switch(event.key.code) {
                     case(sf::Keyboard::Down): {
-                        tx -= 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
-                    }
-                    break;
-                    case(sf::Keyboard::Up): {
                         tx += 1;
                         setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
+                    case(sf::Keyboard::Up): {
+                        tx -= 1;
+                        setTrigValues(tx, ty, tz, trigFunctions);
+                    }
+                    break;
                     case(sf::Keyboard::Left): {
-                        ty -= 1;
+                        ty += 1;
                         setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
                     case(sf::Keyboard::Right): {
-                        ty += 1;
+                        ty -= 1;
                         setTrigValues(tx, ty, tz, trigFunctions);
                     }
                     break;
@@ -238,6 +241,10 @@ int main()
         ImGui::Checkbox("Draw Line Points", &drawLinePoints);
         ImGui::End();
 
+        ImGui::Begin("Box");
+        ImGui::SliderInt("Size", &boxSize, 0, 800);
+        ImGui::End();
+
         //populatePoints(points, numPoints, WIDTH, HEIGHT);
 
         if(autoRotatex){
@@ -272,6 +279,11 @@ int main()
                     std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints);
                     break;
                 };
+                case 3:{ //Box
+                    //std::cout<<"BOX\n";
+                    std::get<Box>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints, boxSize);
+                    break;
+                }
                 default:{
                     std::cout<<"UNKNOWN TYPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
                     break;

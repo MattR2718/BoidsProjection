@@ -12,7 +12,7 @@ public:
     //Variables
     int px, py, pz;
     int r, g, b;
-    int sortVal;
+    int sortVal = 100;
     //Methods
     Drawable(int x_, int y_, int z_, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255);
     /* template<typename T, typename U>
