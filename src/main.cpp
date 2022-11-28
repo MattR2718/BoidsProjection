@@ -67,6 +67,30 @@ auto populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const in
     }
 }
 
+auto populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT){
+    if(boxCount < numBoxes){
+        for(int i = boxCount; i <= numBoxes; i++){
+            drawObjects.push_back(Box(
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                rand() % 60,
+                WIDTH, HEIGHT,     
+                true,
+                rand() % 255, rand() % 255, rand() % 255
+            ));
+        }
+    }else if (boxCount > numBoxes){
+        int ind = 0;
+        while((ind < drawObjects.size()) && (boxCount > numBoxes)){
+            if(std::holds_alternative<Box>(drawObjects[ind]) && !std::get<3>(drawObjects[ind]).atOrigin()){
+                drawObjects.erase(drawObjects.begin() + ind);
+                boxCount--;
+            }else{ ind++; }
+        }
+    }
+}
+
 template <typename T>
 auto degToRad(T angle){
         return float(angle) * PI / 180.f;
@@ -106,6 +130,7 @@ int main()
     bool fill = false;
     //Integer to store number of points to plot
     int numPoints = 100;
+    int numBoxes = 100;
     bool drawLinePoints = false;
     //Floats to store the rotation angle of the cameras
     float tx = 0, ty = 30, tz = 0;
@@ -242,7 +267,18 @@ int main()
         ImGui::End();
 
         ImGui::Begin("Box");
-        ImGui::SliderInt("Size", &boxSize, 0, 800);
+        ImGui::SliderInt("Num Boxes", &numBoxes, 0, 1000);
+        if(ImGui::Button("Randomise")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
+                    int x = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
+                    int y = rand() % (HEIGHT - 400) - HEIGHT / 2 + 200;
+                    int z = rand() % (WIDTH - 400) - WIDTH/ 2 + 200;
+                    std::get<Box>(obj).setPosition(x, y, z);
+                }
+            }
+        }
+        ImGui::SliderInt("Main Box Size", &boxSize, 0, 800);
         ImGui::End();
 
         //populatePoints(points, numPoints, WIDTH, HEIGHT);
@@ -263,6 +299,7 @@ int main()
         });
 
         int pointCount = 0;
+        int boxCount = 0;
 
         //Draw all objects to screen
         for(auto& obj : drawObjects){
@@ -280,7 +317,7 @@ int main()
                     break;
                 };
                 case 3:{ //Box
-                    //std::cout<<"BOX\n";
+                    boxCount++;
                     std::get<Box>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints, boxSize);
                     break;
                 }
@@ -292,6 +329,7 @@ int main()
         }
 
         populateDrawPoints(drawObjects, pointCount, numPoints, WIDTH, HEIGHT);
+        populateDrawBox(drawObjects, boxCount, numBoxes, WIDTH, HEIGHT);
         
 
         //Create an sf::image which will be load the pixels

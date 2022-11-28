@@ -1,10 +1,11 @@
 
 #include "box.h"
 
-Box::Box(int x_, int y_, int z_, int size_, int width, int height, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+Box::Box(int x_, int y_, int z_, int size_, int width, int height, bool fixedSize_, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
     this->size = size_;
     this->centre.setPosition(x_, y_, z_);
     this->sortVal = y_;
+    this->fixedSize = fixedSize_;
 }
 
 std::vector<std::tuple<int, int, int>> Box::generateVerticies(){
@@ -25,7 +26,7 @@ void Box::generateLines(const int width, const int height){
 
     auto addLine = [&](int a, int b){
         return Line(
-                    Point(std::get<0>(verticies[a]), std::get<1>(verticies[a]), std::get<2>(verticies[a]), width, height, this->size * 0.05),
+                    Point(std::get<0>(verticies[a]), std::get<1>(verticies[a]), std::get<2>(verticies[a]), width, height, this->size * 0.05, this->r, this->g, this->b),
                     Point(std::get<0>(verticies[b]), std::get<1>(verticies[b]), std::get<2>(verticies[b]), width, height, this->size * 0.05),
                     width, height
                 );
@@ -60,5 +61,11 @@ void Box::draw(sf::Uint8 *pixels, const int width, const int height, const float
 
 
 void Box::setSize(int s){
-    this->size = s;
+    if(!fixedSize){
+        this->size = s;
+    }
+}
+
+bool Box::atOrigin(){
+    return this->x == 0 && this->y == 0 && this->y == 0;
 }
