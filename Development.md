@@ -1598,7 +1598,69 @@ void Box::draw(sf::Uint8 *pixels, const int width, const int height, const float
 ```
 ![Working Cube](imgs/workingCube.gif)
 
+---
+## 28/11/22
+### **Random Boxes With Colour**
+
 Implementing a similar system to the points in order to draw them to the screen allows a variable number of random boxes to be drawn to the screen. In this case I implemented random colours as well.
 
 ![Random Coloured Boxes](imgs/randomColouredBoxes.JPG)
 ![Random Coloured Boxes Gif](imgs/spinningRandomColouredBoxes.gif)
+
+---
+### **Add Basic Vector Functionality**
+
+__vect.h__
+```cpp
+#ifndef VECTOR_H
+#define VECTOR_H
+
+#include <iostream>
+#include <SFML/Graphics.hpp>
+
+#include "drawable.h"
+#include "point.h"
+#include "line.h"
+
+class Vector : public Drawable{
+
+public:
+    int max;
+    int dx, dy, dz;
+    Vector(int x_, int y_, int z_, int dx_, int dy_, int dz_, int width, int height, int max_ = 10, int r_ = 255, int g_ = 255, int b_ = 255);
+    void draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct);
+
+private:
+
+    
+protected:
+
+
+};
+
+#endif
+```
+
+__vect.cpp__
+```cpp
+#include "vect.h"
+
+Vector::Vector(int x_, int y_, int z_, int dx_, int dy_, int dz_, int width, int height, int max_, int r_ , int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+    this->dx = dx_;
+    this->dy = dy_;
+    this->dz = dz_;
+    this->max = max_;
+}
+
+void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct){
+    Point p1(this->x, this->y, this->z, width, height, 0);
+    Point p2(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5, width, height, 0);
+    Line dir(p1, p2, width, height);
+    dir.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, false);
+}
+```
+
+---
+### **Added Togglable Drawing of Objects**
+
+![Togglable Drawing](imgs/togglableDrawing.JPG)

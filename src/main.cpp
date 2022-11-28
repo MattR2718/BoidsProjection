@@ -15,10 +15,11 @@
 #include "point.h"
 #include "line.h"
 #include "box.h"
+#include "vect.h"
 
 #define PI 3.14159
 
-using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box>>;
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -128,6 +129,8 @@ int main()
     float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
     //Boolean to store whether to fill test points
     bool fill = false;
+
+    bool showPoints = true, showLines = true, showBoxes = true, showVectors = true;
     //Integer to store number of points to plot
     int numPoints = 100;
     int numBoxes = 100;
@@ -243,6 +246,7 @@ int main()
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Points");
+        ImGui::Checkbox("Show Points", &showPoints);
         ImGui::ColorEdit3("Fill", (float*)&pointFillColour);
         ImGui::ColorEdit3("Outline", (float*)&pointOutlineColour);
         if(ImGui::Button("Randomise")){
@@ -263,10 +267,12 @@ int main()
         ImGui::End();
 
         ImGui::Begin("Lines");
+        ImGui::Checkbox("Show Lines", &showLines);
         ImGui::Checkbox("Draw Line Points", &drawLinePoints);
         ImGui::End();
 
         ImGui::Begin("Box");
+        ImGui::Checkbox("Show Boxes", &showBoxes);
         ImGui::SliderInt("Num Boxes", &numBoxes, 0, 1000);
         if(ImGui::Button("Randomise")){
             for(auto& obj : drawObjects){
@@ -309,16 +315,28 @@ int main()
                 }
                 case 1:{ //Point
                     pointCount++;
-                    std::get<Point>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, pointFillColour, pointOutlineColour, fill);
+                    if(showPoints){
+                        std::get<Point>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, pointFillColour, pointOutlineColour, fill);
+                    }
                     break;
                 }
                 case 2:{ //Line
-                    std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints);
+                    if(showLines){
+                        std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints);
+                    }
                     break;
                 };
                 case 3:{ //Box
                     boxCount++;
-                    std::get<Box>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints, boxSize);
+                    if(showBoxes){
+                        std::get<Box>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints, boxSize);
+                    }
+                    break;
+                }
+                case 4:{ //Vector
+                    if(showVectors){
+                        std::get<Vector>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+                    }
                     break;
                 }
                 default:{
