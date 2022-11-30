@@ -164,6 +164,20 @@ int main()
 
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, b};
 
+    for(int i = 0; i < 100; i++){
+        drawObjects.push_back(Vector(
+            rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+            rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
+            rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+            rand() % 50 - 25,
+            rand() % 50 - 25,
+            rand() % 50 - 25,
+            WIDTH, HEIGHT
+        ));
+    }
+    drawObjects.push_back(Vector(0, 0, 0, 100, 100, 100, WIDTH, HEIGHT));
+
+
     bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
@@ -271,7 +285,7 @@ int main()
         ImGui::Checkbox("Draw Line Points", &drawLinePoints);
         ImGui::End();
 
-        ImGui::Begin("Box");
+        ImGui::Begin("Boxes");
         ImGui::Checkbox("Show Boxes", &showBoxes);
         ImGui::SliderInt("Num Boxes", &numBoxes, 0, 1000);
         if(ImGui::Button("Randomise")){
@@ -285,6 +299,19 @@ int main()
             }
         }
         ImGui::SliderInt("Main Box Size", &boxSize, 0, 800);
+        ImGui::End();
+
+        ImGui::Begin("Vectors");
+        if(ImGui::Button("Randomise")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Vector>(obj)){
+                    int x = rand() % 50 - 25;
+                    int y = rand() % 50 - 25;
+                    int z = rand() % 50 - 25;
+                    std::get<Vector>(obj).setDir(x, y, z);
+                }
+            }
+        }
         ImGui::End();
 
         //populatePoints(points, numPoints, WIDTH, HEIGHT);

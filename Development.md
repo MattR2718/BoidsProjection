@@ -1664,3 +1664,15 @@ void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const fl
 ### **Added Togglable Drawing of Objects**
 
 ![Togglable Drawing](imgs/togglableDrawing.JPG)
+
+---
+## 30/11/22
+### **Implementing Random Vectors**
+
+Implementing vectors at random positions and drawing them to the screen produces this:
+
+![Random Vectors](imgs/randomVectors.JPG)
+
+Currently the initial randomisation of the vectors works fine however, attempting to change the direction of the vectors after they have been created, which is a requirement for the implementation of the boids, does not appear to be working correctly. The vectors appear to stretch much more vertically than expected compared to their initial randomisation.
+
+![Broken Random Vector Directions](imgs/wrongRandomisingVectorDirections.JPG)

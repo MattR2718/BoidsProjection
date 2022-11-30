@@ -6,6 +6,11 @@ Line::Line(Point p1_, Point p2_, int width, int height, int r_, int g_, int b_) 
     this->setColour(p1_.r, p1_.g, p1_.b);
 }
 
+void Line::setPoints(Point p1_, Point p2_){
+    this->p1 = p1_;
+    this->p1 = p2_;
+}
+
 template <typename T>
 int iPart(T x){
     return floor(x);
