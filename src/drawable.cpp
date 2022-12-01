@@ -32,12 +32,16 @@ void Drawable::setColour(int r_, int g_, int b_){
 
 void Drawable::setPosition(int x_, int y_, int z_){
     this->x = x_;
-    this->y = -y_;
+    this->y = y_;
     this->z = z_;
 }
 
 std::tuple<int, int, int> Drawable::getPXYZ(){
     return std::tuple<int, int, int> {this->px, this->py, this->pz};
+}
+
+std::tuple<int, int, int> Drawable::getXYZ(){
+    return std::tuple<int, int, int> {this->x, this->y, this->z};
 }
 
 template<typename T, typename U>

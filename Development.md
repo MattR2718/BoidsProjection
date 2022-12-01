@@ -1676,3 +1676,33 @@ Implementing vectors at random positions and drawing them to the screen produces
 Currently the initial randomisation of the vectors works fine however, attempting to change the direction of the vectors after they have been created, which is a requirement for the implementation of the boids, does not appear to be working correctly. The vectors appear to stretch much more vertically than expected compared to their initial randomisation.
 
 ![Broken Random Vector Directions](imgs/wrongRandomisingVectorDirections.JPG)
+
+Printing out the positions of the points representing the vector lines I get:
+
+```
+ x   |  y |   z  |  dx |  dy | dz |  nx |  ny |  nz  |  ax |   ay |   az
+-194 | 88 | -258 | 22  | 15  |-4  | -84 | 163 | -278 | -84 | -163 | -278
+105  | 46 | 148  | -20 | -3  | 7  | 5   | 31  | 183  | 5   | -31  | 183
+201  | 6  | 50   | 14  | -5  |-10 | 271 | -19 |  0   | 271 |  19  |  0
+```
+
+Where:
+- d = direction
+- n = new  (what it should be)
+- a = actual (what it is set to)
+
+Looking at the first line, I can see that the problem is with actually setting the position of the point, the x and z values are correct however the z values are always the opposite sign. This means there is likely a negatiove in the method to change the point position.
+
+
+This is the setPosition method that point is using. The y values are inverted to convert from graphics coorinates (up negative and down positive) to more traditional coordinates (where down is negative).
+
+```cpp
+void Drawable::setPosition(int x_, int y_, int z_){
+    this->x = x_;
+    this->y = -y_;
+    this->z = z_;
+}
+```
+This issue can be fixed by changing this function to stop it inverting the value.
+
+![Fixed Vector Too Vertical](imgs/fixedVectorsTooVertical.gif)

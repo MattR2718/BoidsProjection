@@ -21,6 +21,7 @@ public:
     void setColour(int r, int g, int b);
     void setPosition(int x_, int y_, int z_);
     std::tuple<int, int, int> getPXYZ();
+    std::tuple<int, int, int> getXYZ();
 
     //template<typename T, typename U>
     //void rotAll(T tx, T ty, T tz, U trigfunct);

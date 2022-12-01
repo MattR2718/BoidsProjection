@@ -13,14 +13,23 @@ Vector::Vector(int x_, int y_, int z_, int dx_, int dy_, int dz_, int width, int
     this->dir = dir_;
 }
 
-void Vector::setPos(int x_, int y_, int z_){
+void Vector::setPos(int x_, int y_, int z_, const int width, const int height){
     this->x = x_;
     this->y = y_;
     this->z = z_;
+    this->p1.setPosition(x_, y_, z_);
+    this->p2.setPosition(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5);
+    Line dir_(this->p1, this->p2, width, height);
+    this->dir = dir_;
 }
-void Vector::setDir(int x_, int y_, int z_){
-    this->p2.setPosition(this->x + x_ * 5, this->y + y_ * 5, this->z + z_ * 5);
-    this->dir.setPoints(this->p1, this->p2);
+
+void Vector::setDir(int x_, int y_, int z_, const int width, const int height){
+    this->dx = x_;
+    this->dy = y_;
+    this->dz = z_;
+    this->p2.setPosition(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5);
+    Line dir_(this->p1, this->p2, width, height);
+    this->dir = dir_;
 }
 
 

@@ -302,13 +302,24 @@ int main()
         ImGui::End();
 
         ImGui::Begin("Vectors");
-        if(ImGui::Button("Randomise")){
+        ImGui::Checkbox("Show Vectors", &showVectors);
+        if(ImGui::Button("Randomise Direction")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Vector>(obj)){
                     int x = rand() % 50 - 25;
                     int y = rand() % 50 - 25;
                     int z = rand() % 50 - 25;
-                    std::get<Vector>(obj).setDir(x, y, z);
+                    std::get<Vector>(obj).setDir(x, y, z, WIDTH, HEIGHT);
+                }
+            }
+        }
+        if(ImGui::Button("Randomise Position")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Vector>(obj)){
+                    int x = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
+                    int y = rand() % (HEIGHT - 400) - HEIGHT / 2 + 200;
+                    int z = rand() % (WIDTH - 400) - WIDTH / 2 + 200;
+                    std::get<Vector>(obj).setPos(x, y, z, WIDTH, HEIGHT);
                 }
             }
         }
