@@ -1706,3 +1706,26 @@ void Drawable::setPosition(int x_, int y_, int z_){
 This issue can be fixed by changing this function to stop it inverting the value.
 
 ![Fixed Vector Too Vertical](imgs/fixedVectorsTooVertical.gif)
+
+---
+### **Move Vectors**
+
+Moving the vector consists of simply adding the direction of the vector to the position and updateing the draw line each frame.
+
+```cpp
+void Vector::move(const int width, const int height){
+    this->x += this->dx;
+    this->y += this->dy;
+    this->z += this->dz;
+    this->updateVector(width, height);
+}
+
+void Vector::updateVector(const int width, const int height){
+    this->p1.setPosition(this->x, this->y, this->z);
+    this->p2.setPosition(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5);
+    Line dir_(this->p1, this->p2, width, height);
+    this->dir = dir_;
+}
+```
+
+![Moving Vectors](imgs/movingVectors.gif)

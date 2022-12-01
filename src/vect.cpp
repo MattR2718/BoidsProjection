@@ -32,6 +32,20 @@ void Vector::setDir(int x_, int y_, int z_, const int width, const int height){
     this->dir = dir_;
 }
 
+void Vector::move(const int width, const int height){
+    this->x += this->dx;
+    this->y += this->dy;
+    this->z += this->dz;
+    this->updateVector(width, height);
+}
+
+void Vector::updateVector(const int width, const int height){
+    this->p1.setPosition(this->x, this->y, this->z);
+    this->p2.setPosition(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5);
+    Line dir_(this->p1, this->p2, width, height);
+    this->dir = dir_;
+}
+
 
 void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct){
     this->sortVal = this->p1.sortVal;

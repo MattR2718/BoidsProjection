@@ -372,6 +372,7 @@ int main()
                     break;
                 }
                 case 4:{ //Vector
+                    std::get<Vector>(obj).move(WIDTH, HEIGHT);
                     if(showVectors){
                         std::get<Vector>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
                     }
