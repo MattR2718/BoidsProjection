@@ -11,6 +11,9 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
+#include "drawableData.h"
+#include "camera.h"
+
 #include "drawable.h"
 #include "point.h"
 #include "line.h"
@@ -45,76 +48,9 @@ void displayFPS(sf::RenderWindow& window, const float& fps, const sf::Font& font
 	window.draw(text);
 }
 
-auto populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT){
-    if(pointCount < numPoints){
-        for(int i = pointCount; i <= numPoints; i++){
-            drawObjects.push_back(Point(
-                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
-                rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
-                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
-                WIDTH, HEIGHT,
-                rand() % 30
-
-            ));
-        }
-    }else if (pointCount > numPoints){
-        int ind = 0;
-        while((ind < drawObjects.size()) && (pointCount > numPoints)){
-            if(std::holds_alternative<Point>(drawObjects[ind])){
-                drawObjects.erase(drawObjects.begin() + ind);
-                pointCount--;
-            }else{ ind++; }
-        }
-    }
-}
-
-auto populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT){
-    if(boxCount < numBoxes){
-        for(int i = boxCount; i <= numBoxes; i++){
-            drawObjects.push_back(Box(
-                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
-                rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
-                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
-                rand() % 60,
-                WIDTH, HEIGHT,     
-                true,
-                rand() % 255, rand() % 255, rand() % 255
-            ));
-        }
-    }else if (boxCount > numBoxes){
-        int ind = 0;
-        while((ind < drawObjects.size()) && (boxCount > numBoxes)){
-            if(std::holds_alternative<Box>(drawObjects[ind]) && !std::get<3>(drawObjects[ind]).atOrigin()){
-                drawObjects.erase(drawObjects.begin() + ind);
-                boxCount--;
-            }else{ ind++; }
-        }
-    }
-}
-
-template <typename T>
-auto degToRad(T angle){
-        return float(angle) * PI / 180.f;
-}
-
-template <typename T, typename U>
-void setTrigValues(const T tx, const T ty, const T tz, U& tfunct){
-    tfunct.at("sx") = sin(degToRad(tx));
-    tfunct.at("sy") = sin(degToRad(ty));
-    tfunct.at("sz") = sin(degToRad(tz));
-
-    tfunct.at("cx") = cos(degToRad(tx));
-    tfunct.at("cy") = cos(degToRad(ty));
-    tfunct.at("cz") = cos(degToRad(tz));
-}
-
 int main()
 {
-    constexpr int WIDTH = 1000;
-    constexpr int HEIGHT = 800;
 
-    //Create a window that the program will draw to
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Boids Projection");
     //Limit the windows frame rate to 30
     window.setFramerateLimit(30);
     //Init imgui
@@ -124,26 +60,8 @@ int main()
     sf::Uint8* pixels  = new sf::Uint8[WIDTH * HEIGHT * 4];
     initPixels(pixels, WIDTH * HEIGHT * 4);
 
-    //Colour for drawable object
-    float pointFillColour[3] = { 1, 1, 1 };
-    float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
-    //Boolean to store whether to fill test points
-    bool fill = false;
-
-    bool showPoints = true, showLines = true, showBoxes = true, showVectors = true;
-    //Integer to store number of points to plot
-    int numPoints = 100;
-    int numBoxes = 100;
-    bool drawLinePoints = false;
-    //Floats to store the rotation angle of the cameras
-    float tx = 0, ty = 30, tz = 0;
-    //Map to store values for trig finctions
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    DrawableData drawData;
+    Camera camera;
 
     //Create vector and fill with objects to test with
     Point O(0, 0, 0, WIDTH, HEIGHT, 20);
@@ -151,7 +69,7 @@ int main()
     Point Y(0, 200, 0, WIDTH, HEIGHT,  20, 0, 255, 0);
     Point Z(0, 0, 200, WIDTH, HEIGHT,  20, 0, 0, 255);
     //std::vector<Point> points = { O, X, Y, Z };
-    //populatePoints(points, numPoints, WIDTH, HEIGHT);
+    //populatePoints(points, drawData.numPoints, WIDTH, HEIGHT);
 
     Line l(Point(0, 0, 0, WIDTH, HEIGHT, 10), Point(200, 200, 200, WIDTH, HEIGHT, 10), WIDTH, HEIGHT);
     Line xAxis(X, O, WIDTH, HEIGHT);
@@ -159,8 +77,7 @@ int main()
     Line zAxis(Z, O, WIDTH, HEIGHT);
     std::vector<Line> lines { l, xAxis, yAxis, zAxis };
 
-    int boxSize = 300;
-    Box b(0, 0, 0, boxSize, WIDTH, HEIGHT);
+    Box b(0, 0, 0, drawData.boxSize, WIDTH, HEIGHT);
 
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, b};
 
@@ -177,8 +94,6 @@ int main()
     }
     drawObjects.push_back(Vector(0, 0, 0, 100, 100, 100, WIDTH, HEIGHT));
 
-
-    bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
 
     //Create variable to store fps, clock to calculate fps and times to store change in time
     float fps;
@@ -209,40 +124,40 @@ int main()
             }else if (event.type == sf::Event::KeyPressed) {
                 switch(event.key.code) {
                     case(sf::Keyboard::Down): {
-                        tx += 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.tx += 1;
+                        camera.setTrigValues();
                     }
                     break;
                     case(sf::Keyboard::Up): {
-                        tx -= 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.tx -= 1;
+                        camera.setTrigValues();
                     }
                     break;
                     case(sf::Keyboard::Left): {
-                        ty += 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.ty += 1;
+                        camera.setTrigValues();
                     }
                     break;
                     case(sf::Keyboard::Right): {
-                        ty -= 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.ty -= 1;
+                        camera.setTrigValues();
                     }
                     break;
                     case(sf::Keyboard::Comma):{
-                        tz -= 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.tz -= 1;
+                        camera.setTrigValues();
                     }
                     break;
                     case(sf::Keyboard::Period):{
-                        tz += 1;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.tz += 1;
+                        camera.setTrigValues();
                     }
                     break;
                     case(sf::Keyboard::Space): {
-                        tx = 0;
-                        ty = 0;
-                        tz = 0;
-                        setTrigValues(tx, ty, tz, trigFunctions);
+                        camera.tx = 0;
+                        camera.ty = 0;
+                        camera.tz = 0;
+                        camera.setTrigValues();
                     }
                     break;
                     default:{
@@ -260,9 +175,9 @@ int main()
         
         //Create imgui window to allow colour picking
         ImGui::Begin("Points");
-        ImGui::Checkbox("Show Points", &showPoints);
-        ImGui::ColorEdit3("Fill", (float*)&pointFillColour);
-        ImGui::ColorEdit3("Outline", (float*)&pointOutlineColour);
+        ImGui::Checkbox("Show Points", &drawData.showPoints);
+        ImGui::ColorEdit3("Fill", (float*)&drawData.pointFillColour);
+        ImGui::ColorEdit3("Outline", (float*)&drawData.pointOutlineColour);
         if(ImGui::Button("Randomise")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Point>(obj)){
@@ -273,21 +188,21 @@ int main()
                 }
             }
         }
-        ImGui::Checkbox("Fill", &fill);
-        ImGui::SliderInt("Num Points", &numPoints, 0, 5000);
-        ImGui::Checkbox("Auto Rotate X", &autoRotatex);
-        ImGui::Checkbox("Auto Rotate Y", &autoRotatey);
-        ImGui::Checkbox("Auto Rotate Z", &autoRotatez);
+        ImGui::Checkbox("Fill", &drawData.fill);
+        ImGui::SliderInt("Num Points", &drawData.numPoints, 0, 5000);
+        ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
+        ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
+        ImGui::Checkbox("Auto Rotate Z", &camera.autoRotatez);
         ImGui::End();
 
         ImGui::Begin("Lines");
-        ImGui::Checkbox("Show Lines", &showLines);
-        ImGui::Checkbox("Draw Line Points", &drawLinePoints);
+        ImGui::Checkbox("Show Lines", &drawData.showLines);
+        ImGui::Checkbox("Draw Line Points", &drawData.drawLinePoints);
         ImGui::End();
 
         ImGui::Begin("Boxes");
-        ImGui::Checkbox("Show Boxes", &showBoxes);
-        ImGui::SliderInt("Num Boxes", &numBoxes, 0, 1000);
+        ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
+        ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 1000);
         if(ImGui::Button("Randomise")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
@@ -298,11 +213,11 @@ int main()
                 }
             }
         }
-        ImGui::SliderInt("Main Box Size", &boxSize, 0, 800);
+        ImGui::SliderInt("Main Box Size", &drawData.boxSize, 0, 800);
         ImGui::End();
 
         ImGui::Begin("Vectors");
-        ImGui::Checkbox("Show Vectors", &showVectors);
+        ImGui::Checkbox("Show Vectors", &drawData.showVectors);
         if(ImGui::Button("Randomise Direction")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Vector>(obj)){
@@ -325,18 +240,18 @@ int main()
         }
         ImGui::End();
 
-        //populatePoints(points, numPoints, WIDTH, HEIGHT);
+        //populatePoints(points, drawData.numPoints, WIDTH, HEIGHT);
 
-        if(autoRotatex){
-            tx += 1;
+        if(camera.autoRotatex){
+            camera.tx += 1;
         }
-        if(autoRotatey){
-            ty += 1;
+        if(camera.autoRotatey){
+            camera.ty += 1;
         }
-        if(autoRotatez){
-            tz += 1;
+        if(camera.autoRotatez){
+            camera.tz += 1;
         }
-        setTrigValues(tx, ty, tz, trigFunctions);
+        camera.setTrigValues();
 
         std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
             return std::visit([](auto const& e){ return e.sortVal; }, x);
@@ -353,40 +268,40 @@ int main()
                 }
                 case 1:{ //Point
                     pointCount++;
-                    if(showPoints){
-                        std::get<Point>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, pointFillColour, pointOutlineColour, fill);
+                    if(drawData.showPoints){
+                        std::get<Point>(obj).quickDraw(pixels, WIDTH, HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, drawData.pointFillColour, drawData.pointOutlineColour, drawData.fill);
                     }
                     break;
                 }
                 case 2:{ //Line
-                    if(showLines){
-                        std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints);
+                    if(drawData.showLines){
+                        std::get<Line>(obj).quickDraw(pixels, WIDTH, HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, drawData.drawLinePoints);
                     }
                     break;
                 };
                 case 3:{ //Box
                     boxCount++;
-                    if(showBoxes){
-                        std::get<Box>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions, drawLinePoints, boxSize);
+                    if(drawData.showBoxes){
+                        std::get<Box>(obj).draw(pixels, WIDTH, HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, drawData.drawLinePoints, drawData.boxSize);
                     }
                     break;
                 }
                 case 4:{ //Vector
                     std::get<Vector>(obj).move(WIDTH, HEIGHT);
-                    if(showVectors){
-                        std::get<Vector>(obj).draw(pixels, WIDTH, HEIGHT, tx, ty, tz, trigFunctions);
+                    if(drawData.showVectors){
+                        std::get<Vector>(obj).draw(pixels, WIDTH, HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions);
                     }
                     break;
                 }
                 default:{
-                    std::cout<<"UNKNOWN TYPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
+                    std::cout<<"UNKNOWN camera.tyPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
                     break;
                 }
             }
         }
 
-        populateDrawPoints(drawObjects, pointCount, numPoints, WIDTH, HEIGHT);
-        populateDrawBox(drawObjects, boxCount, numBoxes, WIDTH, HEIGHT);
+        drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, WIDTH, HEIGHT);
+        drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, WIDTH, HEIGHT);
         
 
         //Create an sf::image which will be load the pixels
