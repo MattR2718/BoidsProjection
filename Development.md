@@ -1729,3 +1729,4 @@ void Vector::updateVector(const int width, const int height){
 ```
 
 ![Moving Vectors](imgs/movingVectors.gif)
+
