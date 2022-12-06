@@ -1730,3 +1730,175 @@ void Vector::updateVector(const int width, const int height){
 
 ![Moving Vectors](imgs/movingVectors.gif)
 
+---
+### **Clean Up Main File**
+
+Cleaning up the main file will make the program easier to work on as well as easier to debug.  
+To clean it up I wil first create a few more classes which can store data which is currently stored as variables in the main file.
+
+#### _Camera_:
+Camera stores all of the data to do with the imaginary camera position, such as the angles that it has been rotated by.  
+It also contains the methods for rotating the camera and updating the trig values.
+
+
+_camera.h_:
+```cpp
+class Camera{
+    public:
+
+        Camera();
+    
+        //Floats to store the rotation angle of the cameras
+        float tx = 0, ty = 30, tz = 0;
+        //Default rotating each axis
+        bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
+        //Map to store values for trig finctions
+        std::map<std::string, float> trigFunctions = {{"sx", 0.0f},
+                                                        {"sy", 0.0f},
+                                                        {"sz", 0.0f},
+                                                        {"cx", 0.0f},
+                                                        {"cy", 0.0f},
+                                                        {"cz", 0.0f}};
+        void setTrigValues();
+        void autoRotate();
+
+    private:
+        template <typename T>
+        float degToRad(T angle);
+
+    protected:
+
+};
+```
+
+_camera.cpp_
+```cpp
+Camera::Camera(){
+    this->setTrigValues();
+}
+
+template <typename T>
+float Camera::degToRad(T angle){
+    return float(angle) * PI / 180.f;
+}
+
+void Camera::setTrigValues(){
+
+    this->trigFunctions.at("sx") = std::sin(this->degToRad(this->tx));
+    this->trigFunctions.at("sy") = std::sin(this->degToRad(this->ty));
+    this->trigFunctions.at("sz") = std::sin(this->degToRad(this->tz));
+
+    this->trigFunctions.at("cx") = std::cos(this->degToRad(this->tx));
+    this->trigFunctions.at("cy") = std::cos(this->degToRad(this->ty));
+    this->trigFunctions.at("cz") = std::cos(this->degToRad(this->tz));
+}
+
+void Camera::autoRotate(){
+    if(this->autoRotatex){
+        this->tx += 1;
+    }
+    if(this->autoRotatey){
+        this->ty += 1;
+    }
+    if(this->autoRotatez){
+        this->tz += 1;
+    }
+    this->setTrigValues();
+}
+```
+
+#### _DrawableData_:
+DrawableData contains all of the information about drawables such as fill colours and whether they should be drawn on screen or not.  
+It also contains the functions which draw the random points on the screen and the radom boxes.
+
+_drawableData.h_:
+```cpp
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
+
+class DrawableData{
+    public:
+        //Colours for drawable objects
+        float pointFillColour[3] = { 1, 1, 1 };
+        float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
+        //Store whether to fill points
+        bool fill = false;
+
+        //Default drawing each drawable
+        bool showPoints = true, showLines = true, showBoxes = true, showVectors = true;
+
+        //Number of each object to randomly plot
+        int numPoints = 100;
+        int numBoxes = 100;
+
+        //Size of bounding box
+        int boxSize = 300;
+
+        //Draw points at end of lines which mark the start and end
+        bool drawLinePoints = false;
+
+        void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
+        void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
+
+
+    private:
+
+    protected:
+
+};
+```
+
+_drawableData.cpp_:
+```cpp
+void DrawableData::populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT){
+    if(pointCount < numPoints){
+        for(int i = pointCount; i <= numPoints; i++){
+            drawObjects.push_back(Point(
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                WIDTH, HEIGHT,
+                rand() % 30
+
+            ));
+        }
+    }else if (pointCount > numPoints){
+        int ind = 0;
+        while((ind < drawObjects.size()) && (pointCount > numPoints)){
+            if(std::holds_alternative<Point>(drawObjects[ind])){
+                drawObjects.erase(drawObjects.begin() + ind);
+                pointCount--;
+            }else{ ind++; }
+        }
+    }
+}
+
+
+void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT){
+    if(boxCount < numBoxes){
+        for(int i = boxCount; i <= numBoxes; i++){
+            drawObjects.push_back(Box(
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
+                rand() % (WIDTH - 400) - WIDTH / 2 + 200,
+                rand() % 60,
+                WIDTH, HEIGHT,     
+                true,
+                rand() % 255, rand() % 255, rand() % 255
+            ));
+        }
+    }else if (boxCount > numBoxes){
+        int ind = 0;
+        while((ind < drawObjects.size()) && (boxCount > numBoxes)){
+            if(std::holds_alternative<Box>(drawObjects[ind]) && !std::get<3>(drawObjects[ind]).atOrigin()){
+                drawObjects.erase(drawObjects.begin() + ind);
+                boxCount--;
+            }else{ ind++; }
+        }
+    }
+}
+```
+
+
+#### _Window_:
+Splitting the window into its own class which handles events and drawing massively cleans up the main file since all methods to do with the window can be easily used and found due to their simple names whilst moving the large chunks of code from the main file.
+
