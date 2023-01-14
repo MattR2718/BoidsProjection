@@ -24,8 +24,8 @@ class DrawableData;
 
 class Window{
     public:
-        int WIDTH = 1000;
-        int HEIGHT = 800;
+        int WIDTH = 1200;
+        int HEIGHT = 1000;
 
         sf::RenderWindow* window;
         sf::Clock deltaClock;

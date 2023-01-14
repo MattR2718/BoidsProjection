@@ -1902,3 +1902,334 @@ void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount,
 #### _Window_:
 Splitting the window into its own class which handles events and drawing massively cleans up the main file since all methods to do with the window can be easily used and found due to their simple names whilst moving the large chunks of code from the main file.
 
+_window.h_:
+```cpp
+class DrawableData;
+
+class Window{
+    public:
+        int WIDTH = 1200;
+        int HEIGHT = 1000;
+
+        sf::RenderWindow* window;
+        sf::Clock deltaClock;
+
+        //Create variable to store fps, clock to calculate fps and times to store change in time
+        float fps;
+        sf::Clock fps_clock = sf::Clock();
+        sf::Time previous_time = fps_clock.getElapsedTime();
+        sf::Time current_time;
+        //Load font from file and throw exeption if not found
+        sf::Font font;
+
+        Window();
+        virtual ~Window();
+        const bool running() const;
+
+        void pollEvents(Camera& camera);
+        void updateImGui();
+        void drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera);
+
+        void drawPixelArrayToScreen(sf::Uint8 *pixels);
+        void drawFPS();
+        void render();
+
+    private:
+
+    protected:
+};
+
+#endif
+```
+
+
+
+_window.cpp_:
+```cpp
+#include "window.h"
+
+Window::Window(){
+    //Create a window that the program will draw to
+    this->window = new sf::RenderWindow(sf::VideoMode(this->WIDTH, this->HEIGHT), "Boids Projection");
+    //Limit the windows frame rate to 30
+    //this->window->setFramerateLimit(30);
+    //Init imgui
+    if(!ImGui::SFML::Init(*this->window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
+
+    if(!this->font.loadFromFile("../../fonts/arial.ttf")){
+        throw std::invalid_argument("FONT NOT FOUND");
+    }
+}
+
+Window::~Window(){
+    delete this->window;
+}
+
+const bool Window::running() const{
+	return this->window->isOpen();
+}
+
+void Window::pollEvents(Camera& camera){
+    //Loop over all events since last loop
+    sf::Event event;
+    while (this->window->pollEvent(event))
+    {
+        //Process imgui events
+        ImGui::SFML::ProcessEvent(event);
+        //If close requested then close window
+        if (event.type == sf::Event::Closed){
+            this->window->close();
+        }else if (event.type == sf::Event::KeyPressed) {
+            switch(event.key.code) {
+                case(sf::Keyboard::Down): {
+                    camera.tx += 1;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Up): {
+                    camera.tx -= 1;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Left): {
+                    camera.ty += 1;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Right): {
+                    camera.ty -= 1;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Comma):{
+                    camera.tz -= 1;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Period):{
+                    camera.tz += 1;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Space): {
+                    camera.tx = 0;
+                    camera.ty = 0;
+                    camera.tz = 0;
+                    camera.setTrigValues();
+                }
+                break;
+                default:{
+                    std::cout<<"Key Code Pressed: "<<event.key.code<<'\n';
+                }
+                break;
+            }
+        }
+    }
+}
+
+void Window::updateImGui(){
+    //Update imgui window
+    ImGui::SFML::Update(*this->window, this->deltaClock.restart());
+}
+
+void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera){
+    //Create imgui window to allow colour picking
+    ImGui::Begin("Points");
+    ImGui::Checkbox("Show Points", &drawData.showPoints);
+    ImGui::ColorEdit3("Fill", (float*)&drawData.pointFillColour);
+    ImGui::ColorEdit3("Outline", (float*)&drawData.pointOutlineColour);
+    if(ImGui::Button("Randomise")){
+        for(auto& obj : drawObjects){
+            if(std::holds_alternative<Point>(obj)){
+                int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
+                int z = rand() % (this->WIDTH - 400) - this->WIDTH/ 2 + 200;
+                std::get<Point>(obj).setPosition(x, y, z);
+            }
+        }
+    }
+    ImGui::Checkbox("Fill", &drawData.fill);
+    ImGui::SliderInt("Num Points", &drawData.numPoints, 0, 5000);
+    ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
+    ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
+    ImGui::Checkbox("Auto Rotate Z", &camera.autoRotatez);
+    ImGui::End();
+
+    ImGui::Begin("Lines");
+    ImGui::Checkbox("Show Lines", &drawData.showLines);
+    ImGui::Checkbox("Draw Line Points", &drawData.drawLinePoints);
+    ImGui::End();
+
+    ImGui::Begin("Boxes");
+    ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
+    ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 1000);
+    if(ImGui::Button("Randomise")){
+        for(auto& obj : drawObjects){
+            if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
+                int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
+                int z = rand() % (this->WIDTH - 400) - this->WIDTH/ 2 + 200;
+                std::get<Box>(obj).setPosition(x, y, z);
+            }
+        }
+    }
+    ImGui::SliderInt("Main Box Size", &drawData.boxSize, 0, 800);
+    ImGui::End();
+
+    ImGui::Begin("Vectors");
+    ImGui::Checkbox("Show Vectors", &drawData.showVectors);
+    if(ImGui::Button("Randomise Direction")){
+        for(auto& obj : drawObjects){
+            if(std::holds_alternative<Vector>(obj)){
+                int x = rand() % 50 - 25;
+                int y = rand() % 50 - 25;
+                int z = rand() % 50 - 25;
+                std::get<Vector>(obj).setDir(x, y, z, this->WIDTH, this->HEIGHT);
+            }
+        }
+    }
+    if(ImGui::Button("Randomise Position")){
+        for(auto& obj : drawObjects){
+            if(std::holds_alternative<Vector>(obj)){
+                int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
+                int z = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                std::get<Vector>(obj).setPos(x, y, z, this->WIDTH, this->HEIGHT);
+            }
+        }
+    }
+    ImGui::End();
+}
+
+
+void Window::drawPixelArrayToScreen(sf::Uint8 *pixels){
+    //Create an sf::image which will be load the pixels
+    sf::Image image;
+    image.create(this->WIDTH, this->HEIGHT, pixels);
+    //Create an sf::texture and load the image to the texture
+    sf::Texture texture;
+    texture.loadFromImage(image);
+    //Create an sf::sprite and draw the sprite to the screen
+    sf::Sprite sprite(texture);
+    this->window->draw(sprite);
+}
+
+void Window::drawFPS(){
+    //Calculate fps from change in time and draw to screen
+    this->current_time = this->fps_clock.getElapsedTime();
+    this->fps = 1.f / (this->current_time.asSeconds() - this->previous_time.asSeconds());
+    sf::Text text;
+	// select the font
+	text.setFont(this->font);
+	// set the string to display
+	text.setString(std::to_string(this->fps));
+	// set the character size
+	text.setCharacterSize(30);
+	// set the color
+	text.setFillColor(sf::Color::Red);
+	//Set position
+	text.setPosition(sf::Vector2f(0, 0));
+	this->window->draw(text);
+    this->previous_time = this->current_time;
+}
+
+void Window::render(){
+    //Render imgui windows
+    ImGui::SFML::Render(*this->window);
+    //End the current frame
+    this->window->display();
+}
+```
+
+Initially when splitting up the main file into the classes, the program would crash when building and produce this error:
+
+```
+[main] Building folder: BoidsProjection 
+[build] Starting build
+[proc] Executing command: "C:\Program Files\CMake\bin\cmake.EXE" --build c:/Users/matth/source/repos/BoidsProjection/build --config Release --target all --
+[build] [3/5  20% :: 3.101] Building CXX object src/CMakeFiles/drawables.dir/window.cpp.obj
+[build] FAILED: src/CMakeFiles/drawables.dir/window.cpp.obj 
+[build] C:\PROGRA~1\MICROS~4\2022\Preview\VC\Tools\Llvm\bin\clang.exe  -IC:/Users/matth/source/repos/BoidsProjection/src -IC:/Users/matth/source/repos/BoidsProjection/src/drawable.h -IC:/Users/matth/source/repos/BoidsProjection/src/point.h -IC:/Users/matth/source/repos/BoidsProjection/src/line.h -IC:/Users/matth/source/repos/BoidsProjection/src/vect.h -IC:/Users/matth/source/repos/BoidsProjection/src/camera.h -IC:/Users/matth/source/repos/BoidsProjection/src/drawableData.h -IC:/Users/matth/source/repos/BoidsProjection/src/window.h -IC:/Users/matth/vcpkg/installed/x86-windows/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=c++20 -MD -MT src/CMakeFiles/drawables.dir/window.cpp.obj -MF src\CMakeFiles\drawables.dir\window.cpp.obj.d -o src/CMakeFiles/drawables.dir/window.cpp.obj -c C:/Users/matth/source/repos/BoidsProjection/src/window.cpp
+[build] In file included from C:/Users/matth/source/repos/BoidsProjection/src/window.cpp:1:
+[build] In file included from C:/Users/matth/source/repos/BoidsProjection/src/window.h:12:
+[build] C:/Users/matth/source/repos/BoidsProjection/src/drawableData.h:49:88: error: unknown type name 'Window'; did you mean 'sf::Window'?
+[build]         void drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount);
+[build]                                                                                        ^~~~~~
+[build]                                                                                        sf::Window
+[build] C:/Users/matth/vcpkg/installed/x86-windows/include\imgui-SFML.h:25:7: note: 'sf::Window' declared here
+[build] class Window;
+[build]       ^
+[build] 1 error generated.
+[build] [3/5  40% :: 3.116] Building CXX object src/CMakeFiles/drawables.dir/drawableData.cpp.obj
+[build] FAILED: src/CMakeFiles/drawables.dir/drawableData.cpp.obj 
+[build] C:\PROGRA~1\MICROS~4\2022\Preview\VC\Tools\Llvm\bin\clang.exe  -IC:/Users/matth/source/repos/BoidsProjection/src -IC:/Users/matth/source/repos/BoidsProjection/src/drawable.h -IC:/Users/matth/source/repos/BoidsProjection/src/point.h -IC:/Users/matth/source/repos/BoidsProjection/src/line.h -IC:/Users/matth/source/repos/BoidsProjection/src/vect.h -IC:/Users/matth/source/repos/BoidsProjection/src/camera.h -IC:/Users/matth/source/repos/BoidsProjection/src/drawableData.h -IC:/Users/matth/source/repos/BoidsProjection/src/window.h -IC:/Users/matth/vcpkg/installed/x86-windows/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=c++20 -MD -MT src/CMakeFiles/drawables.dir/drawableData.cpp.obj -MF src\CMakeFiles\drawables.dir\drawableData.cpp.obj.d -o src/CMakeFiles/drawables.dir/drawableData.cpp.obj -c C:/Users/matth/source/repos/BoidsProjection/src/drawableData.cpp
+[build] In file included from C:/Users/matth/source/repos/BoidsProjection/src/drawableData.cpp:1:
+[build] In file included from C:/Users/matth/source/repos/BoidsProjection/src/drawableData.h:14:
+[build] C:/Users/matth/source/repos/BoidsProjection/src/window.h:47:24: error: unknown type name 'DrawableData'; did you mean 'Drawable'?
+[build]         void drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera);
+[build]                        ^~~~~~~~~~~~
+[build]                        Drawable
+[build] C:/Users/matth/source/repos/BoidsProjection/src/drawable.h:9:7: note: 'Drawable' declared here
+[build] class Drawable{
+[build]       ^
+[build] 1 error generated.
+[build] [3/5  60% :: 4.819] Building CXX object src/CMakeFiles/BoidsProjection.dir/main.cpp.obj
+[build] FAILED: src/CMakeFiles/BoidsProjection.dir/main.cpp.obj 
+[build] C:\PROGRA~1\MICROS~4\2022\Preview\VC\Tools\Llvm\bin\clang.exe -DIMGUI_USER_CONFIG=\"imconfig-SFML.h\" -IC:/Users/matth/source/repos/BoidsProjection/src -IC:/Users/matth/source/repos/BoidsProjection/src/drawable.h -IC:/Users/matth/source/repos/BoidsProjection/src/point.h -IC:/Users/matth/source/repos/BoidsProjection/src/line.h -IC:/Users/matth/source/repos/BoidsProjection/src/vect.h -IC:/Users/matth/source/repos/BoidsProjection/src/camera.h -IC:/Users/matth/source/repos/BoidsProjection/src/drawableData.h -IC:/Users/matth/source/repos/BoidsProjection/src/window.h -isystem C:/Users/matth/vcpkg/installed/x86-windows/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=c++20 -MD -MT src/CMakeFiles/BoidsProjection.dir/main.cpp.obj -MF src\CMakeFiles\BoidsProjection.dir\main.cpp.obj.d -o src/CMakeFiles/BoidsProjection.dir/main.cpp.obj -c C:/Users/matth/source/repos/BoidsProjection/src/main.cpp
+[build] In file included from C:/Users/matth/source/repos/BoidsProjection/src/main.cpp:14:
+[build] In file included from C:/Users/matth/source/repos/BoidsProjection/src/drawableData.h:14:
+[build] C:/Users/matth/source/repos/BoidsProjection/src/window.h:47:24: error: unknown type name 'DrawableData'; did you mean 'Drawable'?
+[build]         void drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera);
+[build]                        ^~~~~~~~~~~~
+[build]                        Drawable
+[build] C:/Users/matth/source/repos/BoidsProjection/src/drawable.h:9:7: note: 'Drawable' declared here
+[build] class Drawable{
+[build]       ^
+[build] C:/Users/matth/source/repos/BoidsProjection/src/main.cpp:90:26: error: non-const lvalue reference to type 'Drawable' cannot bind to a value of unrelated type 'DrawableData'
+[build]         window.drawImGui(drawData, drawObjects, camera);
+[build]                          ^~~~~~~~
+[build] C:/Users/matth/source/repos/BoidsProjection/src/window.h:47:38: note: passing argument to parameter 'drawData' here
+[build]         void drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera);
+[build]                                      ^
+[build] 2 errors generated.
+[build] ninja: build stopped: subcommand failed.
+[proc] The command: "C:\Program Files\CMake\bin\cmake.EXE" --build c:/Users/matth/source/repos/BoidsProjection/build --config Release --target all -- exited with code: 1 and signal: null
+[build] Build finished with exit code 1
+```
+
+![CreateClassesFromMainError](imgs/CreateClassesToCleanMainError.JPG)
+
+This window is caused to to a 'definition loop'. For example:
+When creating a window, the program uses window.h as a template for creating it. Window.h starts with the header guard: 
+```cpp
+#ifndef WINDOW_H
+#define WINDOW_H
+```
+This means that if WINDOW_H is not defined already, define it. Then the program continues to comile the window object and create the functions. One of the functions,
+```cpp
+void drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera);
+```
+requires the data type DrawableData. The program then tries to work out what DrawableData is by using the header file drawableData.h.
+DrawableData.h, like window.h starts with a header guard:
+```cpp
+#ifndef DRAWABLEDATA_H
+#define DRAWABLEDATA_H
+```
+Which defines DrawableData since it hasnt been defined before.
+The compiler continues creating the definition of DrawableData until it reaches the function:
+```cpp
+void drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount);
+```
+Which requires a the type Window. Since window hasn't been completed, the program tries to define it however it is stopped by the header guard in window.h. This means that it cannot work out what to do for the window variable and crashes. Producing the error above.
+
+The solution to this error is to provide a class definition for Window and DrawableData insde the oposite class. This allows the compiler to create the objects as it doesnt care exactly what the data types are, just that they exist and can be passed to the function. To do this I just add:
+```cpp
+class DrawableData;
+```
+In window.h.
+
+And add:
+```cpp
+class Window;
+```
+In drawableData.h.
