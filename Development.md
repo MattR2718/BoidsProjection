@@ -2241,3 +2241,79 @@ The current imgui windows are very messy and take up lots of the window space. B
 
 ![Cleaned Up Imgui](imgs/CleanedUpImgui.JPG)
 
+### **Add ImPlot for fps graph***
+
+Implot allows for easy implementation of graphs within imgui widgets. Using this to plot fps over time gives a nicer idea of how the program is running as well as easily being able to see how running different parts affect fps.
+
+In order to have a good looking fps graph I will want a scrolling buffer to allow the previous fps values to be viewed as well as replaced by the constantly updating values.
+
+```cpp
+#ifndef SCROLLINGBUFFER_h
+#define SCROLLINGBUFFER_h
+
+// utility structure for realtime plot
+struct ScrollingBuffer {
+    int MaxSize;
+    int Offset;
+    ImVector<ImVec2> Data;
+    float avg[1] = {0.0};
+    ScrollingBuffer(int max_size = 2000) {
+        MaxSize = max_size;
+        Offset  = 0;
+        Data.reserve(MaxSize);
+    }
+    void AddPoint(float x, float y) {
+        if (Data.size() < MaxSize)
+            Data.push_back(ImVec2(x,y));
+        else {
+            Data[Offset] = ImVec2(x,y);
+            Offset =  (Offset + 1) % MaxSize;
+        }
+    }
+    void Erase() {
+        if (Data.size() > 0) {
+            Data.shrink(0);
+            Offset  = 0;
+        }
+    }
+    void getAvg(){
+        int t = 0;
+        for(auto& v : Data){
+            t += v.y;
+        }
+        avg[0] = static_cast<float>(t) / static_cast<float>(Data.size());
+    }
+};
+
+#endif
+```
+
+The imgui widget calculates the fps, adds that to the scrolling buffer, and plots both the buffer as a line as well as the average of the buffer.
+
+```cpp
+ImGui::Begin("Frame Rate", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    ImGui::SetWindowPos(ImVec2(WIDTH - fpsWidgetWidth, 0));
+    ImGui::SetWindowSize(ImVec2(fpsWidgetWidth, fpsWidgetHeight));
+    time = fpsClock.getElapsedTime().asSeconds();
+    time = 1.0 / time;
+    fpsClock.restart();
+    plott += ImGui::GetIO().DeltaTime;
+    frameData.AddPoint(plott, time);
+    static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
+    if(ImPlot::BeginPlot("##", ImVec2(-1, 150))){
+        ImPlot::SetupAxes(NULL, NULL, flags, flags);
+        ImPlot::SetupAxisLimits(ImAxis_X1, plott - 10, plott, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1,0,fpsWidgetMaxFPS);
+        ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 1, 1));
+        ImPlot::PlotLine(std::to_string(time).c_str(), &frameData.Data[0].x, &frameData.Data[0].y, frameData.Data.size(), 0, frameData.Offset, 2*sizeof(float));
+        ImPlot::PopStyleColor();
+        ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
+        frameData.getAvg();
+        ImPlot::PlotInfLines(std::to_string(frameData.avg[0]).c_str(), frameData.avg, 1, ImPlotInfLinesFlags_Horizontal);
+        ImPlot::PopStyleColor();
+        ImPlot::EndPlot();
+    }
+ImGui::End();
+```
+
+![FPSGraphGif](imgs/FPSGraph.gif)

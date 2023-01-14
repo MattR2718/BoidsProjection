@@ -11,5 +11,6 @@ target_link_libraries(${PROJECT_NAME}
     imgui::imgui
     sfml-graphics sfml-system sfml-window
     ImGui-SFML::ImGui-SFML
+    implot::implot
     drawables
 )

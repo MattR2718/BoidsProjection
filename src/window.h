@@ -8,12 +8,14 @@
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
 #include <imgui-SFML.h>
+#include <implot.h>
+
+#include "scrollingBuffer.h"
 
 #include "drawableData.h"
 #include "camera.h"
 #include "window.h"
 
-// #include "drawable.h"
 #include "point.h"
 #include "line.h"
 #include "box.h"
@@ -24,8 +26,8 @@ class DrawableData;
 
 class Window{
     public:
-        int WIDTH = 1200;
-        int HEIGHT = 1000;
+        const int WIDTH = 1200;
+        const int HEIGHT = 1000;
 
         sf::RenderWindow* window;
         sf::Clock deltaClock;
@@ -52,6 +54,13 @@ class Window{
 
 
     private:
+        ScrollingBuffer frameData;
+        sf::Clock fpsClock;
+        float time = 0;
+        float plott = 0;
+        const int fpsWidgetWidth = 400;
+        const int fpsWidgetHeight = 170;
+        const int fpsWidgetMaxFPS = 200;
 
 
     protected:

@@ -3,10 +3,12 @@
 Window::Window(){
     //Create a window that the program will draw to
     this->window = new sf::RenderWindow(sf::VideoMode(this->WIDTH, this->HEIGHT), "Boids Projection");
-    //Limit the windows frame rate to 30
-    //this->window->setFramerateLimit(30);
+    //this->window->setFramerateLimit(120);
     //Init imgui
     if(!ImGui::SFML::Init(*this->window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
+    
+    ImGui::CreateContext();
+    ImPlot::CreateContext();
 
     if(!this->font.loadFromFile("../../fonts/arial.ttf")){
         throw std::invalid_argument("FONT NOT FOUND");
@@ -14,6 +16,9 @@ Window::Window(){
 }
 
 Window::~Window(){
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
+    ImGui::SFML::Shutdown();
     delete this->window;
 }
 
@@ -164,6 +169,33 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             }
         }
     }
+    ImGui::End();
+
+    //ImPlot::ShowDemoWindow();
+    
+    ImGui::Begin("Frame Rate", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+        ImGui::SetWindowPos(ImVec2(WIDTH - fpsWidgetWidth, 0));
+        ImGui::SetWindowSize(ImVec2(fpsWidgetWidth, fpsWidgetHeight));
+        time = fpsClock.getElapsedTime().asSeconds();
+        time = 1.0 / time;
+        fpsClock.restart();
+        plott += ImGui::GetIO().DeltaTime;
+        frameData.AddPoint(plott, time);
+        static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
+        if(ImPlot::BeginPlot("##", ImVec2(-1, 150))){
+            ImPlot::SetupAxes(NULL, NULL, flags, flags);
+            ImPlot::SetupAxisLimits(ImAxis_X1, plott - 10, plott, ImGuiCond_Always);
+            ImPlot::SetupAxisLimits(ImAxis_Y1,0,fpsWidgetMaxFPS);
+            ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 1, 1));
+            ImPlot::PlotLine(std::to_string(time).c_str(), &frameData.Data[0].x, &frameData.Data[0].y, frameData.Data.size(), 0, frameData.Offset, 2*sizeof(float));
+            ImPlot::PopStyleColor();
+            ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
+            frameData.getAvg();
+            ImPlot::PlotInfLines(std::to_string(frameData.avg[0]).c_str(), frameData.avg, 1, ImPlotInfLinesFlags_Horizontal);
+            ImPlot::PopStyleColor();
+            ImPlot::EndPlot();
+        }
+    ImGui::End();
 }
 
 

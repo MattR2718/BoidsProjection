@@ -107,7 +107,7 @@ int main(){
         
 
         window.drawPixelArrayToScreen(pixels);
-        window.drawFPS();
+        //window.drawFPS();
         window.render();
 
     }

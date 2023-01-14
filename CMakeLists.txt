@@ -6,6 +6,7 @@ find_package(SFML CONFIG REQUIRED COMPONENTS graphics system window)
 include_directories(src)
 find_package(imgui CONFIG REQUIRED)
 find_package(ImGui-SFML CONFIG REQUIRED)
+find_package(implot CONFIG REQUIRED)
 
 add_subdirectory(src)
 #add_subdirectory(tests)
