@@ -2233,3 +2233,11 @@ And add:
 class Window;
 ```
 In drawableData.h.
+
+
+### **Clean Up Imgui**
+
+The current imgui windows are very messy and take up lots of the window space. By cleaning them up into a single collapsable widget it makes the window much less cluttered and easier to close if wanted.
+
+![Cleaned Up Imgui](imgs/CleanedUpImgui.JPG)
+

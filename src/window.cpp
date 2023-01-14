@@ -85,72 +85,85 @@ void Window::updateImGui(){
 }
 
 void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera){
-    //Create imgui window to allow colour picking
-    ImGui::Begin("Points");
-    ImGui::Checkbox("Show Points", &drawData.showPoints);
-    ImGui::ColorEdit3("Fill", (float*)&drawData.pointFillColour);
-    ImGui::ColorEdit3("Outline", (float*)&drawData.pointOutlineColour);
-    if(ImGui::Button("Randomise")){
-        for(auto& obj : drawObjects){
-            if(std::holds_alternative<Point>(obj)){
-                int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
-                int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
-                int z = rand() % (this->WIDTH - 400) - this->WIDTH/ 2 + 200;
-                std::get<Point>(obj).setPosition(x, y, z);
-            }
-        }
-    }
-    ImGui::Checkbox("Fill", &drawData.fill);
-    ImGui::SliderInt("Num Points", &drawData.numPoints, 0, 5000);
-    ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
-    ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
-    ImGui::Checkbox("Auto Rotate Z", &camera.autoRotatez);
-    ImGui::End();
+    
+    //ImGui::ShowDemoWindow();
 
-    ImGui::Begin("Lines");
-    ImGui::Checkbox("Show Lines", &drawData.showLines);
-    ImGui::Checkbox("Draw Line Points", &drawData.drawLinePoints);
-    ImGui::End();
+    //Create ImGui window to contain options
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 10));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
+    ImGui::Begin("Options", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+    ImGui::SetWindowPos(ImVec2(0, 0));
+    
+    //Create imgui section for points
+    if(ImGui::CollapsingHeader("Points", ImGuiTreeNodeFlags_DefaultOpen)){
+        ImGui::Checkbox("Show Points", &drawData.showPoints);
+        ImGui::ColorEdit3("Fill", (float*)&drawData.pointFillColour);
+        ImGui::ColorEdit3("Outline", (float*)&drawData.pointOutlineColour);
+        if(ImGui::Button("Randomise")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Point>(obj)){
+                    int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                    int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
+                    int z = rand() % (this->WIDTH - 400) - this->WIDTH/ 2 + 200;
+                    std::get<Point>(obj).setPosition(x, y, z);
+                }
+            }
+        }
+        ImGui::Checkbox("Fill", &drawData.fill);
+        ImGui::SliderInt("Num Points", &drawData.numPoints, 0, 5000);
+        ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
+        ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
+        ImGui::Checkbox("Auto Rotate Z", &camera.autoRotatez);
+    }
 
-    ImGui::Begin("Boxes");
-    ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
-    ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 1000);
-    if(ImGui::Button("Randomise")){
-        for(auto& obj : drawObjects){
-            if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
-                int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
-                int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
-                int z = rand() % (this->WIDTH - 400) - this->WIDTH/ 2 + 200;
-                std::get<Box>(obj).setPosition(x, y, z);
-            }
-        }
+    //Create imgui section for lines
+    if(ImGui::CollapsingHeader("Lines", ImGuiTreeNodeFlags_DefaultOpen)){
+        ImGui::Checkbox("Show Lines", &drawData.showLines);
+        ImGui::Checkbox("Draw Line Points", &drawData.drawLinePoints);
     }
-    ImGui::SliderInt("Main Box Size", &drawData.boxSize, 0, 800);
-    ImGui::End();
 
-    ImGui::Begin("Vectors");
-    ImGui::Checkbox("Show Vectors", &drawData.showVectors);
-    if(ImGui::Button("Randomise Direction")){
-        for(auto& obj : drawObjects){
-            if(std::holds_alternative<Vector>(obj)){
-                int x = rand() % 50 - 25;
-                int y = rand() % 50 - 25;
-                int z = rand() % 50 - 25;
-                std::get<Vector>(obj).setDir(x, y, z, this->WIDTH, this->HEIGHT);
+    //Create imgui section for boxes
+    if(ImGui::CollapsingHeader("Boxes", ImGuiTreeNodeFlags_DefaultOpen)){
+        ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
+        ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 1000);
+        if(ImGui::Button("Randomise")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
+                    int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                    int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
+                    int z = rand() % (this->WIDTH - 400) - this->WIDTH/ 2 + 200;
+                    std::get<Box>(obj).setPosition(x, y, z);
+                }
+            }
+        }
+        ImGui::SliderInt("Main Box Size", &drawData.boxSize, 0, 800);
+    }
+
+    //Create imgui section for vectors
+    if(ImGui::CollapsingHeader("Vectors", ImGuiTreeNodeFlags_DefaultOpen)){
+        ImGui::Checkbox("Show Vectors", &drawData.showVectors);
+        if(ImGui::Button("Randomise Direction")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Vector>(obj)){
+                    int x = rand() % 50 - 25;
+                    int y = rand() % 50 - 25;
+                    int z = rand() % 50 - 25;
+                    std::get<Vector>(obj).setDir(x, y, z, this->WIDTH, this->HEIGHT);
+                }
+            }
+        }
+        if(ImGui::Button("Randomise Position")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Vector>(obj)){
+                    int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                    int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
+                    int z = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
+                    std::get<Vector>(obj).setPos(x, y, z, this->WIDTH, this->HEIGHT);
+                }
             }
         }
     }
-    if(ImGui::Button("Randomise Position")){
-        for(auto& obj : drawObjects){
-            if(std::holds_alternative<Vector>(obj)){
-                int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
-                int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
-                int z = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
-                std::get<Vector>(obj).setPos(x, y, z, this->WIDTH, this->HEIGHT);
-            }
-        }
-    }
-    ImGui::End();
 }
 
 
