@@ -9,4 +9,4 @@ find_package(ImGui-SFML CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
 
 add_subdirectory(src)
-#add_subdirectory(tests)
+add_subdirectory(tests)
