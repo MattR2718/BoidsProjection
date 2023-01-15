@@ -105,7 +105,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         ImGui::Checkbox("Show Points", &drawData.showPoints);
         ImGui::ColorEdit3("Fill", (float*)&drawData.pointFillColour);
         ImGui::ColorEdit3("Outline", (float*)&drawData.pointOutlineColour);
-        if(ImGui::Button("Randomise")){
+        if(ImGui::Button("Randomise##Points")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Point>(obj)){
                     int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
@@ -126,13 +126,24 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     if(ImGui::CollapsingHeader("Lines", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::Checkbox("Show Lines", &drawData.showLines);
         ImGui::Checkbox("Draw Line Points", &drawData.drawLinePoints);
+        std::string curraa = "Line Antialiasing: ";
+        curraa += (drawData.lineAntiAliasing) ? "On" : "Off";
+        ImGui::Text("%s", curraa.c_str());
+        if(ImGui::Button("Toggle Antialiasing##Lines")){
+            drawData.lineAntiAliasing = !drawData.lineAntiAliasing;
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Line>(obj)){
+                    std::get<Line>(obj).antiAliased = drawData.lineAntiAliasing;
+                }
+            }
+        }
     }
 
     //Create imgui section for boxes
     if(ImGui::CollapsingHeader("Boxes", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
         ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 1000);
-        if(ImGui::Button("Randomise")){
+        if(ImGui::Button("Randomise##Boxes")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
                     int x = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
@@ -143,6 +154,17 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             }
         }
         ImGui::SliderInt("Main Box Size", &drawData.boxSize, 0, 800);
+        std::string curraa = "Box Antialiasing: ";
+        curraa += (drawData.boxAntiAliasing) ? "On" : "Off";
+        ImGui::Text("%s", curraa.c_str());
+        if(ImGui::Button("Toggle Antialiasing##Boxes")){
+            drawData.boxAntiAliasing = !drawData.boxAntiAliasing;
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Box>(obj)){
+                    std::get<Box>(obj).antiAliased = drawData.boxAntiAliasing;
+                }
+            }
+        }
     }
 
     //Create imgui section for vectors
@@ -165,6 +187,17 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
                     int y = rand() % (this->HEIGHT - 400) - this->HEIGHT / 2 + 200;
                     int z = rand() % (this->WIDTH - 400) - this->WIDTH / 2 + 200;
                     std::get<Vector>(obj).setPos(x, y, z, this->WIDTH, this->HEIGHT);
+                }
+            }
+        }
+        std::string curraa = "Vector Antialiasing: ";
+        curraa += (drawData.vectorAntiAliasing) ? "On" : "Off";
+        ImGui::Text("%s", curraa.c_str());
+        if(ImGui::Button("Toggle Antialiasing##Vector")){
+            drawData.vectorAntiAliasing = !drawData.vectorAntiAliasing;
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Vector>(obj)){
+                    std::get<Vector>(obj).antiAliased = drawData.vectorAntiAliasing;
                 }
             }
         }

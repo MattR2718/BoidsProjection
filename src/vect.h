@@ -13,7 +13,10 @@ class Vector : public Drawable{
 public:
     int max;
     int dx, dy, dz;
-    Vector(int x_, int y_, int z_, int dx_, int dy_, int dz_, int width, int height, int max_ = 10, int r_ = 255, int g_ = 255, int b_ = 255);
+
+    bool antiAliased = false;
+
+    Vector(int x_, int y_, int z_, int dx_, int dy_, int dz_, int width, int height, bool antiAliased_ = false, int max_ = 10, int r_ = 255, int g_ = 255, int b_ = 255);
     
     void setPos(int x_, int y_, int z_, const int width, const int height);
     void setDir(int x_, int y_, int z_, const int width, const int height);
@@ -28,7 +31,6 @@ private:
     void updateVector(const int width, const int height);
     
 protected:
-
 
 };
 

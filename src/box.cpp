@@ -1,7 +1,8 @@
 
 #include "box.h"
 
-Box::Box(int x_, int y_, int z_, int size_, int width, int height, bool fixedSize_, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+Box::Box(int x_, int y_, int z_, int size_, int width, int height, bool antiAliased_, bool fixedSize_, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+    this->antiAliased = antiAliased_;
     this->size = size_;
     this->centre.setPosition(x_, y_, z_);
     this->sortVal = y_;
@@ -28,7 +29,7 @@ void Box::generateLines(const int width, const int height){
         return Line(
                     Point(std::get<0>(verticies[a]), std::get<1>(verticies[a]), std::get<2>(verticies[a]), width, height, this->size * 0.05, this->r, this->g, this->b),
                     Point(std::get<0>(verticies[b]), std::get<1>(verticies[b]), std::get<2>(verticies[b]), width, height, this->size * 0.05),
-                    width, height
+                    width, height, this->antiAliased
                 );
     };
 

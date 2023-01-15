@@ -2317,3 +2317,104 @@ ImGui::End();
 ```
 
 ![FPSGraphGif](imgs/FPSGraph.gif)
+
+### **Add line anti-aliasing option**
+
+Currently all lines are drawn using xialoin wus line drawing algorithm which draws lines with antialiasing. Adding in the option of using Bresenhams line drawing algorithm gives the option of no anti aliasing.
+
+```cpp
+//Draw line connecting two points using projected x and y
+if(this->antiAliased){
+    XiaolinWu(pixels, width, height);
+}else{
+    Bresenham(pixels, width, height);
+}
+```
+
+```cpp
+//Plot lines with slopes between 0 and -1 using bresenham
+void Line::PlotLineLow(sf::Uint8 *pixels, const int width, const int height, int x0, int y0, int x1, int y1){
+    //Lambda function to plot a single point at position (xval, yval) on screen
+    auto plot = [&](int xval, int yval, float bright){
+        if(xval < -this->offsetx || xval >= this->offsetx || yval < -this->offsety || yval >= this->offsety){return;}
+        int index = ((yval + this->offsety) * width + (xval + this->offsetx)) * 4;
+        pixels[index] = this->r;
+        pixels[index + 1] = this->g;
+        pixels[index + 2] = this->b;
+        pixels[index + 3] = 255 * bright;
+    };
+
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+    int yi = 1;
+    if(dy < 0){
+        yi = -1;
+        dy = -dy;
+    }
+    float D = (2 * dy) - dx;
+    float y = y0;
+    int xi = (x0 < x1) ? 1 : -1;
+    for(int x = x0; x != x1; x += xi){
+        plot(x, y, 1);
+        if(D > 0){
+            y += yi;
+            D += (2 * (dy - dx));
+        }else{
+            D += 2 * dy;
+        }
+    }
+
+}
+
+//Plot lines with sloped between 0 and 1
+void Line::PlotLineHigh(sf::Uint8 *pixels, const int width, const int height, int x0, int y0, int x1, int y1){
+    //Lambda function to plot a single point at position (xval, yval) on screen
+    auto plot = [&](int xval, int yval, float bright){
+        if(xval < -this->offsetx || xval >= this->offsetx || yval < -this->offsety || yval >= this->offsety){return;}
+        int index = ((yval + this->offsety) * width + (xval + this->offsetx)) * 4;
+        pixels[index] = this->r;
+        pixels[index + 1] = this->g;
+        pixels[index + 2] = this->b;
+        pixels[index + 3] = 255 * bright;
+    };
+
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+    int xi = 1;
+    if(dx < 0){
+        xi = -1;
+        dx = -dx;
+    }
+    float D = (2 * dx) - dy;
+    float x = x0;
+    int yi = (y0 < y1) ? 1 : -1;
+    for(int y = y0; y != y1; y += yi){
+        plot(x, y, 1);
+        if(D > 0){
+            x += xi;
+            D += (2 * (dx - dy));
+        }else{
+            D += 2 * dx;
+        }
+    }
+}
+
+//Plot line between two points using bresenhams line drawing algorithm
+//Check slope and call correct function
+void Line::Bresenham(sf::Uint8 *pixels, const int width, const int height){
+    if(abs(this->p2.py - this->p1.py) < abs(this->p2.px - this->p1.px)){
+        if(this->p1.px > this->p2.px){
+            this->PlotLineLow(pixels, width, height, this->p2.px, this->p2.py, this->p1.px, this->p1.py);
+        }else{
+            this->PlotLineLow(pixels, width, height, this->p1.px, this->p1.py, this->p2.px, this->p2.py);
+        }
+    }else{
+        if(this->p1.py > this->p2.py){
+            this->PlotLineHigh(pixels, width, height, this->p2.px, this->p2.py, this->p1.px, this->p1.py);
+        }else{
+            this->PlotLineHigh(pixels, width, height, this->p1.px, this->p1.py, this->p2.px, this->p2.py);
+        }
+    }
+
+}
+```

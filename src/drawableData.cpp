@@ -33,7 +33,8 @@ void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount,
                 rand() % (HEIGHT - 400) - HEIGHT / 2 + 200,
                 rand() % (WIDTH - 400) - WIDTH / 2 + 200,
                 rand() % 60,
-                WIDTH, HEIGHT,     
+                WIDTH, HEIGHT,
+                this->boxAntiAliasing,
                 true,
                 rand() % 255, rand() % 255, rand() % 255
             ));

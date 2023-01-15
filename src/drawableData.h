@@ -43,6 +43,11 @@ class DrawableData{
         //Draw points at end of lines which mark the start and end
         bool drawLinePoints = false;
 
+        //Antialiasing option
+        bool lineAntiAliasing = false;
+        bool boxAntiAliasing = false;
+        bool vectorAntiAliasing = false;
+
         void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
         void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
 
