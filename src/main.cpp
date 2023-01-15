@@ -6,6 +6,8 @@
 #include <cmath>
 #include <variant>
 #include <ranges>
+#include <thread>
+#include <chrono>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -32,6 +34,23 @@ void initPixels(sf::Uint8 *arr, const int length){
         arr[i + 2] = 0;
         arr[i + 3] = 255;
     }
+}
+
+void drawingThread(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+    camera.autoRotate();
+
+    std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
+        return std::visit([](auto const& e){ return e.sortVal; }, x);
+    });
+
+    int pointCount = 0;
+    int boxCount = 0;
+
+    drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+
+    drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
+    drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
+
 }
 
 int main(){
@@ -89,26 +108,18 @@ int main(){
         
         window.drawImGui(drawData, drawObjects, camera);
 
-        //populatePoints(points, drawData.numPoints, window.WIDTH, window.HEIGHT);
+        bool threadRunning = true;
+        //drawingThread(window, camera, pixels, drawData, drawObjects);
+        //std::jthread drawThread{drawingThread, window, camera, pixels, drawData, drawObjects};
+        //TODO When changing number of boxes and points after making thread, doesnt add boxes until press randomise
+        std::jthread drawThread{[&]{drawingThread(window, camera, pixels, drawData, drawObjects);}};
+        std::jthread testThread{[]{}};
 
-        camera.autoRotate();
-
-        std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
-            return std::visit([](auto const& e){ return e.sortVal; }, x);
-        });
-
-        int pointCount = 0;
-        int boxCount = 0;
-
-        drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
-
-        drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
-        drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
-        
+        drawThread.join();
+        testThread.join();
 
         window.drawPixelArrayToScreen(pixels);
-        //window.drawFPS();
         window.render();
-
     }
+    
 }

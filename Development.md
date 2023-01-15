@@ -2418,3 +2418,37 @@ void Line::Bresenham(sf::Uint8 *pixels, const int width, const int height){
 
 }
 ```
+
+
+### **Move To Thread**
+
+Once the boid algorithm is implemented, the boids will run on one thread and the drawing calculations will be done on anothe thread. This is so that they can both be done concurrently and performance will be greater.
+
+In order to do this i put the drawing calculations into a function which will be assigned to the thread.
+
+```cpp
+void drawingThread(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+    camera.autoRotate();
+
+    std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
+        return std::visit([](auto const& e){ return e.sortVal; }, x);
+    });
+
+    int pointCount = 0;
+    int boxCount = 0;
+
+    drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+
+    drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
+    drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
+
+}
+```
+
+```cpp
+std::jthread drawThread{[&]{drawingThread(window, camera, pixels, drawData, drawObjects);}};
+
+drawThread.join();
+```
+
+Drawing the pixel array to the screen and rendering it cannot be done within the thread as the window can only be updated within the thread it was created in and since it is created in the main thread, that is where it has to be updated however, this is not very costly performance wise.

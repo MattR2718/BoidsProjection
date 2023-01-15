@@ -229,6 +229,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             ImPlot::EndPlot();
         }
     ImGui::End();
+    ImGui::PopStyleVar(3);
 }
 
 
