@@ -8,6 +8,7 @@
 #include <ranges>
 #include <thread>
 #include <chrono>
+#include <future>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -97,6 +98,8 @@ int main(){
 
     bool randomise = true;
 
+    std::jthread drawThread;
+
     //Run program while window is open
     while (window.running())
     {
@@ -112,14 +115,19 @@ int main(){
         //drawingThread(window, camera, pixels, drawData, drawObjects);
         //std::jthread drawThread{drawingThread, window, camera, pixels, drawData, drawObjects};
         //TODO When changing number of boxes and points after making thread, doesnt add boxes until press randomise
-        std::jthread drawThread{[&]{drawingThread(window, camera, pixels, drawData, drawObjects);}};
-        std::jthread testThread{[]{}};
+        
+        //drawThread = std::jthread{[&]{drawingThread(window, camera, pixels, drawData, drawObjects);}};
+        //std::jthread testThread{[]{}};
+        //drawThread.join();
+        //testThread.join();
 
-        drawThread.join();
-        testThread.join();
+        auto ret = std::async(std::launch::async, [&]{drawingThread(window, camera, pixels, drawData, drawObjects);});
+        auto tret = std::async(std::launch::async, [&]{std::this_thread::sleep_for(std::chrono::seconds(1)); std::cout<<"SLEPT FOR 1 SECOND\n"; });
+        ret.get();
 
         window.drawPixelArrayToScreen(pixels);
         window.render();
+        tret.get();
     }
     
 }

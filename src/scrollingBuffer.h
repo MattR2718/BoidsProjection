@@ -28,10 +28,14 @@ struct ScrollingBuffer {
     }
     void getAvg(){
         int t = 0;
-        for(auto& v : Data){
+        /* for(auto& v : Data){
             t += v.y;
+        } */
+        int i = Data.size() - 1;
+        while(i >= 0 && (Data.size() - i) < 500){
+            t += Data[i--].y;
         }
-        avg[0] = static_cast<float>(t) / static_cast<float>(Data.size());
+        avg[0] = static_cast<float>(t) / static_cast<float>(Data.size() - i);
     }
 };
 

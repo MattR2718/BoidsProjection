@@ -5,6 +5,7 @@ Window::Window(){
     this->window = new sf::RenderWindow(sf::VideoMode(this->WIDTH, this->HEIGHT), "Boids Projection");
     //this->window->setFramerateLimit(120);
     //Init imgui
+    this->window->setPosition(sf::Vector2i(0, 0));
     if(!ImGui::SFML::Init(*this->window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
     
     ImGui::CreateContext();
