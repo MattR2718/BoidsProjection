@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <map>
+#include <cmath>
+
 #include <SFML/Graphics.hpp>
 
 #include "drawable.h"
