@@ -2453,7 +2453,10 @@ drawThread.join();
 
 Drawing the pixel array to the screen and rendering it cannot be done within the thread as the window can only be updated within the thread it was created in and since it is created in the main thread, that is where it has to be updated however, this is not very costly performance wise.
 
+Using this multithreading solution, the fps of the program becomes very unstable.
+![Unstable FPS From Thread Creation](imgs/StutteringFPSDueToThreadCreation.JPG)
 
+This unstable fps is likely due to the relatively slow creation of a thread each frame. To solve this problem I will want to create the thread when the program opens and then have the thread wait to run the code. This will mean that the thread is always waiting to run the code each frame rather than making threads each frame which is slow.
 
 
 
