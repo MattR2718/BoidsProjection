@@ -32,7 +32,7 @@ struct ScrollingBuffer {
             t += v.y;
         } */
         int i = Data.size() - 1;
-        while(i >= 0 && (Data.size() - i) < 500){
+        while(i >= 0 && (Data.size() - i) < 300){
             t += Data[i--].y;
         }
         avg[0] = static_cast<float>(t) / static_cast<float>(Data.size() - i);

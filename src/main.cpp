@@ -9,6 +9,8 @@
 #include <thread>
 #include <chrono>
 #include <future>
+#include <semaphore>
+#include <mutex>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -26,6 +28,12 @@
 
 #define PI 3.14159
 
+std::binary_semaphore
+    smphSignalMainToThread{1},
+    smphSignalThreadToMain{0};
+
+std::binary_semaphore sem{1};
+
 using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
 
 void initPixels(sf::Uint8 *arr, const int length){
@@ -37,7 +45,7 @@ void initPixels(sf::Uint8 *arr, const int length){
     }
 }
 
-void drawingThread(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+void drawingThreadOriginal(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
     camera.autoRotate();
 
     std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
@@ -52,6 +60,32 @@ void drawingThread(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableDa
     drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
     drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
 
+}
+
+void drawingThread(std::stop_token stop_token, Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+    while (!stop_token.stop_requested()){
+        smphSignalMainToThread.acquire();
+        //sem.acquire();
+        
+        //Start by clearing pixels
+        initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+        
+        camera.autoRotate();
+
+        std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
+            return std::visit([](auto const& e){ return e.sortVal; }, x);
+        });
+
+        int pointCount = 0;
+        int boxCount = 0;
+
+        drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+
+        drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
+        drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
+        smphSignalThreadToMain.release();
+        //sem.release();
+    }
 }
 
 int main(){
@@ -98,21 +132,21 @@ int main(){
 
     bool randomise = true;
 
-    std::jthread drawThread;
+    std::stop_token drawThreadStopToken;
+
+    std::jthread drawThread([&]{drawingThread(drawThreadStopToken, window, camera, pixels, drawData, drawObjects);});
 
     //Run program while window is open
     while (window.running())
     {
+        //smphSignalMainToThread.release();
         window.pollEvents(camera);
         window.updateImGui();
-
-        //Start by clearing pixels
-        initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
         
         window.drawImGui(drawData, drawObjects, camera);
 
         bool threadRunning = true;
-        //drawingThread(window, camera, pixels, drawData, drawObjects);
+        //drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
         //std::jthread drawThread{drawingThread, window, camera, pixels, drawData, drawObjects};
         //TODO When changing number of boxes and points after making thread, doesnt add boxes until press randomise
         
@@ -121,13 +155,25 @@ int main(){
         //drawThread.join();
         //testThread.join();
 
-        auto ret = std::async(std::launch::async, [&]{drawingThread(window, camera, pixels, drawData, drawObjects);});
-        auto tret = std::async(std::launch::async, [&]{std::this_thread::sleep_for(std::chrono::seconds(1)); std::cout<<"SLEPT FOR 1 SECOND\n"; });
-        ret.get();
+        //auto ret = std::async(std::launch::async, [&]{drawingThread(window, camera, pixels, drawData, drawObjects);});
+        //auto tret = std::async(std::launch::async, [&]{std::this_thread::sleep_for(std::chrono::seconds(1)); std::cout<<"SLEPT FOR 1 SECOND\n"; });
+        //ret.get();
 
+        //auto now = std::chrono::system_clock::now();
+        smphSignalThreadToMain.acquire();
+        //sem.acquire();
         window.drawPixelArrayToScreen(pixels);
+        //sem.release();
+        smphSignalMainToThread.release();
+        //auto end = std::chrono::system_clock::now();
+        //float currentTime = float(std::chrono::duration_cast < std::chrono::milliseconds> (end - now).count());
+        //std::cout << "Elapsed Time: " << currentTime << " ms \n";
         window.render();
-        tret.get();
+        //tret.get();
     }
+
+    drawThread.request_stop();
+
+    delete[] pixels;
     
 }

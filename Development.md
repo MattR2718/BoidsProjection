@@ -2458,12 +2458,21 @@ Using this multithreading solution, the fps of the program becomes very unstable
 
 This unstable fps is likely due to the relatively slow creation of a thread each frame. 
 
-v DIDNT DO: \
 To solve this problem I will want to create the thread when the program opens and then have the thread wait to run the code. This will mean that the thread is always waiting to run the code each frame rather than making threads each frame which is slow.
 
-v DID DO: \
-Instead of creating a thread i can call std::async whuch 
+A stop_token can be used to loop the thread while the program is running. While the program runs, the thread continuously calculates frames, when the window needs to refresh the screen with a new frame, binary_semaphores can be used to limit access to pixels, if this is not used, pixels can be accesses by multiple threads at once which can cause visual issues.
 
+Adding this makes the program run smoother however, the screen is flashing:
+![Flashing Objects](imgs/FlashingObjects.gif)
+
+This is likely due to the pixels being accessed at the same time
+Moving 
+```cpp
+initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+```
+into the threadfunction fixed the flashing issue.
+
+![Fixed Flashing Objects](imgs/FixedFlashingObjects.gif)
 
 
 ### **Make CMAKELISTS Cross Platform**
