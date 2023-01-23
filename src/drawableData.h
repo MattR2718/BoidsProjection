@@ -33,6 +33,8 @@ class DrawableData{
         //Default drawing each drawable
         bool showPoints = true, showLines = true, showBoxes = true, showVectors = true;
 
+        bool showDemoObjects = false;
+
         //Number of each object to randomly plot
         int numPoints = 100;
         int numBoxes = 100;

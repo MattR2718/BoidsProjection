@@ -143,10 +143,12 @@ int main(){
     Line yAxis(Y, O, window.WIDTH, window.HEIGHT);
     Line zAxis(Z, O, window.WIDTH, window.HEIGHT);
     std::vector<Line> lines { l, xAxis, yAxis, zAxis };
+    
+    std::vector<Line> axis{xAxis, yAxis, zAxis};
 
-    Box b(0, 0, 0, drawData.boxSize, window.WIDTH, window.HEIGHT);
+    Box boundingBox(0, 0, 0, drawData.boxSize, window.WIDTH, window.HEIGHT);
 
-    DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, b};
+    DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, boundingBox};
 
     for(int i = 0; i < 100; i++){
         drawObjects.push_back(Vector(
@@ -175,6 +177,12 @@ int main(){
     {
 
         drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
+
+        if(!drawData.showDemoObjects){
+            drawObjects.clear();
+            drawObjects.emplace_back(boundingBox);
+            drawObjects.insert(drawObjects.end(), axis.begin(), axis.end());
+        }
 
         window.pollEvents(camera);
         window.updateImGui();

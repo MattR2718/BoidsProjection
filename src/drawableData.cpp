@@ -51,6 +51,7 @@ void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount,
 }
 
 void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount){
+    
     //Draw all objects to screen
     for(auto& obj : drawObjects){
         switch(obj.index()){
