@@ -34,6 +34,10 @@ std::binary_semaphore
 
 std::binary_semaphore sem{1};
 
+std::mutex pixelMutex;
+
+bool runThread = true;
+
 using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
 
 void initPixels(sf::Uint8 *arr, const int length){
@@ -55,6 +59,8 @@ void drawingThreadOriginal(Window& window, Camera& camera, sf::Uint8 *pixels, Dr
     int pointCount = 0;
     int boxCount = 0;
 
+    //Start by clearing pixels
+    initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
     drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
 
     drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
@@ -63,30 +69,53 @@ void drawingThreadOriginal(Window& window, Camera& camera, sf::Uint8 *pixels, Dr
 }
 
 void drawingThread(std::stop_token stop_token, Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+    window.window->setActive(true);
+    
     while (!stop_token.stop_requested()){
-        smphSignalMainToThread.acquire();
-        //sem.acquire();
+        //window.window->setActive(true);
+        //window.pollEvents(camera);
+        window.updateImGui();
         
-        //Start by clearing pixels
-        initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
-        
-        camera.autoRotate();
+        window.drawImGui(drawData, drawObjects, camera);
+            //Start by clearing pixels
+            //initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+            
+            camera.autoRotate();
 
-        std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
-            return std::visit([](auto const& e){ return e.sortVal; }, x);
-        });
+            std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
+                return std::visit([](auto const& e){ return e.sortVal; }, x);
+            });
 
-        int pointCount = 0;
-        int boxCount = 0;
+            int pointCount = 0;
+            int boxCount = 0;
+            
+            //drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
 
-        drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+            {
+                //smphSignalMainToThread.acquire();
+                //std::lock_guard guard(pixelMutex);
+                //Start by clearing pixels
+                initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+                drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+                //smphSignalThreadToMain.release();
+            }
 
-        drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
-        drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
-        smphSignalThreadToMain.release();
-        //sem.release();
+            drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
+            drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
+
+            window.drawPixelArrayToScreen(pixels);
+            window.render();
+
+            //pixelMutex.unlock();
+            //smphSignalThreadToMain.release();
+            //sem.release();
+        //}
+        //window.window->setActive(false);
     }
+    window.window->close();
 }
+
+
 
 int main(){
 
@@ -95,6 +124,8 @@ int main(){
     //Create a pixel array which will contain the pixels drawn to the screen
     sf::Uint8* pixels  = new sf::Uint8[window.WIDTH * window.HEIGHT * 4];
     initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+    sf::Uint8* drawPixels  = new sf::Uint8[window.WIDTH * window.HEIGHT * 4];
+    initPixels(drawPixels, window.WIDTH * window.HEIGHT * 4);
 
     DrawableData drawData;
     Camera camera;
@@ -133,46 +164,26 @@ int main(){
     bool randomise = true;
 
     std::stop_token drawThreadStopToken;
+    //bool stop = false;
 
-    std::jthread drawThread([&]{drawingThread(drawThreadStopToken, window, camera, pixels, drawData, drawObjects);});
+    //std::jthread drawThread([&]{drawingThread(drawThreadStopToken, window, camera, drawPixels, drawData, drawObjects);});
+
+    //window.window->setActive(false);
 
     //Run program while window is open
     while (window.running())
     {
-        //smphSignalMainToThread.release();
+
+        drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
+
         window.pollEvents(camera);
         window.updateImGui();
         
         window.drawImGui(drawData, drawObjects, camera);
 
-        bool threadRunning = true;
-        //drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
-        //std::jthread drawThread{drawingThread, window, camera, pixels, drawData, drawObjects};
-        //TODO When changing number of boxes and points after making thread, doesnt add boxes until press randomise
-        
-        //drawThread = std::jthread{[&]{drawingThread(window, camera, pixels, drawData, drawObjects);}};
-        //std::jthread testThread{[]{}};
-        //drawThread.join();
-        //testThread.join();
-
-        //auto ret = std::async(std::launch::async, [&]{drawingThread(window, camera, pixels, drawData, drawObjects);});
-        //auto tret = std::async(std::launch::async, [&]{std::this_thread::sleep_for(std::chrono::seconds(1)); std::cout<<"SLEPT FOR 1 SECOND\n"; });
-        //ret.get();
-
-        //auto now = std::chrono::system_clock::now();
-        smphSignalThreadToMain.acquire();
-        //sem.acquire();
         window.drawPixelArrayToScreen(pixels);
-        //sem.release();
-        smphSignalMainToThread.release();
-        //auto end = std::chrono::system_clock::now();
-        //float currentTime = float(std::chrono::duration_cast < std::chrono::milliseconds> (end - now).count());
-        //std::cout << "Elapsed Time: " << currentTime << " ms \n";
         window.render();
-        //tret.get();
     }
-
-    drawThread.request_stop();
 
     delete[] pixels;
     

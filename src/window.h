@@ -4,6 +4,8 @@
 #include <iostream>
 #include <variant>
 #include <vector>
+#include <future>
+#include <semaphore>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>

@@ -3,7 +3,7 @@
 Window::Window(){
     //Create a window that the program will draw to
     this->window = new sf::RenderWindow(sf::VideoMode(this->WIDTH, this->HEIGHT), "Boids Projection");
-    //this->window->setFramerateLimit(120);
+    //this->window->setFramerateLimit(30);
     //Init imgui
     this->window->setPosition(sf::Vector2i(0, 0));
     if(!ImGui::SFML::Init(*this->window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
@@ -36,6 +36,7 @@ void Window::pollEvents(Camera& camera){
         ImGui::SFML::ProcessEvent(event);
         //If close requested then close window
         if (event.type == sf::Event::Closed){
+            //stop = true;
             this->window->close();
         }else if (event.type == sf::Event::KeyPressed) {
             switch(event.key.code) {
