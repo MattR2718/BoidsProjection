@@ -2474,6 +2474,9 @@ into the threadfunction fixed the flashing issue.
 
 ![Fixed Flashing Objects](imgs/FixedFlashingObjects.gif)
 
+#### Removed Multithreading
+Implementing multithreading was not working reliably so removed it to work on adding the boids and can readd it back in later if time.
+
 
 ### **Make CMAKELISTS Cross Platform**
 
