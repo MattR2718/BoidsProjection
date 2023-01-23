@@ -22,8 +22,9 @@
 #include "line.h"
 #include "box.h"
 #include "vect.h"
+#include "boid.h"
 
-using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
 class DrawableData;
 
 class Window{

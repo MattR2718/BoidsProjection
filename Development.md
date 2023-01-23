@@ -2712,3 +2712,59 @@ To stop this from happening the variable IMGUI_SFML_FIND_SFML needs to be change
 set(IMGUI_SFML_FIND_SFML OFF)
 ```
 Adding this line into my CMakeLists.txt fixes the error and means that the build files can be made
+
+
+## **Add Boids Files**
+Now that all of the drawing code has been done, adding in the boids shouldn't be too much of a problem.
+
+Adding in a basic boid object which just contains a point which represents its position is simple.
+
+_boid.h_
+```cpp
+#ifndef BOID_H
+#define BOID_H
+
+
+#include "drawable.h"
+#include "point.h"
+#include "vect.h"
+
+class Boid: public Drawable{
+
+public:
+
+    Boid(int x_, int y_, int z_, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255);
+
+    void quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill);
+
+private:
+    Point point{0, 0, 0, 0, 0};
+
+
+protected:
+
+
+};
+
+#endif
+```
+
+
+_boid.cpp_
+```cpp
+#include "boid.h"
+
+
+Boid::Boid(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+    
+    this->point = Point(x_, y_, z_, width, height, 20, r_, g_, b_);
+
+}
+
+
+void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill){
+    this->point.quickDraw(pixels, width, height, tx, ty, tz, trigFunct, pointFillColour, pointOutlineColour, fill);
+}
+```
+
+//TODO ADD IN BOID SORTVAL

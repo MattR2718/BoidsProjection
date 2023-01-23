@@ -85,6 +85,12 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
                 }
                 break;
             }
+            case 5:{ //Boid
+                if(this->showBoids){
+                    std::get<Boid>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->boidFillColour, this->boidOutlineColour, this->fillBoids);
+                }
+                break;
+            }
             default:{
                 std::cout<<"UNKNOWN camera.tyPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
                 break;

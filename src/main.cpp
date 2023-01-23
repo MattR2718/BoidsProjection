@@ -25,6 +25,7 @@
 #include "line.h"
 #include "box.h"
 #include "vect.h"
+#include "boid.h"
 
 #define PI 3.14159
 
@@ -38,7 +39,7 @@ std::mutex pixelMutex;
 
 bool runThread = true;
 
-using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
 
 void initPixels(sf::Uint8 *arr, const int length){
     for (int i = 0; i < length; i += 4){
@@ -150,6 +151,16 @@ int main(){
 
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, boundingBox};
 
+    std::vector<Boid> boids;
+    for(int i = 0; i < 100; i++){
+        boids.emplace_back(Boid(
+            rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
+            rand() % (window.HEIGHT - 400) - window.HEIGHT / 2 + 200,
+            rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
+            window.WIDTH, window.HEIGHT
+        ));
+    }
+
     for(int i = 0; i < 100; i++){
         drawObjects.push_back(Vector(
             rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
@@ -182,6 +193,7 @@ int main(){
             drawObjects.clear();
             drawObjects.emplace_back(boundingBox);
             drawObjects.insert(drawObjects.end(), axis.begin(), axis.end());
+            drawObjects.insert(drawObjects.end(), boids.begin(), boids.end());
         }
 
         window.pollEvents(camera);

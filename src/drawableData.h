@@ -18,20 +18,25 @@
 #include "line.h"
 #include "box.h"
 #include "vect.h"
+#include "boid.h"
 
-using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector>>;
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
 class Window;
 
 class DrawableData{
     public:
         //Colours for drawable objects
         float pointFillColour[3] = { 1, 1, 1 };
+        float boidFillColour[3] = {0, 1, 0};
         float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
+        float boidOutlineColour[3] = {0.5, 0.5, 0.5};
         //Store whether to fill points
         bool fill = false;
+        bool fillBoids = true;
 
         //Default drawing each drawable
         bool showPoints = true, showLines = true, showBoxes = true, showVectors = true;
+        bool showBoids = true;
 
         bool showDemoObjects = false;
 
