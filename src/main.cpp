@@ -152,7 +152,7 @@ int main(){
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, boundingBox};
 
     std::vector<Boid> boids;
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 500; i++){
         boids.emplace_back(Boid(
             rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
             rand() % (window.HEIGHT - 400) - window.HEIGHT / 2 + 200,

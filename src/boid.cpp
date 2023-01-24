@@ -10,4 +10,5 @@ Boid::Boid(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_
 
 void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill){
     this->point.quickDraw(pixels, width, height, tx, ty, tz, trigFunct, pointFillColour, pointOutlineColour, fill);
+    this->sortVal = this->point.sortVal;
 }
