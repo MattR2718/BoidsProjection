@@ -79,7 +79,9 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
                 break;
             }
             case 4:{ //Vector
-                std::get<Vector>(obj).move(window.WIDTH, window.HEIGHT);
+                if(std::get<Vector>(obj).moveVector){
+                    std::get<Vector>(obj).move(window.WIDTH, window.HEIGHT);
+                }
                 if(this->showVectors){
                     std::get<Vector>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions);
                 }

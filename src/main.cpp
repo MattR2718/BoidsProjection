@@ -152,7 +152,7 @@ int main(){
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, boundingBox};
 
     std::vector<Boid> boids;
-    for(int i = 0; i < 500; i++){
+    for(int i = 0; i < 150; i++){
         boids.emplace_back(Boid(
             rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
             rand() % (window.HEIGHT - 400) - window.HEIGHT / 2 + 200,
@@ -194,6 +194,10 @@ int main(){
             drawObjects.emplace_back(boundingBox);
             drawObjects.insert(drawObjects.end(), axis.begin(), axis.end());
             drawObjects.insert(drawObjects.end(), boids.begin(), boids.end());
+            drawObjects.emplace_back(
+                Vector(0, 0, 0, 20, 20, 20, window.WIDTH, window.HEIGHT, false, 1000, 0, 255, 0)
+            );
+            //std::get<Vector>(drawObjects[drawObjects.size() - 1]).updateVector(window.WIDTH, window.HEIGHT);
         }
 
         window.pollEvents(camera);

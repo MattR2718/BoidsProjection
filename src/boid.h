@@ -16,7 +16,7 @@ public:
 
 private:
     Point point{0, 0, 0, 0, 0};
-
+    Vector dir{0, 0, 0, 0, 0, 0, 0, 0};
 
 protected:
 
