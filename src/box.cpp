@@ -7,6 +7,7 @@ Box::Box(int x_, int y_, int z_, int size_, int width, int height, bool antiAlia
     this->centre.setPosition(x_, y_, z_);
     this->sortVal = y_;
     this->fixedSize = fixedSize_;
+    this->setColour(r_, g_, b_);
 }
 
 std::vector<std::tuple<int, int, int>> Box::generateVerticies(){
@@ -29,7 +30,7 @@ void Box::generateLines(const int width, const int height){
         return Line(
                     Point(std::get<0>(verticies[a]), std::get<1>(verticies[a]), std::get<2>(verticies[a]), width, height, this->size * 0.05, this->r, this->g, this->b),
                     Point(std::get<0>(verticies[b]), std::get<1>(verticies[b]), std::get<2>(verticies[b]), width, height, this->size * 0.05),
-                    width, height, this->antiAliased
+                    width, height, this->antiAliased, this->r, this->g, this->b
                 );
     };
 

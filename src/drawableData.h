@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <variant>
+#include <functional>
+
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -21,6 +23,7 @@
 #include "boid.h"
 
 using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
+
 class Window;
 
 class DrawableData{
@@ -42,10 +45,11 @@ class DrawableData{
 
         //Number of each object to randomly plot
         int numPoints = 100;
-        int numBoxes = 100;
+        int numBoxes = 20;
+        int numBoids = 50;
 
         //Size of bounding box
-        int boxSize = 300;
+        int boundingBoxSize = 500;
 
         //Draw points at end of lines which mark the start and end
         bool drawLinePoints = false;
@@ -55,10 +59,16 @@ class DrawableData{
         bool boxAntiAliasing = false;
         bool vectorAntiAliasing = false;
 
+        float boidSpeedMult = 1.0;
+        int boidSize = 10;
+
         void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
         void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
+        void populateBoids(DrawVariantVector& drawObjects, int boidCount, const int numBoids, const int WIDTH, const int HEIGHT);
 
-        void drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount);
+        void drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount, int& boidCount);
+
+        void updateBoids(DrawVariantVector& drawObjects);
 
     private:
 

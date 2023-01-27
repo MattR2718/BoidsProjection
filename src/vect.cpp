@@ -8,10 +8,17 @@ Vector::Vector(int x_, int y_, int z_, int dx_, int dy_, int dz_, int width, int
     this->dx = dx_;
     this->dy = dy_;
     this->dz = dz_;
+    this->sdx = dx_;
+    this->sdy = dy_;
+    this->sdz = dz_;
     this->max = max_;
     this->moveVector = moveVector_;
+    //std::cout<<this->r<< ' '<<this->g<<' '<<this->b<<'\n';
+    this->setColour(r_, g_, b_);
     Point p1_(this->x, this->y, this->z, width, height, 20, r_, g_, b_);
     this->p1 = p1_;
+    this->p1.setColour(this->r, this->g, this->b);
+    //std::cout<<this->r<< ' '<<this->g<<' '<<this->b<<'\n';
     Point p2_(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5, width, height, 20, 255, 0, 255);
     this->p2 = p2_;
     Line dir_(this->p1, this->p2, width, height, this->antiAliased, r_, g_, b_);
@@ -56,6 +63,9 @@ void Vector::updateVector(const int width, const int height){
 
 void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct){
     this->sortVal = this->p1.sortVal;
+    this->p1.setColour(this->r, this->g, this->b);
+    this->p2.setColour(this->r, this->g, this->b);
+    this->dir.setColour(this->r, this->g, this->b);
     //this->p1.draw(pixels, width, height, tx, ty, tz, trigfunct);
     //this->p2.draw(pixels, width, height, tx, ty, tz, trigfunct);
     dir.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, false);

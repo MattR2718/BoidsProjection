@@ -3,7 +3,7 @@
 Window::Window(){
     //Create a window that the program will draw to
     this->window = new sf::RenderWindow(sf::VideoMode(this->WIDTH, this->HEIGHT), "Boids Projection");
-    this->window->setFramerateLimit(60);
+    this->window->setFramerateLimit(45);
     //Init imgui
     this->window->setPosition(sf::Vector2i(0, 0));
     if(!ImGui::SFML::Init(*this->window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
@@ -113,11 +113,11 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     //Create imgui section for points
     if(ImGui::CollapsingHeader("Points", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::Checkbox("Show Points", &drawData.showPoints);
-        ImGui::ColorEdit3("Fill", (float*)&drawData.pointFillColour);
-        ImGui::ColorEdit3("Outline", (float*)&drawData.pointOutlineColour);
+        ImGui::ColorEdit3("Fill##Points", (float*)&drawData.pointFillColour);
+        ImGui::ColorEdit3("Outline##Points", (float*)&drawData.pointOutlineColour);
         ImGui::Checkbox("Fill", &drawData.fill);
         if(drawData.showDemoObjects){
-            ImGui::SliderInt("Num Points", &drawData.numPoints, 0, 5000);
+            ImGui::SliderInt("Num Points", &drawData.numPoints, 0, 1000);
             if(ImGui::Button("Randomise##Points")){
                 for(auto& obj : drawObjects){
                     if(std::holds_alternative<Point>(obj)){
@@ -151,8 +151,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     //Create imgui section for boxes
     if(ImGui::CollapsingHeader("Boxes", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
-        ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 1000);
-        ImGui::SliderInt("Main Box Size", &drawData.boxSize, 0, 800);
+        ImGui::SliderInt("Main Box Size", &drawData.boundingBoxSize, 0, 1000);
         std::string curraa = "Box Antialiasing: ";
         curraa += (drawData.boxAntiAliasing) ? "On" : "Off";
         ImGui::Text("%s", curraa.c_str());
@@ -165,6 +164,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             }
         }
         if(drawData.showDemoObjects){
+            ImGui::SliderInt("Num Boxes", &drawData.numBoxes, 0, 100);
             if(ImGui::Button("Randomise##Boxes")){
                 for(auto& obj : drawObjects){
                     if(std::holds_alternative<Box>(obj) && !std::get<Box>(obj).atOrigin()){
@@ -215,6 +215,14 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             }
         }
     }
+
+    if(ImGui::CollapsingHeader("Boids", ImGuiTreeNodeFlags_DefaultOpen)){
+        ImGui::ColorEdit3("Fill##Boids", (float*)&drawData.boidFillColour);
+        ImGui::ColorEdit3("Outline##Boids", (float*)&drawData.boidOutlineColour);
+        ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
+        ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
+    }
+
     ImGui::End();
 
 

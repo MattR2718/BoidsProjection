@@ -6,6 +6,8 @@
 #include <vector>
 #include <future>
 #include <semaphore>
+#include <functional>
+
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -25,6 +27,7 @@
 #include "boid.h"
 
 using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
+
 class DrawableData;
 
 class Window{

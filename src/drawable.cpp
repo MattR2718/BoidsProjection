@@ -1,6 +1,6 @@
 #include "drawable.h"
 
-Drawable::Drawable(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_){
+Drawable::Drawable(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_, bool delete_){
     this->x = x_;
     this->y = y_;
     this->z = z_;
@@ -12,6 +12,7 @@ Drawable::Drawable(int x_, int y_, int z_, int width, int height, int r_, int g_
     this->b = b_;
     this->offsetx = width / 2;
     this->offsety = height / 2;
+    this->del = delete_;
 }
 
 

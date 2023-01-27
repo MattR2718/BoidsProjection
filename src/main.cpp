@@ -11,6 +11,7 @@
 #include <future>
 #include <semaphore>
 #include <mutex>
+#include <functional>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -59,13 +60,15 @@ void drawingThreadOriginal(Window& window, Camera& camera, sf::Uint8 *pixels, Dr
 
     int pointCount = 0;
     int boxCount = 0;
+    int boidCount = 0;
 
     //Start by clearing pixels
     initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
-    drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+    drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount, boidCount);
 
     drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
     drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
+    drawData.populateBoids(drawObjects, boidCount, drawData.numBoids, window.WIDTH, window.HEIGHT);
 
 }
 
@@ -89,6 +92,7 @@ void drawingThread(std::stop_token stop_token, Window& window, Camera& camera, s
 
             int pointCount = 0;
             int boxCount = 0;
+            int boidCount = 0;
             
             //drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
 
@@ -97,12 +101,14 @@ void drawingThread(std::stop_token stop_token, Window& window, Camera& camera, s
                 //std::lock_guard guard(pixelMutex);
                 //Start by clearing pixels
                 initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
-                drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
+                drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount, boidCount);
                 //smphSignalThreadToMain.release();
             }
 
             drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
             drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
+            //drawData.populateBoids(drawObjects, boidCount, drawData.numBoids, window.WIDTH, window.HEIGHT)
+
 
             window.drawPixelArrayToScreen(pixels);
             window.render();
@@ -128,6 +134,8 @@ int main(){
     sf::Uint8* drawPixels  = new sf::Uint8[window.WIDTH * window.HEIGHT * 4];
     initPixels(drawPixels, window.WIDTH * window.HEIGHT * 4);
 
+    //std::cout<<"INITTED PIXELS\n";
+
     DrawableData drawData;
     Camera camera;
 
@@ -139,27 +147,47 @@ int main(){
     //std::vector<Point> points = { O, X, Y, Z };
     //populatePoints(points, drawData.numPoints, window.WIDTH, window.HEIGHT);
 
-    Line l(Point(0, 0, 0, window.WIDTH, window.HEIGHT, 10), Point(200, 200, 200, window.WIDTH, window.HEIGHT, 10), window.WIDTH, window.HEIGHT);
-    Line xAxis(X, O, window.WIDTH, window.HEIGHT);
-    Line yAxis(Y, O, window.WIDTH, window.HEIGHT);
-    Line zAxis(Z, O, window.WIDTH, window.HEIGHT);
+    //std::cout<<"MADE POINTS\n";
+
+    Line l(Point(0, 0, 0, window.WIDTH, window.HEIGHT, 10), Point(282, 282, 282, window.WIDTH, window.HEIGHT, 10), window.WIDTH, window.HEIGHT, drawData.lineAntiAliasing, 255, 255, 255);
+    Line xAxis(X, O, window.WIDTH, window.HEIGHT, drawData.lineAntiAliasing, 255, 0, 0);
+    xAxis.del = false;
+    Line yAxis(Y, O, window.WIDTH, window.HEIGHT, drawData.lineAntiAliasing, 0, 255, 0);
+    yAxis.del = false;
+    Line zAxis(Z, O, window.WIDTH, window.HEIGHT, drawData.lineAntiAliasing, 0, 0, 255);
+    zAxis.del = false;
     std::vector<Line> lines { l, xAxis, yAxis, zAxis };
     
     std::vector<Line> axis{xAxis, yAxis, zAxis};
 
-    Box boundingBox(0, 0, 0, drawData.boxSize, window.WIDTH, window.HEIGHT);
+    //std::cout<<"MADE LINES\n";
+
+    Box boundingBox(0, 0, 0, drawData.boundingBoxSize, window.WIDTH, window.HEIGHT, drawData.boxAntiAliasing, false, 255, 255, 255);
+    boundingBox.del = false;
+
+    //std::cout<<"MADE BOUNDING BOX\n";
 
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, boundingBox};
 
+    //std::cout<<"MADE DRAW OBJECTS\n";
+
+    //std::vector<std::reference_wrapper<Boid>> boids;
     std::vector<Boid> boids;
-    for(int i = 0; i < 150; i++){
-        boids.emplace_back(Boid(
+    for(int i = 0; i < 50; i++){
+        /* boids.emplace_back(Boid(
             rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
             rand() % (window.HEIGHT - 400) - window.HEIGHT / 2 + 200,
             rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
             window.WIDTH, window.HEIGHT
+        )); */
+        boids.emplace_back(Boid(0, 0, 0,
+            window.WIDTH, window.HEIGHT
         ));
+        boids[boids.size() - 1].del = false;
+        //boids.emplace_back(temp);
     }
+
+    //std::cout<<"ADD BOIDS TO VECTOR\n";
 
     for(int i = 0; i < 100; i++){
         drawObjects.push_back(Vector(
@@ -174,6 +202,8 @@ int main(){
     }
     drawObjects.push_back(Vector(0, 0, 0, 100, 100, 100, window.WIDTH, window.HEIGHT));
 
+    //std::cout<<"ADD VECTORS TO VECTOR\n";
+
     bool randomise = true;
 
     std::stop_token drawThreadStopToken;
@@ -183,22 +213,38 @@ int main(){
 
     //window.window->setActive(false);
 
+    drawObjects.insert(drawObjects.end(), boids.begin(), boids.end());
+
     //Run program while window is open
     while (window.running())
     {
-
+        //char c;
+        //std::cin>>c;
         drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
 
-        if(!drawData.showDemoObjects){
+        /* if(!drawData.showDemoObjects){
             drawObjects.clear();
             drawObjects.emplace_back(boundingBox);
             drawObjects.insert(drawObjects.end(), axis.begin(), axis.end());
             drawObjects.insert(drawObjects.end(), boids.begin(), boids.end());
             drawObjects.emplace_back(
-                Vector(0, 0, 0, 20, 20, 20, window.WIDTH, window.HEIGHT, false, 1000, 0, 255, 0)
+                Vector(0, 0, 0, 40, 40, 40, window.WIDTH, window.HEIGHT, false, 1000, false, 255, 0, 0)
             );
+             drawObjects.emplace_back(Box(100, 100, 100,
+                                        200, window.WIDTH, window.HEIGHT,
+                                        drawData.boxAntiAliasing, true, 
+                                        255, 255, 255)); 
             //std::get<Vector>(drawObjects[drawObjects.size() - 1]).updateVector(window.WIDTH, window.HEIGHT);
+        } */
+
+        if(!drawData.showDemoObjects){
+            const auto [first, last] = std::ranges::remove_if(drawObjects, [](auto const& x){
+                        return std::visit([](auto const& e){ return e.del; }, x);
+                    });
+            drawObjects.erase(first, last);
         }
+
+        drawData.updateBoids(drawObjects);
 
         window.pollEvents(camera);
         window.updateImGui();

@@ -13,8 +13,11 @@ public:
     int px, py, pz;
     int r, g, b;
     int sortVal = 100;
+
+    bool del;
+
     //Methods
-    Drawable(int x_, int y_, int z_, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255);
+    Drawable(int x_, int y_, int z_, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255, bool delete_ = true);
     /* template<typename T, typename U>
     void draw(sf::Uint8 *arr, const int width, T& tx, T& ty, T& tz, std::map<std::string, float> & trigfunct); */
     void draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct);

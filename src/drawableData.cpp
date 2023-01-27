@@ -50,7 +50,31 @@ void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount,
     }
 }
 
-void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount){
+
+void DrawableData::populateBoids(DrawVariantVector& drawObjects, int boidCount, const int numBoids, const int WIDTH, const int HEIGHT){
+    if(boidCount < numBoids){
+        for(int i = boidCount; i <= numBoids; i++){
+            drawObjects.push_back(Boid(0, 0, 0,
+                WIDTH, HEIGHT
+            ));
+        }
+    }else if (boidCount > numBoids){
+        int ind = 0;
+        while((ind < drawObjects.size()) && (boidCount > numBoids)){
+            if(std::holds_alternative<Boid>(drawObjects[ind])){
+                drawObjects.erase(drawObjects.begin() + ind);
+                boidCount--;
+            }else{ ind++; }
+        }
+    }
+}
+
+
+
+
+
+
+void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount, int& boidCount){
     
     //Draw all objects to screen
     for(auto& obj : drawObjects){
@@ -74,7 +98,7 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
             case 3:{ //Box
                 boxCount++;
                 if(this->showBoxes){
-                    std::get<Box>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->boxSize);
+                    std::get<Box>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->boundingBoxSize);
                 }
                 break;
             }
@@ -88,15 +112,27 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
                 break;
             }
             case 5:{ //Boid
+                boidCount++;
                 if(this->showBoids){
                     std::get<Boid>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->boidFillColour, this->boidOutlineColour, this->fillBoids);
                 }
                 break;
             }
             default:{
-                std::cout<<"UNKNOWN camera.tyPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
+                std::cout<<"UNKNOWN TYPE IN VARIANT, INDEX = "<<obj.index()<<'\n';
                 break;
             }
+        }
+    }
+}
+
+void DrawableData::updateBoids(DrawVariantVector& drawObjects){
+    for(auto& obj : drawObjects){
+        if(obj.index() == 5){ //Boid
+            auto& boid = std::get<Boid>(obj);
+            boid.boundCheck(this->boundingBoxSize);
+            boid.updateSpeedMult(this->boidSpeedMult);
+            boid.setRadius(this->boidSize);
         }
     }
 }

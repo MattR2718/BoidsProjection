@@ -2767,4 +2767,94 @@ void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const
 }
 ```
 
-//TODO ADD IN BOID SORTVAL
+## __Make Boids Move__
+
+Giving each boid object a vector representing the direction and speed of the boid will allow me to easily move the boid.
+Drawing these vectors on the boids gives an idea of where the boid is going to go. The boids are currently circles since they are the simplest drawable to draw. At a later stage they could easily be changed since it is just the shape that is being rendered, nothing to do with the logic.
+
+Updating the boid draw function to move the boid before drawing it does not work.
+
+```cpp
+void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* boidFillColour, float* boidOutlineColour, const bool fill){
+    this->dir.setColour(boidFillColour[0] * 255, boidFillColour[1] * 255, boidFillColour[2] * 255);
+    this->dir.move(width, height);
+    this->dir.draw(pixels, width, height, tx, ty, tz, trigFunct);
+    auto[dirx, diry, dirz]{this->dir.getXYZ()};
+    this->point.setPosition(dirx, diry, dirz);
+    this->point.quickDraw(pixels, width, height, tx, ty, tz, trigFunct, boidFillColour, boidOutlineColour, fill);
+    this->sortVal = this->point.sortVal;
+}
+```
+
+![Boids not Moving](imgs/boidsNotMoving.JPG)
+
+This is because when removing the demo objects I am clearing the draw object vector and then inserting the boids vector into it. This means that the boid position gets reset every frame and they can't move.  
+To fix this I can add a boolean to every drawable object which will define if it should be deleted.
+
+```cpp
+if(!drawData.showDemoObjects){
+    const auto [first, last] = std::ranges::remove_if(drawObjects, [](auto const& x){
+                return std::visit([](auto const& e){ return e.del; }, x);
+            });
+    drawObjects.erase(first, last);
+}
+```
+
+This code loops over all of the objects and visits them, deleting them if the boolean value del is true. Since every type of object in the variant has the same del attribute this works. Since I am now keeping the same objects in the draw vector, the updates to the position each frame persists and so the boids.
+
+To keep the boids on screen and slow them down to a suitable speed to view them I have two methods. This loops over all objects in drawObjects and if it is a boid, calls the two functions.
+
+```cpp
+for(auto& obj : drawObjects){
+        if(obj.index() == 5){ //Boid
+            auto& boid = std::get<Boid>(obj);
+            boid.boundCheck(this->boundingBoxSize);
+            boid.updateSpeedMult(this->boidSpeedMult);
+        }
+    }
+```
+
+BoundCheck takes the size of the bounding box and reverses the motion of the boid based on whether the boid is colliding with or outside the bounding box. When updating the direction of the boid I set the position of the Boid to slightly inside the bounding box so that it cannot clip out by passing the edge of the box and get stuck in a loop of reversing its direction.
+```cpp
+void Boid::boundCheck(const int boundingBoxSize){
+    int max = boundingBoxSize / 2;
+    auto[x, y, z]{this->point.getXYZ()};
+    this->setPosition(x, y, z);
+    if(this->x >= max){
+        this->x = max - 1;
+        this->dir.sdx *= -1;
+    }else if(this->x <= -max){
+        this->x = 1 - max;
+        this->dir.sdx *= -1;
+    }
+
+    if(this->y >= max){
+        this->y = max - 1;
+        this->dir.sdy *= -1;
+    }else if(this->y <= -max){
+        this->y = 1 - max;
+        this->dir.sdy *= -1;
+    }
+
+    if(this->z >= max){
+        this->z = max - 1;
+        this->dir.sdz *= -1;
+    }else if(this->z <= -max){
+        this->z = 1 - max;
+        this->dir.sdz *= -1;
+    }
+    this->point.setPosition(this->x, this->y, this->z);
+    this->dir.setPosition(this->x, this->y, this->z);
+}
+```
+
+UpdateSpeedMult simply takes the speed multiplier from the slider that the user can interact with and sets the direction of the boid vector to that value.
+```cpp
+void Boid::updateSpeedMult(const float boidSpeedMult){
+    this->dir.dx = this->dir.sdx * boidSpeedMult;
+    this->dir.dy = this->dir.sdy * boidSpeedMult;
+    this->dir.dz = this->dir.sdz * boidSpeedMult;
+}
+```
+
+![Boids Bouncing Around Bounding Box](imgs/boidsBouncingAroundBoundingBox.gif)
