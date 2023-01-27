@@ -63,3 +63,17 @@ void Boid::updateSpeedMult(const float boidSpeedMult){
 void Boid::setRadius(const int rad){
     this->point.setRadius(rad);
 }
+
+/* void Boid::setPosition(int x_, int y_, int z_){
+    //this->setPosition(x_, y_, z_);
+    //this->point.setPosition(this->x, this->y, this->z);
+    //this->dir.setPosition(this->x, this->y, this->z);
+} */
+
+void Boid::resetPos(){
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
+    this->dir.setPosition(0, 0, 0);
+    this->point.setPosition(0, 0, 0);
+}

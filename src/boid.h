@@ -17,6 +17,8 @@ public:
     void boundCheck(const int boundingBoxSize);
     void updateSpeedMult(const float boidSpeedMult);
     void setRadius(const int rad);
+    //void setPosition(int x_, int y_, int z_);
+    void resetPos();
 private:
     Point point{0, 0, 0, 0, 0};
     Vector dir{0, 0, 0, 0, 0, 0, 0, 0};

@@ -219,8 +219,16 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     if(ImGui::CollapsingHeader("Boids", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::ColorEdit3("Fill##Boids", (float*)&drawData.boidFillColour);
         ImGui::ColorEdit3("Outline##Boids", (float*)&drawData.boidOutlineColour);
+        ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 500);
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
+        if(ImGui::Button("Explode##Boids")){
+            for(auto& obj : drawObjects){
+                if(std::holds_alternative<Boid>(obj)){
+                    std::get<Boid>(obj).resetPos();
+                }
+            }
+        }
     }
 
     ImGui::End();
