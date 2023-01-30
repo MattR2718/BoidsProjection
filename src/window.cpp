@@ -11,9 +11,9 @@ Window::Window(){
     ImGui::CreateContext();
     ImPlot::CreateContext();
 
-    if(!this->font.loadFromFile("../../fonts/arial.ttf")){
-        throw std::invalid_argument("FONT NOT FOUND");
-    }
+    //if(!this->font.loadFromFile("../../fonts/arial.ttf")){
+    //    throw std::invalid_argument("FONT NOT FOUND");
+    //}
 }
 
 Window::~Window(){
