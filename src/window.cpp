@@ -222,6 +222,12 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 500);
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
+        
+        ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
+        ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
+        ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
+        ImGui::Checkbox("Show Separation Vector", &drawData.drawSeparation);
+        
         if(ImGui::Button("Explode##Boids")){
             for(auto& obj : drawObjects){
                 if(std::holds_alternative<Boid>(obj)){

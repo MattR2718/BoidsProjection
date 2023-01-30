@@ -41,6 +41,7 @@ class DrawableData{
         bool showPoints = true, showLines = true, showBoxes = true, showVectors = true;
         bool showBoids = true;
 
+        //Draw random points and boxes
         bool showDemoObjects = false;
 
         //Number of each object to randomly plot
@@ -58,6 +59,12 @@ class DrawableData{
         bool lineAntiAliasing = false;
         bool boxAntiAliasing = false;
         bool vectorAntiAliasing = false;
+
+        //Whether to draw behaviour vectors
+        bool drawCohesion = true;
+        bool drawAlignment = true;
+        bool drawSeparation = true;
+        bool drawDirection = true;
 
         float boidSpeedMult = 1.0;
         int boidSize = 10;

@@ -2858,3 +2858,36 @@ void Boid::updateSpeedMult(const float boidSpeedMult){
 ```
 
 ![Boids Bouncing Around Bounding Box](imgs/boidsBouncingAroundBoundingBox.gif)
+
+
+### Add Vectors for all 3 Bahaviours
+
+Each boid has its own vector which will store directions based on the behaviour rules. These vectors will then be combined with the direction vector to get the new direction each frame.
+
+```cpp
+Vector separation{0, 0, 0, 0, 0, 0, 0, 0};
+Vector cohesion{0, 0, 0, 0, 0, 0, 0, 0};
+Vector alignment{0, 0, 0, 0, 0, 0, 0, 0};
+```
+
+Implementing booleans for the vectors, I can add checkboxes to toggle whether to draw the different vectors on the screen.
+
+```cpp
+ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
+ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
+ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
+ImGui::Checkbox("Show Separation Vector", &drawData.drawSeparation);
+```
+
+The vectors are initialised to the direction vector and each given an colour: red, green or blue.
+
+```cpp
+this->cohesion = this->dir;
+this->cohesion.setColour(255, 0, 0);
+this->separation = this->dir;
+this->separation.setColour(0, 255, 0);
+this->alignment = this->dir;
+this->alignment.setColour(0, 0, 255);
+```
+
+![Added Behaviour Vectors](imgs/addedBehaviourVectors.JPG)
