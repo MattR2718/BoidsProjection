@@ -2937,3 +2937,14 @@ void DrawableData::updateBoids(DrawVariantVector& drawObjects){
 
 The method inside the boid itself will apply all rules on a single loop through the data to reduce the number of loops  over the whole data.
 
+#### ___Cohesion___
+Initially the program would crash when calculating cohesion. I tracked this down to a divide by zero error when the boid is not near any other boids. This can be solved by initialising the number of neighbours to 1 rather than 0.
+
+The cohesion vectors can be calculated and drawn on but they do not appear to be affecting the direction vector like they should be.
+
+![Cohesion Vector Drawn](imgs/cohesionVectors.JPG)
+
+
+### __Slow When Lots Of Neighbours__
+Currently the program runs quite slowly when a boid has a lot of neightbours, this makes the frame rate very inconsistent due to the movenment of the boids.
+

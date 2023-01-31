@@ -49,11 +49,36 @@ void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const
     this->sortVal = this->point.sortVal;
 }
 
-void Boid::boundCheck(const int boundingBoxSize){
+void Boid::boundCheck(const int boundingBoxSize, bool wrapAround){
     int max = boundingBoxSize / 2;
     auto[x, y, z]{this->point.getXYZ()};
     this->setPosition(x, y, z);
-    if(this->x >= max){
+    
+    auto bound = [](int& pos, const int& max, int& dir){
+        if(pos >= max){
+            pos = max - 1;
+            dir *= -1;
+        }else if(pos <= -max){
+            pos = 1 - max;
+            dir *= -1;
+        }
+    };
+
+    auto wrap = [](int& pos, const int& max){
+        if(std::abs(pos) >= max){ pos = -pos; }
+    };
+
+    if(!wrapAround){
+        bound(this->x, max, this->dir.sdx);
+        bound(this->y, max, this->dir.sdy);
+        bound(this->z, max, this->dir.sdz);
+    }else{
+        wrap(this->x, max);
+        wrap(this->y, max);
+        wrap(this->z, max);
+    }
+    
+    /* if(this->x >= max){
         this->x = max - 1;
         this->dir.sdx *= -1;
     }else if(this->x <= -max){
@@ -75,7 +100,7 @@ void Boid::boundCheck(const int boundingBoxSize){
     }else if(this->z <= -max){
         this->z = 1 - max;
         this->dir.sdz *= -1;
-    }
+    } */
     this->point.setPosition(this->x, this->y, this->z);
     this->dir.setPosition(this->x, this->y, this->z);
 }
@@ -104,7 +129,7 @@ void Boid::resetPos(){
     this->point.setPosition(0, 0, 0);
 }
 
-void Boid::behaviours(DrawVariantVector& drawObjects, const int& width, const int& height){
+void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult){
 
     auto dist = [&](auto& b){
         auto[tx, ty, tz]{this->getXYZ()};
@@ -118,21 +143,42 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const int& width, const in
         return std::acos((tx * bx + ty * by + tz * bz)/(std::sqrt(tx*tx + ty*ty + tz*tz) * std::sqrt(bx*bx + by*by + bz*bz)));
     };
 
-    int numNeighbours = 0;
+    auto[tx, ty, tz]{this->getXYZ()};
+    int numNeighbours = 1;
     this->cohesion.setDir(0, 0, 0);
     this->alignment.setDir(0, 0, 0);
     this->separation.setDir(0, 0, 0);
-    /* for(auto& obj : drawObjects){
+    for(auto& obj : drawObjects){
         if(obj.index() == 5){ //Boid
             auto& b = std::get<Boid>(obj);
             //Check is boid is local
             if(dist(b) <= this->maxDistSqrd && angle(b) <= this->fov){
                 numNeighbours++;
                 //Cohesion
-
+                cohesion.dx += b.x;
+                cohesion.dy += b.y;
+                cohesion.dz += b.z;
 
             }
         }
-    } */
-    std::cout<<numNeighbours<<'\n';
+    }
+    cohesion.dx /= numNeighbours;
+    cohesion.dy /= numNeighbours;
+    cohesion.dz /= numNeighbours;
+    //cohesion.dx = cohesion.dx / numNeighbours;
+    //cohesion.dy = cohesion.dy / numNeighbours;
+    //cohesion.dz = cohesion.dz / numNeighbours;
+    //cohesion.setDir(cohesion.dx / numNeighbours, cohesion.dy / numNeighbours, cohesion.dz / numNeighbours);
+    cohesion.dx -= tx;
+    cohesion.dy -= ty;
+    cohesion.dz -= tz;
+    
+    cohesion = cohesion * cohesionMult;
+
+    std::cout<<cohesion<<'\n';
+
+    this->dir = this->dir + cohesion;
+
+    //std::cout<<cohesionMult<<'\n';
+    //std::cout<<numNeighbours<<'\n';
 }

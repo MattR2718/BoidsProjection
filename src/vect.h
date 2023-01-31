@@ -38,6 +38,8 @@ protected:
 
 
 friend Vector operator+ (Vector a, Vector b);
+friend Vector operator* (Vector a, float b);
+friend std::ostream& operator<< (std::ostream& os, const Vector& v);
 };
 
 

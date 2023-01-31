@@ -69,6 +69,12 @@ class DrawableData{
         float boidSpeedMult = 1.0;
         int boidSize = 10;
 
+        float cohesionMult = 0.1;
+        float alignmentMult = 1.0;
+        float separationMult = 1.0;
+
+        bool wrapAround = true;
+
         void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
         void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
         void populateBoids(DrawVariantVector& drawObjects, int boidCount, const int numBoids, const int WIDTH, const int HEIGHT);

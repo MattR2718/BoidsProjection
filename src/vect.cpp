@@ -86,3 +86,16 @@ Vector operator+ (Vector a, Vector b){
     a.setDir(a.dx, a.dy, a.dz);
     return a;
 }
+
+Vector operator* (Vector a, float b){
+    a.dx *= b;
+    a.dy *= b;
+    a.dz *= b;
+    a.setDir(a.dx, a.dy, a.dz);
+    return a;
+}
+
+std::ostream& operator<<(std::ostream& os, const Vector& v){
+    os<<"dx: "<<v.dx<<"  dy: "<<v.dy<<"  dz: "<<v.dz;
+    return os;
+}

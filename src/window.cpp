@@ -224,8 +224,12 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
         
+        ImGui::Checkbox("Wrap##Boids", &drawData.wrapAround);
+        ImGui::Checkbox("Bounce##Boids", &drawData.wrapAround);
+
         ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
         ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
+        ImGui::SliderFloat("Cohesion Multiplier", &drawData.cohesionMult, 0.0, 1.0);
         ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
         ImGui::Checkbox("Show Separation Vector", &drawData.drawSeparation);
         

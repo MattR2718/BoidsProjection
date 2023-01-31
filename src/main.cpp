@@ -202,12 +202,12 @@ int main(){
     }
     drawObjects.push_back(Vector(0, 0, 0, 100, 100, 100, window.WIDTH, window.HEIGHT));
 
-    Vector one{0, 0, 0, 100, 0, 0, window.WIDTH, window.HEIGHT};
-    Vector two{0, 0, 0, 0, 100, 0, window.WIDTH, window.HEIGHT};
-    one = one + two;
-    one.del = false;
-    one.moveVector = false;
-    drawObjects.push_back(one);
+    //Vector one{0, 0, 0, 100, 0, 0, window.WIDTH, window.HEIGHT};
+    //Vector two{0, 0, 0, 0, 100, 0, window.WIDTH, window.HEIGHT};
+    //one = one + two;
+    //one.del = false;
+    //one.moveVector = false;
+    //drawObjects.push_back(one);
 
 
     //std::cout<<"ADD VECTORS TO VECTOR\n";
@@ -253,6 +253,8 @@ int main(){
         }
 
         drawData.updateBoids(drawObjects, window);
+
+        //drawData.updateReferenceBoids(boids);
 
         window.pollEvents(camera);
         window.updateImGui();
