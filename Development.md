@@ -2891,3 +2891,11 @@ this->alignment.setColour(0, 0, 255);
 ```
 
 ![Added Behaviour Vectors](imgs/addedBehaviourVectors.JPG)
+
+
+### __Add Release To Github__
+
+Github allows you to add releases of your code and saves them in you repository. I added the current build as a pre release version on github to test how it works and to make sure it could all build when downloaded.
+
+![Initial Release](imgs/InitialRelease.JPG)
+
