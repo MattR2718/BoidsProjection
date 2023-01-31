@@ -37,13 +37,14 @@ void Vector::setPos(int x_, int y_, int z_, const int width, const int height){
     this->dir = dir_;
 }
 
-void Vector::setDir(int x_, int y_, int z_, const int width, const int height){
+void Vector::setDir(int x_, int y_, int z_){
     this->dx = x_;
     this->dy = y_;
     this->dz = z_;
     this->p2.setPosition(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5);
-    Line dir_(this->p1, this->p2, width, height, this->antiAliased);
-    this->dir = dir_;
+    //Line dir_(this->p1, this->p2, width, height, this->antiAliased);
+    //this->dir = dir_;
+    this->dir.setPoints(this->p1, this->p2);
 }
 
 void Vector::move(const int width, const int height){
@@ -69,4 +70,19 @@ void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const fl
     //this->p1.draw(pixels, width, height, tx, ty, tz, trigfunct);
     //this->p2.draw(pixels, width, height, tx, ty, tz, trigfunct);
     dir.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, false);
+}
+
+void Vector::add(const Vector& v){
+    this->dx += v.dx;
+    this->dy += v.dy;
+    this->dz += v.dz;
+    this->setDir(this->dx, this->dy, this->dz);
+}
+
+Vector operator+ (Vector a, Vector b){
+    a.dx += b.dx;
+    a.dy += b.dy;
+    a.dz += b.dz;
+    a.setDir(a.dx, a.dy, a.dz);
+    return a;
 }

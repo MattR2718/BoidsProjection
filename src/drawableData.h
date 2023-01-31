@@ -75,7 +75,7 @@ class DrawableData{
 
         void drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount, int& boidCount);
 
-        void updateBoids(DrawVariantVector& drawObjects);
+        void updateBoids(DrawVariantVector& drawObjects, Window& window);
 
     private:
 

@@ -199,7 +199,8 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
                         int x = rand() % 50 - 25;
                         int y = rand() % 50 - 25;
                         int z = rand() % 50 - 25;
-                        std::get<Vector>(obj).setDir(x, y, z, this->WIDTH, this->HEIGHT);
+                        //std::get<Vector>(obj).setDir(x, y, z, this->WIDTH, this->HEIGHT);
+                        std::get<Vector>(obj).setDir(x, y, z);
                     }
                 }
             }

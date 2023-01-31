@@ -1,10 +1,20 @@
 #ifndef BOID_H
 #define BOID_H
-
+#include <iostream>
+#include <vector>
+#include <variant>
+#include <cmath>
 
 #include "drawable.h"
 #include "point.h"
+#include "line.h"
+#include "box.h"
 #include "vect.h"
+#include "boid.h"
+
+class Boid;
+
+using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
 
 class Boid: public Drawable{
 
@@ -19,6 +29,7 @@ public:
     void setRadius(const int rad);
     //void setPosition(int x_, int y_, int z_);
     void resetPos();
+    void behaviours(DrawVariantVector& drawObjects, const int& width, const int& height);
 private:
     Point point{0, 0, 0, 0, 0};
     Vector dir{0, 0, 0, 0, 0, 0, 0, 0};
@@ -27,7 +38,11 @@ private:
     Vector cohesion{0, 0, 0, 0, 0, 0, 0, 0};
     Vector alignment{0, 0, 0, 0, 0, 0, 0, 0};
 
+    //Angle is the distance from the normal around the boid
+    //An angle of 180 degrees is a full circle as it is 180 degrees either direction
     float fov = 180;
+    float maxDist = 100;
+    float maxDistSqrd = maxDist * maxDist;
 
 protected:
 

@@ -2899,3 +2899,41 @@ Github allows you to add releases of your code and saves them in you repository.
 
 ![Initial Release](imgs/InitialRelease.JPG)
 
+### __Implement Adding Vectors__
+By overloading the addition operator I can make adding vectors very simple.
+
+```cpp
+friend Vector operator+ (Vector a, Vector b);
+
+Vector operator+ (Vector a, Vector b){
+    a.dx += b.dx;
+    a.dy += b.dy;
+    a.dz += b.dz;
+    a.setDir(a.dx, a.dy, a.dz);
+    return a;
+}
+```
+
+![Adding Vectors Vector](imgs/addingVectorsVector.JPG)
+
+### __Implement The Behaviour Rules__
+
+Every boid will have a function that will handle calculating the new direction of the boid. This function will take in every drawable and loop over it and for every boid apply the rules to the current boid.  
+It is contained un the update boids method of drawableData
+
+```cpp
+void DrawableData::updateBoids(DrawVariantVector& drawObjects){
+    for(auto& obj : drawObjects){
+        if(obj.index() == 5){ //Boid
+            auto& boid = std::get<Boid>(obj);
+            boid.behaviours(drawObjects);
+            boid.boundCheck(this->boundingBoxSize);
+            boid.updateSpeedMult(this->boidSpeedMult);
+            boid.setRadius(this->boidSize);
+        }
+    }
+}
+```
+
+The method inside the boid itself will apply all rules on a single loop through the data to reduce the number of loops  over the whole data.
+

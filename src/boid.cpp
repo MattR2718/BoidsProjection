@@ -103,3 +103,36 @@ void Boid::resetPos(){
     this->dir.setPosition(0, 0, 0);
     this->point.setPosition(0, 0, 0);
 }
+
+void Boid::behaviours(DrawVariantVector& drawObjects, const int& width, const int& height){
+
+    auto dist = [&](auto& b){
+        auto[tx, ty, tz]{this->getXYZ()};
+        auto[bx, by, bz]{b.getXYZ()};
+        return ((tx - bx) * (tx - bx) + (ty - by) * (ty - by) + (tz - bz) * (tz - bz));
+    };
+
+    auto angle = [&](auto& b){        
+        auto[tx, ty, tz]{this->getXYZ()};
+        auto[bx, by, bz]{b.getXYZ()};
+        return std::acos((tx * bx + ty * by + tz * bz)/(std::sqrt(tx*tx + ty*ty + tz*tz) * std::sqrt(bx*bx + by*by + bz*bz)));
+    };
+
+    int numNeighbours = 0;
+    this->cohesion.setDir(0, 0, 0);
+    this->alignment.setDir(0, 0, 0);
+    this->separation.setDir(0, 0, 0);
+    /* for(auto& obj : drawObjects){
+        if(obj.index() == 5){ //Boid
+            auto& b = std::get<Boid>(obj);
+            //Check is boid is local
+            if(dist(b) <= this->maxDistSqrd && angle(b) <= this->fov){
+                numNeighbours++;
+                //Cohesion
+
+
+            }
+        }
+    } */
+    std::cout<<numNeighbours<<'\n';
+}

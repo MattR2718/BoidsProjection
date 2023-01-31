@@ -10,7 +10,7 @@ Line::Line(Point p1_, Point p2_, int width, int height, bool antiAliased_, int r
 
 void Line::setPoints(Point p1_, Point p2_){
     this->p1 = p1_;
-    this->p1 = p2_;
+    this->p2 = p2_;
 }
 
 template <typename T>

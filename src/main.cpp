@@ -202,6 +202,14 @@ int main(){
     }
     drawObjects.push_back(Vector(0, 0, 0, 100, 100, 100, window.WIDTH, window.HEIGHT));
 
+    Vector one{0, 0, 0, 100, 0, 0, window.WIDTH, window.HEIGHT};
+    Vector two{0, 0, 0, 0, 100, 0, window.WIDTH, window.HEIGHT};
+    one = one + two;
+    one.del = false;
+    one.moveVector = false;
+    drawObjects.push_back(one);
+
+
     //std::cout<<"ADD VECTORS TO VECTOR\n";
 
     bool randomise = true;
@@ -244,7 +252,7 @@ int main(){
             drawObjects.erase(first, last);
         }
 
-        drawData.updateBoids(drawObjects);
+        drawData.updateBoids(drawObjects, window);
 
         window.pollEvents(camera);
         window.updateImGui();
