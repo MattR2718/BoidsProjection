@@ -62,8 +62,8 @@ class DrawableData{
 
         //Whether to draw behaviour vectors
         bool drawCohesion = true;
-        bool drawAlignment = true;
-        bool drawSeparation = true;
+        bool drawAlignment = false;
+        bool drawSeparation = false;
         bool drawDirection = true;
 
         float boidSpeedMult = 1.0;

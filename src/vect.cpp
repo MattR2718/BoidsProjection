@@ -55,6 +55,24 @@ void Vector::move(const int width, const int height){
 }
 
 void Vector::updateVector(const int width, const int height){
+    //Check for max vector size
+    auto mag = [&](){
+        return (this->sdx * this->sdx + this->sdy * this->sdy + this->sdz * this->sdz);
+    };
+
+    //if magnitude greater than max then limit velocity
+    auto vecmag = mag();
+    if(vecmag > (this->max * this->max) && vecmag != 0){
+        //std::cout<<"TOO BIG\n";
+        //this->sdx = (this->sdx / vecmag) * this->max;
+        //this->sdy = (this->sdy / vecmag) * this->max;
+        //this->sdz = (this->sdz / vecmag) * this->max;
+        
+        this->dx = (this->dx / vecmag) * this->max;
+        this->dy = (this->dy / vecmag) * this->max;
+        this->dz = (this->dz / vecmag) * this->max;
+    }
+    
     this->p1.setPosition(this->x, this->y, this->z);
     this->p2.setPosition(this->x + this->dx * 5, this->y + this->dy * 5, this->z + this->dz * 5);
     Line dir_(this->p1, this->p2, width, height, this->antiAliased, this->r, this->g, this->b);

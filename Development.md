@@ -2944,6 +2944,32 @@ The cohesion vectors can be calculated and drawn on but they do not appear to be
 
 ![Cohesion Vector Drawn](imgs/cohesionVectors.JPG)
 
+Updating the function to affect the sdx values in the direction vector rather than the dx values in the vector fixes the issue.
+
+```cpp
+this->dir.sdx = this->dir.dx + cohesion.dx;
+this->dir.sdy = this->dir.dy + cohesion.dy;
+this->dir.sdz = this->dir.dz + cohesion.dz;
+```
+
+![Cohesion Working Broken Max Vector Speed](imgs/cohesionWorkingBrokenMaxVector.gif)
+
+
+This can be sorted by calculating the unit vector of the velocity and then limiting it to a max value.
+
+```cpp
+//if magnitude greater than max then limit velocity
+auto vecmag = mag();
+if(vecmag > (this->max * this->max) && vecmag != 0){
+    this->dx = (this->dx / vecmag) * this->max;
+    this->dy = (this->dy / vecmag) * this->max;
+    this->dz = (this->dz / vecmag) * this->max;
+}
+```
+
+Implementing this makes all boids form into a clump and they do not fly off to massive speeds.
+
+![Cohesion Working](imgs/cohesionWorking.gif)
 
 ### __Slow When Lots Of Neighbours__
 Currently the program runs quite slowly when a boid has a lot of neightbours, this makes the frame rate very inconsistent due to the movenment of the boids.

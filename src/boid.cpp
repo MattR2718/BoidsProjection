@@ -7,7 +7,7 @@ Boid::Boid(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_
                     rand() % 20 - 10,
                     rand() % 20 - 10,
                     rand() % 20 - 10,
-                    width, height, false, 100, true, r_, g_, b_);
+                    width, height, false, 20, true, r_, g_, b_);
     this->cohesion = this->dir;
     this->cohesion.setColour(255, 0, 0);
     this->separation = this->dir;
@@ -175,9 +175,12 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
     
     cohesion = cohesion * cohesionMult;
 
-    std::cout<<cohesion<<'\n';
+    //std::cout<<cohesion<<'\n';
 
-    this->dir = this->dir + cohesion;
+    //this->dir = this->dir + cohesion;
+    this->dir.sdx = this->dir.dx + cohesion.dx;
+    this->dir.sdy = this->dir.dy + cohesion.dy;
+    this->dir.sdz = this->dir.dz + cohesion.dz;
 
     //std::cout<<cohesionMult<<'\n';
     //std::cout<<numNeighbours<<'\n';

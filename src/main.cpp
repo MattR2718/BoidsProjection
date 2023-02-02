@@ -174,15 +174,18 @@ int main(){
     //std::vector<std::reference_wrapper<Boid>> boids;
     std::vector<Boid> boids;
     for(int i = 0; i < 50; i++){
-        /* boids.emplace_back(Boid(
-            rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
-            rand() % (window.HEIGHT - 400) - window.HEIGHT / 2 + 200,
-            rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
+#if 1
+        boids.emplace_back(Boid(
+            rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
+            rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
+            rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
             window.WIDTH, window.HEIGHT
-        )); */
+        ));
+#else
         boids.emplace_back(Boid(0, 0, 0,
             window.WIDTH, window.HEIGHT
         ));
+#endif
         boids[boids.size() - 1].del = false;
         //boids.emplace_back(temp);
     }
