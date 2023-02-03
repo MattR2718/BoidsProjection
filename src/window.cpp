@@ -103,15 +103,16 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     ImGui::SetWindowPos(ImVec2(0, 0));
     
     ImGui::Checkbox("Show Demo Objects", &drawData.showDemoObjects);
+    ImGui::Checkbox("Show FPS Graph", &this->showFPS);
 
-    if(ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)){
+    if(ImGui::CollapsingHeader("Camera")){
         ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
         ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
         ImGui::Checkbox("Auto Rotate Z", &camera.autoRotatez);
     }
 
     //Create imgui section for points
-    if(ImGui::CollapsingHeader("Points", ImGuiTreeNodeFlags_DefaultOpen)){
+    if(ImGui::CollapsingHeader("Points")){
         ImGui::Checkbox("Show Points", &drawData.showPoints);
         ImGui::ColorEdit3("Fill##Points", (float*)&drawData.pointFillColour);
         ImGui::ColorEdit3("Outline##Points", (float*)&drawData.pointOutlineColour);
@@ -132,7 +133,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     }
 
     //Create imgui section for lines
-    if(ImGui::CollapsingHeader("Lines", ImGuiTreeNodeFlags_DefaultOpen)){
+    if(ImGui::CollapsingHeader("Lines")){
         ImGui::Checkbox("Show Lines", &drawData.showLines);
         ImGui::Checkbox("Draw Line Points", &drawData.drawLinePoints);
         std::string curraa = "Line Antialiasing: ";
@@ -179,7 +180,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     }
 
     //Create imgui section for vectors
-    if(ImGui::CollapsingHeader("Vectors", ImGuiTreeNodeFlags_DefaultOpen)){
+    if(ImGui::CollapsingHeader("Vectors")){
         ImGui::Checkbox("Show Vectors", &drawData.showVectors);
         std::string curraa = "Vector Antialiasing: ";
         curraa += (drawData.vectorAntiAliasing) ? "On" : "Off";
@@ -220,7 +221,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     if(ImGui::CollapsingHeader("Boids", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::ColorEdit3("Fill##Boids", (float*)&drawData.boidFillColour);
         ImGui::ColorEdit3("Outline##Boids", (float*)&drawData.boidOutlineColour);
-        ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 500);
+        ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 1500);
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
         
@@ -252,29 +253,31 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
 
     //ImPlot::ShowDemoWindow();
     
-    ImGui::Begin("Frame Rate", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-        ImGui::SetWindowPos(ImVec2(WIDTH - fpsWidgetWidth, 0));
-        ImGui::SetWindowSize(ImVec2(fpsWidgetWidth, fpsWidgetHeight));
-        time = fpsClock.getElapsedTime().asSeconds();
-        time = 1.0 / time;
-        fpsClock.restart();
-        plott += ImGui::GetIO().DeltaTime;
-        frameData.AddPoint(plott, time);
-        static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
-        if(ImPlot::BeginPlot("##", ImVec2(-1, 150))){
-            ImPlot::SetupAxes(NULL, NULL, flags, flags);
-            ImPlot::SetupAxisLimits(ImAxis_X1, plott - 10, plott, ImGuiCond_Always);
-            ImPlot::SetupAxisLimits(ImAxis_Y1,0,fpsWidgetMaxFPS);
-            ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 1, 1));
-            ImPlot::PlotLine(std::to_string(time).c_str(), &frameData.Data[0].x, &frameData.Data[0].y, frameData.Data.size(), 0, frameData.Offset, 2*sizeof(float));
-            ImPlot::PopStyleColor();
-            ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
-            frameData.getAvg();
-            ImPlot::PlotInfLines(std::to_string(frameData.avg[0]).c_str(), frameData.avg, 1, ImPlotInfLinesFlags_Horizontal);
-            ImPlot::PopStyleColor();
-            ImPlot::EndPlot();
-        }
-    ImGui::End();
+    if(this->showFPS){
+        ImGui::Begin("Frame Rate", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+            ImGui::SetWindowPos(ImVec2(WIDTH - fpsWidgetWidth, 0));
+            ImGui::SetWindowSize(ImVec2(fpsWidgetWidth, fpsWidgetHeight));
+            time = fpsClock.getElapsedTime().asSeconds();
+            time = 1.0 / time;
+            fpsClock.restart();
+            plott += ImGui::GetIO().DeltaTime;
+            frameData.AddPoint(plott, time);
+            static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
+            if(ImPlot::BeginPlot("##", ImVec2(-1, 150))){
+                ImPlot::SetupAxes(NULL, NULL, flags, flags);
+                ImPlot::SetupAxisLimits(ImAxis_X1, plott - 10, plott, ImGuiCond_Always);
+                ImPlot::SetupAxisLimits(ImAxis_Y1,0,fpsWidgetMaxFPS);
+                ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 1, 1));
+                ImPlot::PlotLine(std::to_string(time).c_str(), &frameData.Data[0].x, &frameData.Data[0].y, frameData.Data.size(), 0, frameData.Offset, 2*sizeof(float));
+                ImPlot::PopStyleColor();
+                ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
+                frameData.getAvg();
+                ImPlot::PlotInfLines(std::to_string(frameData.avg[0]).c_str(), frameData.avg, 1, ImPlotInfLinesFlags_Horizontal);
+                ImPlot::PopStyleColor();
+                ImPlot::EndPlot();
+            }
+        ImGui::End();
+    }
     ImGui::PopStyleVar(3);
 }
 

@@ -66,7 +66,8 @@ class Window{
         float plott = 0;
         const int fpsWidgetWidth = 400;
         const int fpsWidgetHeight = 170;
-        const int fpsWidgetMaxFPS = 200;
+        const int fpsWidgetMaxFPS = 60;
+        bool showFPS = true;
 
 
     protected:

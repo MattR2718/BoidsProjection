@@ -2,7 +2,7 @@
 
 
 Boid::Boid(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
-    this->point = Point(x_, y_, z_, width, height, 10, r_, g_, b_);
+    this->point = Point(x_, y_, z_, width, height, 3, r_, g_, b_);
     this->dir = Vector(x_, y_, z_, 
                     rand() % 20 - 10,
                     rand() % 20 - 10,

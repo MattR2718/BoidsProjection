@@ -3089,3 +3089,31 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
     this->dir.sdz = this->dir.sdz + alignment.dz;
 }
 ```
+
+
+### __Update Default Values__
+updating default values to give the best option when program is initially run.
+
+Firstly, drawing the vectors is expensive and not entirely neccesary for the viewing of the boids, however they were extremely useful for debugging.
+```cpp
+//Whether to draw behaviour vectors
+bool drawDirection = false;
+bool drawCohesion = false;
+bool drawAlignment = false;
+bool drawSeparation = false;
+```
+
+Secondly, the program runs much smoother than I expected so I can increase the maximum number of boids that can be created.
+```cpp
+ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 1500);
+```
+
+I'm also decreasign the size of the boids by default so that they dont cover too much of the space as well as increasing the number.
+```cpp
+int boidSize = 3;
+int numBoids = 750;
+```
+
+I also defaulted the camera, point, line and vector options to closed so that they take up less screen space and resized the scale on the fps graph as well as making it toggleable.
+
+![Updated Defaults](imgs/updatedDefaults.gif)
