@@ -56,16 +56,18 @@ void Boid::boundCheck(const int boundingBoxSize, bool wrapAround){
     
     auto bound = [](int& pos, const int& max, int& dir){
         if(pos >= max){
-            pos = max - 1;
+            pos = max - 10;
             dir *= -1;
         }else if(pos <= -max){
-            pos = 1 - max;
+            pos = 20 - max;
             dir *= -1;
         }
     };
 
     auto wrap = [](int& pos, const int& max){
-        if(std::abs(pos) >= max){ pos = -pos; }
+        //if(std::abs(pos) >= max){ pos = -pos; }
+        if(pos >= max){ pos = 20 - max; }
+        else if(pos <= -max){ pos = max - 20; }
     };
 
     if(!wrapAround){
@@ -78,29 +80,6 @@ void Boid::boundCheck(const int boundingBoxSize, bool wrapAround){
         wrap(this->z, max);
     }
     
-    /* if(this->x >= max){
-        this->x = max - 1;
-        this->dir.sdx *= -1;
-    }else if(this->x <= -max){
-        this->x = 1 - max;
-        this->dir.sdx *= -1;
-    }
-
-    if(this->y >= max){
-        this->y = max - 1;
-        this->dir.sdy *= -1;
-    }else if(this->y <= -max){
-        this->y = 1 - max;
-        this->dir.sdy *= -1;
-    }
-
-    if(this->z >= max){
-        this->z = max - 1;
-        this->dir.sdz *= -1;
-    }else if(this->z <= -max){
-        this->z = 1 - max;
-        this->dir.sdz *= -1;
-    } */
     this->point.setPosition(this->x, this->y, this->z);
     this->dir.setPosition(this->x, this->y, this->z);
 }
@@ -129,7 +108,7 @@ void Boid::resetPos(){
     this->point.setPosition(0, 0, 0);
 }
 
-void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult){
+void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult, const int& WIDTH, const int& HEIGHT){
 
     auto dist = [&](auto& b){
         auto[tx, ty, tz]{this->getXYZ()};
@@ -159,29 +138,46 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
                 cohesion.dy += b.y;
                 cohesion.dz += b.z;
 
+                //Separation
+                separation.dx += (tx - b.x);
+                separation.dy += (ty - b.y);
+                separation.dz += (tz - b.z);
+
             }
         }
     }
+    //Calculate values for cohesion
     cohesion.dx /= numNeighbours;
     cohesion.dy /= numNeighbours;
     cohesion.dz /= numNeighbours;
-    //cohesion.dx = cohesion.dx / numNeighbours;
-    //cohesion.dy = cohesion.dy / numNeighbours;
-    //cohesion.dz = cohesion.dz / numNeighbours;
-    //cohesion.setDir(cohesion.dx / numNeighbours, cohesion.dy / numNeighbours, cohesion.dz / numNeighbours);
     cohesion.dx -= tx;
     cohesion.dy -= ty;
     cohesion.dz -= tz;
-    
     cohesion = cohesion * cohesionMult;
-
-    //std::cout<<cohesion<<'\n';
-
-    //this->dir = this->dir + cohesion;
+    cohesion.updateVector(WIDTH, HEIGHT);
+    
+    //Add cohesion to direction vector>
     this->dir.sdx = this->dir.dx + cohesion.dx;
     this->dir.sdy = this->dir.dy + cohesion.dy;
     this->dir.sdz = this->dir.dz + cohesion.dz;
 
-    //std::cout<<cohesionMult<<'\n';
-    //std::cout<<numNeighbours<<'\n';
+    //Calculate vector for separation
+    separation = separation * separationMult;
+
+    //Add separation to direction vector
+    this->dir.sdx = this->dir.sdx + separation.dx;
+    this->dir.sdy = this->dir.sdy + separation.dy;
+    this->dir.sdz = this->dir.sdz + separation.dz;
+
+
+
+
+    /* std::cout<<"--------------------------------\n";
+    std::cout<<"Direction: "<<this->dir<<'\n';
+    std::cout<<"Cohesion: "<<this->cohesion<<'\n';
+    std::cout<<"Alignment: "<<this->alignment<<'\n';
+    std::cout<<"Separation: "<<this->separation<<'\n';
+    std::cout<<"--------------------------------\n"; */
+
+
 }

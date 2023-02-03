@@ -22,6 +22,7 @@ public:
     
     void setPos(int x_, int y_, int z_, const int width, const int height);
     void setDir(int x_, int y_, int z_);
+    void updateVector(const int width, const int height);
     void move(const int width, const int height);
     void draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct);
     void add(const Vector& v);
@@ -31,8 +32,6 @@ private:
     Point p1{0, 0, 0, 0, 0};
     Point p2{0, 0, 0, 0, 0};
     Line dir{p1, p2, 0, 0};
-
-    void updateVector(const int width, const int height);
     
 protected:
 

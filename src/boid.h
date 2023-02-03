@@ -29,7 +29,7 @@ public:
     void setRadius(const int rad);
     //void setPosition(int x_, int y_, int z_);
     void resetPos();
-    void behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult);
+    void behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult, const int& WIDTH, const int& HEIGHT);
 private:
     Point point{0, 0, 0, 0, 0};
     Vector dir{0, 0, 0, 0, 0, 0, 0, 0};

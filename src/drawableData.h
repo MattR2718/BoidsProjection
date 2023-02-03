@@ -61,17 +61,17 @@ class DrawableData{
         bool vectorAntiAliasing = false;
 
         //Whether to draw behaviour vectors
+        bool drawDirection = true;
         bool drawCohesion = true;
         bool drawAlignment = false;
-        bool drawSeparation = false;
-        bool drawDirection = true;
+        bool drawSeparation = true;
 
         float boidSpeedMult = 1.0;
         int boidSize = 10;
 
         float cohesionMult = 0.1;
         float alignmentMult = 1.0;
-        float separationMult = 1.0;
+        float separationMult = 0.015;
 
         bool wrapAround = true;
 

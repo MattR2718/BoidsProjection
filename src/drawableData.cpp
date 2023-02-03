@@ -130,7 +130,7 @@ void DrawableData::updateBoids(DrawVariantVector& drawObjects, Window& window){
     for(auto& obj : drawObjects){
         if(obj.index() == 5){ //Boid
             auto& boid = std::get<Boid>(obj);
-            boid.behaviours(drawObjects, this->cohesionMult, this->alignmentMult, this->separationMult);
+            boid.behaviours(drawObjects, this->cohesionMult, this->alignmentMult, this->separationMult, window.WIDTH, window.HEIGHT);
             boid.boundCheck(this->boundingBoxSize, this->wrapAround);
             boid.updateSpeedMult(this->boidSpeedMult);
             boid.setRadius(this->boidSize);

@@ -228,9 +228,13 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
 
         ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
         ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
-        ImGui::SliderFloat("Cohesion Multiplier", &drawData.cohesionMult, 0.0, 1.0);
+        
         ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
+        ImGui::SliderFloat("Cohesion Multiplier", &drawData.cohesionMult, 0.0, 1.0);
+        
         ImGui::Checkbox("Show Separation Vector", &drawData.drawSeparation);
+        ImGui::SliderFloat("Separation Multiplier", &drawData.separationMult, 0.0, 1.0);
+
         
         if(ImGui::Button("Explode##Boids")){
             for(auto& obj : drawObjects){

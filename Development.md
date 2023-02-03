@@ -2938,6 +2938,8 @@ void DrawableData::updateBoids(DrawVariantVector& drawObjects){
 The method inside the boid itself will apply all rules on a single loop through the data to reduce the number of loops  over the whole data.
 
 #### ___Cohesion___
+Cohesion tries to make all boids move towards the center of mass of all neighbouring boids.
+
 Initially the program would crash when calculating cohesion. I tracked this down to a divide by zero error when the boid is not near any other boids. This can be solved by initialising the number of neighbours to 1 rather than 0.
 
 The cohesion vectors can be calculated and drawn on but they do not appear to be affecting the direction vector like they should be.
@@ -2970,6 +2972,35 @@ if(vecmag > (this->max * this->max) && vecmag != 0){
 Implementing this makes all boids form into a clump and they do not fly off to massive speeds.
 
 ![Cohesion Working](imgs/cohesionWorking.gif)
+
+#### ___Separation___
+The aim of separation is to move the boid away from all neighbouring boids so it doesn't collide with them.
+
+Adding in separation causes the boids to still clump into a group due to separation however, they now spread out as to not hit each other.
+
+![Working Separation Boids Escape](imgs/workingSeparationBoidsEscape.gif)
+
+The separation is working however, some boids manage to escape the bounding box and fly off to very large distances. This causes the program to begin to run very slowly.
+
+I tracked this down to incorrect logic on my wrap around bounding.  
+The original would just move the boid to the opposide side of the axis to its current position, it did not actually place the boid back into the bouinding box. This means the boids woudl repeatedly be reflected across the axis as they got further away from the origin.
+```cpp
+auto wrap = [](int& pos, const int& max){
+    if(std::abs(pos) >= max){ pos = -pos; }
+};
+```
+
+The fix is simple, all that needs doing is checking where the boid leaves the box and moving it to the opposite side of the box, but inside it this time.
+```cpp
+auto wrap = [](int& pos, const int& max){
+    if(pos >= max){ pos = 20 - max; }
+    else if(pos <= -max){ pos = max - 20; }
+};
+```
+
+
+![Working Separation](imgs/workingSeparation.gif)
+
 
 ### __Slow When Lots Of Neighbours__
 Currently the program runs quite slowly when a boid has a lot of neightbours, this makes the frame rate very inconsistent due to the movenment of the boids.
