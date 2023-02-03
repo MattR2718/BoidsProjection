@@ -2998,10 +2998,94 @@ auto wrap = [](int& pos, const int& max){
 };
 ```
 
-
 ![Working Separation](imgs/workingSeparation.gif)
 
 
-### __Slow When Lots Of Neighbours__
-Currently the program runs quite slowly when a boid has a lot of neightbours, this makes the frame rate very inconsistent due to the movenment of the boids.
+#### ___Alignment___
+Alignment tries to align all boids with their neighbours. This mean sthat all boids steer to follow eachother which causes the main flowing and flocking motions.
 
+![Working Alignment](imgs/workingAlignment.gif)
+
+
+The final code for implementing the behaviours is:
+```cpp
+void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult, const int& WIDTH, const int& HEIGHT){
+
+    //Lambda function to calculate distance beterrn this boid and a given boid
+    //Returns distance squared
+    auto dist = [&](auto& b){
+        auto[tx, ty, tz]{this->getXYZ()};
+        auto[bx, by, bz]{b.getXYZ()};
+        return ((tx - bx) * (tx - bx) + (ty - by) * (ty - by) + (tz - bz) * (tz - bz));
+    };
+
+    //Lambda function to calculate the angle between this boid and another boid
+    auto angle = [&](auto& b){        
+        auto[tx, ty, tz]{this->getXYZ()};
+        auto[bx, by, bz]{b.getXYZ()};
+        return std::acos((tx * bx + ty * by + tz * bz)/(std::sqrt(tx*tx + ty*ty + tz*tz) * std::sqrt(bx*bx + by*by + bz*bz)));
+    };
+
+    auto[tx, ty, tz]{this->getXYZ()};
+    int numNeighbours = 1;
+    this->cohesion.setDir(0, 0, 0);
+    this->alignment.setDir(0, 0, 0);
+    this->separation.setDir(0, 0, 0);
+    //Loop over all drawable objects and check if they are boids
+    //if so, calculate the respective behaviours
+    for(auto& obj : drawObjects){
+        if(obj.index() == 5){ //Boid
+            auto& b = std::get<Boid>(obj);
+            //Check is boid is local
+            if(dist(b) <= this->maxDistSqrd && angle(b) <= this->fov){
+                numNeighbours++;
+                //Cohesion
+                cohesion.dx += b.x;
+                cohesion.dy += b.y;
+                cohesion.dz += b.z;
+
+                //Separation
+                separation.dx += (tx - b.x);
+                separation.dy += (ty - b.y);
+                separation.dz += (tz - b.z);
+
+                //Alignment
+                alignment.dx += b.dir.dx;
+                alignment.dy += b.dir.dy;
+                alignment.dz += b.dir.dz;
+
+            }
+        }
+    }
+    //Calculate values for cohesion
+    cohesion = cohesion / numNeighbours;
+    cohesion.dx -= tx;
+    cohesion.dy -= ty;
+    cohesion.dz -= tz;
+    cohesion = cohesion * cohesionMult;
+    
+    //Add cohesion to direction vector>
+    this->dir.sdx = this->dir.dx + cohesion.dx;
+    this->dir.sdy = this->dir.dy + cohesion.dy;
+    this->dir.sdz = this->dir.dz + cohesion.dz;
+
+
+    //Calculate vector for separation
+    separation = separation * separationMult;
+
+    //Add separation to direction vector
+    this->dir.sdx = this->dir.sdx + separation.dx;
+    this->dir.sdy = this->dir.sdy + separation.dy;
+    this->dir.sdz = this->dir.sdz + separation.dz;
+
+
+    //Calculate values for alignment
+    alignment = alignment / numNeighbours;
+    alignment = alignment * alignmentMult;
+
+    //Add alignment to direction vector
+    this->dir.sdx = this->dir.sdx + alignment.dx;
+    this->dir.sdy = this->dir.sdy + alignment.dy;
+    this->dir.sdz = this->dir.sdz + alignment.dz;
+}
+```

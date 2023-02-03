@@ -91,10 +91,10 @@ void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const fl
 }
 
 void Vector::add(const Vector& v){
-    this->dx += v.dx;
-    this->dy += v.dy;
-    this->dz += v.dz;
-    this->setDir(this->dx, this->dy, this->dz);
+    this->sdx += v.dx;
+    this->sdy += v.dy;
+    this->sdz += v.dz;
+    //this->setDir(this->sdx, this->sdy, this->sdz);
 }
 
 Vector operator+ (Vector a, Vector b){
@@ -109,6 +109,14 @@ Vector operator* (Vector a, float b){
     a.dx *= b;
     a.dy *= b;
     a.dz *= b;
+    a.setDir(a.dx, a.dy, a.dz);
+    return a;
+}
+
+Vector operator/ (Vector a, int b){
+    a.dx /= b;
+    a.dy /= b;
+    a.dz /= b;
     a.setDir(a.dx, a.dy, a.dz);
     return a;
 }

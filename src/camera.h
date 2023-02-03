@@ -14,9 +14,9 @@ class Camera{
         Camera();
     
         //Floats to store the rotation angle of the cameras
-        float tx = 0, ty = 30, tz = 0;
+        float tx = 15, ty = 30, tz = 0;
         //Default rotating each axis
-        bool autoRotatex = false, autoRotatey = true, autoRotatez = false;
+        bool autoRotatex = false, autoRotatey = false, autoRotatez = false;
         //Map to store values for trig finctions
         std::map<std::string, float> trigFunctions = {{"sx", 0.0f},
                                                         {"sy", 0.0f},

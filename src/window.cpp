@@ -227,8 +227,10 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         ImGui::Checkbox("Wrap Around at Edge##Boids", &drawData.wrapAround);
 
         ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
-        ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
         
+        ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
+        ImGui::SliderFloat("Alignment Multiplier", &drawData.alignmentMult, 0.0, 1.0);
+
         ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
         ImGui::SliderFloat("Cohesion Multiplier", &drawData.cohesionMult, 0.0, 1.0);
         

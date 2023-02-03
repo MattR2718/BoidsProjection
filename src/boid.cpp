@@ -110,12 +110,15 @@ void Boid::resetPos(){
 
 void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult, const int& WIDTH, const int& HEIGHT){
 
+    //Lambda function to calculate distance beterrn this boid and a given boid
+    //Returns distance squared
     auto dist = [&](auto& b){
         auto[tx, ty, tz]{this->getXYZ()};
         auto[bx, by, bz]{b.getXYZ()};
         return ((tx - bx) * (tx - bx) + (ty - by) * (ty - by) + (tz - bz) * (tz - bz));
     };
 
+    //Lambda function to calculate the angle between this boid and another boid
     auto angle = [&](auto& b){        
         auto[tx, ty, tz]{this->getXYZ()};
         auto[bx, by, bz]{b.getXYZ()};
@@ -127,6 +130,8 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
     this->cohesion.setDir(0, 0, 0);
     this->alignment.setDir(0, 0, 0);
     this->separation.setDir(0, 0, 0);
+    //Loop over all drawable objects and check if they are boids
+    //if so, calculate the respective behaviours
     for(auto& obj : drawObjects){
         if(obj.index() == 5){ //Boid
             auto& b = std::get<Boid>(obj);
@@ -143,23 +148,26 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
                 separation.dy += (ty - b.y);
                 separation.dz += (tz - b.z);
 
+                //Alignment
+                alignment.dx += b.dir.dx;
+                alignment.dy += b.dir.dy;
+                alignment.dz += b.dir.dz;
+
             }
         }
     }
     //Calculate values for cohesion
-    cohesion.dx /= numNeighbours;
-    cohesion.dy /= numNeighbours;
-    cohesion.dz /= numNeighbours;
+    cohesion = cohesion / numNeighbours;
     cohesion.dx -= tx;
     cohesion.dy -= ty;
     cohesion.dz -= tz;
     cohesion = cohesion * cohesionMult;
-    cohesion.updateVector(WIDTH, HEIGHT);
     
     //Add cohesion to direction vector>
     this->dir.sdx = this->dir.dx + cohesion.dx;
     this->dir.sdy = this->dir.dy + cohesion.dy;
     this->dir.sdz = this->dir.dz + cohesion.dz;
+
 
     //Calculate vector for separation
     separation = separation * separationMult;
@@ -170,6 +178,23 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
     this->dir.sdz = this->dir.sdz + separation.dz;
 
 
+    //Calculate values for alignment
+    alignment = alignment / numNeighbours;
+    alignment = alignment * alignmentMult;
+
+    //Add alignment to direction vector
+    this->dir.sdx = this->dir.sdx + alignment.dx;
+    this->dir.sdy = this->dir.sdy + alignment.dy;
+    this->dir.sdz = this->dir.sdz + alignment.dz;
+
+
+
+    this->dir.sdx = this->dir.sdx + this->dir.dx;
+    this->dir.sdy = this->dir.sdy + this->dir.dy;
+    this->dir.sdz = this->dir.sdz + this->dir.dz;
+    this->dir.sdx = this->dir.sdx + this->dir.dx;
+    this->dir.sdy = this->dir.sdy + this->dir.dy;
+    this->dir.sdz = this->dir.sdz + this->dir.dz;
 
 
     /* std::cout<<"--------------------------------\n";

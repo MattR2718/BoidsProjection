@@ -47,10 +47,10 @@ class DrawableData{
         //Number of each object to randomly plot
         int numPoints = 100;
         int numBoxes = 20;
-        int numBoids = 50;
+        int numBoids = 250;
 
         //Size of bounding box
-        int boundingBoxSize = 500;
+        int boundingBoxSize = 750;
 
         //Draw points at end of lines which mark the start and end
         bool drawLinePoints = false;
@@ -70,10 +70,10 @@ class DrawableData{
         int boidSize = 10;
 
         float cohesionMult = 0.1;
-        float alignmentMult = 1.0;
-        float separationMult = 0.015;
+        float alignmentMult = 0.75;
+        float separationMult = 0.005;
 
-        bool wrapAround = true;
+        bool wrapAround = false;
 
         void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
         void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
