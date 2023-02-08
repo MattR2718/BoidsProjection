@@ -5,6 +5,7 @@
 #include <vector>
 #include <variant>
 #include <functional>
+#include <random>
 
 
 #include <SFML/Graphics.hpp>
@@ -32,7 +33,7 @@ class DrawableData{
         float pointFillColour[3] = { 1, 1, 1 };
         float boidFillColour[3] = {0, 1, 0};
         float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
-        float boidOutlineColour[3] = {0.5, 0.5, 0.5};
+        float boidOutlineColour[3] = {0, 1, 0};
         //Store whether to fill points
         bool fill = false;
         bool fillBoids = true;

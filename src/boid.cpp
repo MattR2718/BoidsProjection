@@ -1,12 +1,12 @@
 #include "boid.h"
 
 
-Boid::Boid(int x_, int y_, int z_, int width, int height, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+Boid::Boid(int x_, int y_, int z_, int dx, int dy, int dz, int width, int height, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
     this->point = Point(x_, y_, z_, width, height, 3, r_, g_, b_);
+        
+    
     this->dir = Vector(x_, y_, z_, 
-                    rand() % 20 - 10,
-                    rand() % 20 - 10,
-                    rand() % 20 - 10,
+                    dx, dy, dz,
                     width, height, false, 20, true, r_, g_, b_);
     this->cohesion = this->dir;
     this->cohesion.setColour(255, 0, 0);

@@ -20,7 +20,7 @@ class Boid: public Drawable{
 
 public:
 
-    Boid(int x_, int y_, int z_, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255);
+    Boid(int x_, int y_, int z_, int dx, int dy, int dz, int width, int height, int r_ = 255, int g_ = 255, int b_ = 255);
 
     void quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* boidFillColour, float* boidOutlineColour, const bool fill, bool drawCohesion, bool drawAlignment, bool drawSeparation, bool drawDirection);
 

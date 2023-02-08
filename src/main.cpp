@@ -12,6 +12,7 @@
 #include <semaphore>
 #include <mutex>
 #include <functional>
+#include <random>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
@@ -172,13 +173,39 @@ int main(){
     //std::cout<<"MADE DRAW OBJECTS\n";
 
     //std::vector<std::reference_wrapper<Boid>> boids;
+    //std::random_device dev;
+    //std::mt19937 rng(dev());
+    //std::uniform_int_distribution<std::mt19937::result_type> rngdist(-(drawData.boundingBoxSize - 20)/2, (drawData.boundingBoxSize - 20)/2);
+
+    //create random generator device
+    std::random_device dev;
+    //create a seed for the random number generator based on time
+    std::mt19937::result_type seed = dev() ^ (
+            (std::mt19937::result_type)
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch()
+                ).count() +
+            (std::mt19937::result_type)
+            std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now().time_since_epoch()
+                ).count() );
+    //seed the random number generator
+    std::mt19937 gen(seed);
+    //create a distribution of random numbers
+    std::uniform_int_distribution<std::mt19937::result_type> rngposdist(-(drawData.boundingBoxSize - 20)/2, (drawData.boundingBoxSize - 20)/2);
+    std::uniform_int_distribution<std::mt19937::result_type> rngdirdist(-10, 10);
+
+
     std::vector<Boid> boids;
     for(int i = 0; i < 50; i++){
 #if 1
         boids.emplace_back(Boid(
-            rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
-            rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
-            rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
+            rngposdist(gen),
+            rngposdist(gen),
+            rngposdist(gen),
+            rngdirdist(gen),
+            rngdirdist(gen),
+            rngdirdist(gen),
             window.WIDTH, window.HEIGHT
         ));
 #else

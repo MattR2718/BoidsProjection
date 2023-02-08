@@ -53,8 +53,32 @@ void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount,
 
 void DrawableData::populateBoids(DrawVariantVector& drawObjects, int boidCount, const int numBoids, const int WIDTH, const int HEIGHT){
     if(boidCount < numBoids){
+        //create random generator device
+        std::random_device dev;
+        //create a seed for the random number generator based on time
+        std::mt19937::result_type seed = dev() ^ (
+                (std::mt19937::result_type)
+                std::chrono::duration_cast<std::chrono::seconds>(
+                    std::chrono::system_clock::now().time_since_epoch()
+                    ).count() +
+                (std::mt19937::result_type)
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch()
+                    ).count() );
+        //seed the random number generator
+        std::mt19937 gen(seed);
+        //create a distribution of random numbers
+        std::uniform_int_distribution<std::mt19937::result_type> rngposdist(-(this->boundingBoxSize - 20)/2, (this->boundingBoxSize - 20)/2);
+        std::uniform_int_distribution<std::mt19937::result_type> rngdirdist(-10, 10);
+
         for(int i = boidCount; i <= numBoids; i++){
-            drawObjects.push_back(Boid(0, 0, 0,
+            drawObjects.push_back(Boid(
+                rngposdist(gen),
+                rngposdist(gen),
+                rngposdist(gen),
+                rngdirdist(gen),
+                rngdirdist(gen),
+                rngdirdist(gen),
                 WIDTH, HEIGHT
             ));
         }

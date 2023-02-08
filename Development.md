@@ -3117,3 +3117,48 @@ int numBoids = 750;
 I also defaulted the camera, point, line and vector options to closed so that they take up less screen space and resized the scale on the fps graph as well as making it toggleable.
 
 ![Updated Defaults](imgs/updatedDefaults.gif)
+
+### __Update Random Numbers__
+Currently the random numbers are generated using the rand() function. These are the same every time the program is run which makes it less interesting to rerun the program. Updating this to a more suitable random number generator will make the program more interesting.
+
+Ine example is with the boids position initialisation:
+```cpp
+boids.emplace_back(Boid(
+    rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
+    rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
+    rand() % (drawData.boundingBoxSize - 20) - drawData.boundingBoxSize / 2,
+    window.WIDTH, window.HEIGHT
+));
+```
+
+Updating to a better random number generator gives:
+```cpp
+//create random generator device
+std::random_device dev;
+//create a seed for the random number generator based on time
+std::mt19937::result_type seed = dev() ^ (
+        (std::mt19937::result_type)
+        std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+            ).count() +
+        (std::mt19937::result_type)
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::high_resolution_clock::now().time_since_epoch()
+            ).count() );
+//seed the random number generator
+std::mt19937 gen(seed);
+//create a distribution of random numbers
+std::uniform_int_distribution<std::mt19937::result_type> rngdist(-(drawData.boundingBoxSize - 20)/2, (drawData.boundingBoxSize - 20)/2);
+
+```
+And creating the boids:
+```cpp
+boids.emplace_back(Boid(
+    rngdist(gen),
+    rngdist(gen),
+    rngdist(gen),
+    window.WIDTH, window.HEIGHT
+));
+```
+
+Similar updates to this can be applied in places such as boid initial velocity and all randomise buttons.

@@ -3,7 +3,7 @@
 Window::Window(){
     //Create a window that the program will draw to
     this->window = new sf::RenderWindow(sf::VideoMode(this->WIDTH, this->HEIGHT), "Boids Projection");
-    this->window->setFramerateLimit(45);
+    this->window->setFramerateLimit(30);
     //Init imgui
     this->window->setPosition(sf::Vector2i(0, 0));
     if(!ImGui::SFML::Init(*this->window)){ std::cout<<"ERROR INITIALISING IMGUI WINDOW\n"; throw std::invalid_argument("IMGUI WINDOW FAILED TO INITIALISE\n");}
