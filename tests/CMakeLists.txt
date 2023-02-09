@@ -26,3 +26,11 @@ target_link_libraries(testInputValidation
     GTest::Main
     drawables
 )
+
+add_executable(testInputSanitisation testInputSanitisation.cpp)
+
+target_link_libraries(testInputSanitisation
+    GTest::GTest 
+    GTest::Main
+    drawables
+)

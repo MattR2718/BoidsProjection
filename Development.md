@@ -3290,3 +3290,25 @@ TEST(FloatingPointRangeCheck, InvalidRanges){
 All of these tests for both validation rules pass (pass and fail cirrectly)
 
 ![Input Valudation Passed Tests](imgs/inputValidationPassedTests.JPG)
+
+### __Input Sanitisation__
+#### ___Removing Invalid Characters From Input___
+
+A simple sanitiser is:
+```cpp
+void clean(std::string& str){
+    std::regex ex("[^0-9\\.\\+\\-e]");
+    std::stringstream result;
+    std::regex_replace(std::ostream_iterator<char>(result), str.begin(), str.end(), ex, "");
+    str = result.str();
+}
+```
+This loops over the string and tests each character, if it matches with the expression is removed. Since the expression is 'notted' (^) it matches for every character not in the regular expression.
+
+When removing invalid characters, e is valid for exponentials so is not removed. This failed a sanitisation test.
+
+![E Left From Sanitisation](imgs/eFromHelloSanitisation.JPG)
+This also caused a problem with the input "1.23test" which was cleaned to "1.23e" since e is a valid character.
+![E In Test Being Left Sanitisation](imgs/eInTestBeingLeftSanitisation.jpg)
+This means I will have to make a more complicated sanitisation function to account for these cases. Instead of removing all chartacters that are not valid, I can first search for words and remove them before searchign for invalid characters.
+
