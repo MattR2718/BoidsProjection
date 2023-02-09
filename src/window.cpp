@@ -78,7 +78,7 @@ void Window::pollEvents(Camera& camera){
                 }
                 break;
                 default:{
-                    std::cout<<"Key Code Pressed: "<<event.key.code<<'\n';
+                    //std::cout<<"Key Code Pressed: "<<event.key.code<<'\n';
                 }
                 break;
             }
@@ -93,7 +93,7 @@ void Window::updateImGui(){
 
 void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera){
     
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 
     //Create ImGui window to contain options
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 10));
@@ -230,13 +230,17 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
         
         ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
-        ImGui::SliderFloat("Alignment Multiplier", &drawData.alignmentMult, 0.0, 1.0);
-
+        ImGui::SliderFloat("Alignment Multiplier##Slider", &drawData.alignmentMult, 0.0, 1.0);
+        static char alignBuff[32] = ""; 
+        ImGui::InputText("Alignment Multiplier##Text Box", alignBuff, 32);
+        std::string test = alignBuff;
+        std::cout<<test<<'\n';
+        
         ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
         ImGui::SliderFloat("Cohesion Multiplier", &drawData.cohesionMult, 0.0, 1.0);
         
         ImGui::Checkbox("Show Separation Vector", &drawData.drawSeparation);
-        ImGui::SliderFloat("Separation Multiplier", &drawData.separationMult, 0.0, 1.0);
+        ImGui::SliderFloat("Separation Multiplier", &drawData.separationMult, 0.0, 0.05);
 
         
         if(ImGui::Button("Explode##Boids")){

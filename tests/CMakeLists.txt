@@ -18,3 +18,11 @@ target_link_libraries(testBoxVerticies
     GTest::Main
     drawables
 )
+
+add_executable(testInputValidation testInputValidation.cpp)
+
+target_link_libraries(testInputValidation
+    GTest::GTest 
+    GTest::Main
+    drawables
+)

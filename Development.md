@@ -3162,3 +3162,131 @@ boids.emplace_back(Boid(
 ```
 
 Similar updates to this can be applied in places such as boid initial velocity and all randomise buttons.
+
+
+### __Add Text Boxes For User Input + Input Validation__
+Adding text boxes aside the sliders will make it easier for the user to select specific values.
+Adding a text box is simple using ImGui:
+```cpp
+static char alignBuff[32] = ""; 
+ImGui::InputText("Alignment Multiplier##Text Box", alignBuff, 32);
+std::string test = alignBuff;
+```
+The buffer limits the input length to 32 characters so that is not a check that I need to perform.
+
+#### ___Format Check___
+The first check I am implementing is whether the inputted string follows the rules for a floating point number so it can be converted.
+To do this I am checking it against a regular expression which definnes the layout fo a floating point number.
+
+> Talk about the regex:
+> https://www.regular-expressions.info/floatingpoint.html
+
+
+```cpp
+bool floatingPointConversionCheck(const std::string& str){
+    std::regex ex("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$");
+    return std::regex_match(str, ex);
+}
+```
+
+Implementing unit tests for this is simple since it returns a boolean.
+Tests which should pass:
+```cpp
+TEST(FloatingPointConversionCheck, ValidConvertions){
+    std::vector<std::string> testInputs{
+        "0.5",
+        "0.625",
+        "10.5",
+        "10",
+        "0.000005",
+        "10e-5",
+        "10.34e-5",
+        "10.34e+5",
+        "10.34e5",
+        "-100",
+        "-10.03e-2",
+        "-.03e3"
+    };
+    for(auto& input : testInputs){
+        bool out = floatingPointConversionCheck(input);
+        EXPECT_EQ(out, true);
+    }
+}
+```
+Tests which should fail:
+```cpp
+TEST(FloatingPointConversionCheck, InvalidConvertions){
+    std::vector<std::string> testInputs{
+        "number",
+        "",
+        "a",
+        "10.0a",
+        "10.10.10",
+        "1.625\n",
+        "1.625 ",
+        "0.0  56",
+        "0.56 a",
+        "0.888 0.898"
+    };
+    for(auto& input : testInputs){
+        bool out = floatingPointConversionCheck(input);
+        EXPECT_EQ(out, false);
+    }
+}
+```
+
+#### ___Range Check___
+I want to allow more variety with the inputted values than the sliders allow so that the user can experiment further and be more precise. For this reason I want to limit the magnitude of the values that they put in.
+
+At this point, the inputted value should have passed the format check so it should be save to cast it to a float and use numerical comparisons to check the range.
+
+```cpp
+bool rangeCheck(const float& fl, const float min, const float max){
+    return (fl <= max) && (fl >= min);
+}
+```
+
+Even though this is simple it is still worth writing some unit tests to make sure that it works.
+
+Tests which should pass:
+```cpp
+TEST(FloatingPointRangeCheck, ValidRanges){
+    std::vector<std::array<float, 3>> testInputs{
+        {0, -10, 10},
+        {10, -10, 10},
+        {0.5, -1, 1},
+        {0.87654, 0.87653, 0.87655},
+        {100, 90, 1000},
+        {-100, -110, -90},
+        {1.41, 0.667, 3.141}
+    };
+    for(auto& input : testInputs){
+        bool out = rangeCheck(input[0], input[1], input[2]);
+        EXPECT_EQ(out, true);
+    }
+}
+```
+
+Tests which should fail:
+```cpp
+TEST(FloatingPointRangeCheck, InvalidRanges){
+    std::vector<std::array<float, 3>> testInputs{
+        {10, 0, 1},
+        {1, 0, 0.5},
+        {-100, -110, -105},
+        {0.065, 0.0644, 0.0645},
+        {-1, 0, 1},
+        {200, 300, 450},
+        {0.67654462, 0.88633739, 0.8939877},
+        {0.6125, -10, 0.612499}
+    };
+    for(auto& input : testInputs){
+        bool out = rangeCheck(input[0], input[1], input[2]);
+        EXPECT_EQ(out, false);
+    }
+}
+```
+
+All of these tests for both validation rules pass (pass and fail cirrectly)
+
+![Input Valudation Passed Tests](imgs/inputValidationPassedTests.JPG)
