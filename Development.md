@@ -3312,3 +3312,22 @@ This also caused a problem with the input "1.23test" which was cleaned to "1.23e
 ![E In Test Being Left Sanitisation](imgs/eInTestBeingLeftSanitisation.jpg)
 This means I will have to make a more complicated sanitisation function to account for these cases. Instead of removing all chartacters that are not valid, I can first search for words and remove them before searchign for invalid characters.
 
+This would make the program more open however, since the numbers are not going to need to be very small or very large, there isn't much need to include exponential forms of the input, so the regular expression can be changed to only accept numbers in the form "+/-aaaa.bbbb".
+
+```cpp
+void sanitise(std::string& str){
+    std::regex ex("[^0-9\\.\\+\\-]");
+
+    std::stringstream result;
+    std::regex_replace(std::ostream_iterator<char>(result), str.begin(), str.end(), ex, "");
+
+    str = result.str();
+}
+```
+
+```cpp
+bool floatingPointConversionCheck(const std::string& str){
+    std::regex ex("^[-+]?[0-9]*\\.?[0-9]+$");
+    return std::regex_match(str, ex);
+}
+```

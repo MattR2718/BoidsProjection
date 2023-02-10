@@ -18,13 +18,9 @@ TEST(FloatingPointConversionCheck, ValidConvertions){
         "10.5",
         "10",
         "0.000005",
-        "10e-5",
-        "10.34e-5",
-        "10.34e+5",
-        "10.34e5",
-        "-100",
-        "-10.03e-2",
-        "-.03e3"
+        "0.5089695129344164",
+        "0.07174329054775652",
+        "0.7576474741201431"
     };
     for(auto& input : testInputs){
         bool out = floatingPointConversionCheck(input);

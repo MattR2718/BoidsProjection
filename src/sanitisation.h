@@ -5,6 +5,6 @@
 #include <regex>
 #include <sstream>
 
-void clean(std::string& str);
+void sanitise(std::string& str);
 
 #endif

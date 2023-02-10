@@ -21,15 +21,15 @@ TEST(RemoveInvalidCharacters, RemoveInvalidCharacters){
     };
 
     std::vector<std::string> testOutput{
-        "e",
+        "",
         "1234",
         "12.34",
-        "1.42e-3",
-        "1.23e"
+        "1.42-3",
+        "1.23"
     };
 
     for(auto& in : testInputs){
-        clean(in);
+        sanitise(in);
     }
 
     for(int i = 0; i < testInputs.size(); i++){
