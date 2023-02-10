@@ -3365,3 +3365,18 @@ ImGui::PopItemWidth();
 ```
 
 ![BehaviourGui](imgs/behaviourGui.JPG)
+
+
+### __Fixing Rotation__
+The current projection causes the cube to become mishapen when being rotated about the x axis.
+
+![Incorrect Rottion](imgs/incorrectProjection.gif)
+
+The problem was an incorrect sign in the yvalue rotation:
+```cpp
+    this->py = this->x * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("cx") + trigfunct.at("cx") * trigfunct.at("sz")) + this->y * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("sz") - trigfunct.at("cx") * trigfunct.at("cz")) - this->z * trigfunct.at("sx") * trigfunct.at("cy");
+```
+To:
+```cpp
+    this->py = this->x * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("cz") + trigfunct.at("cx") * trigfunct.at("sz")) + this->y * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("sz") - trigfunct.at("cx") * trigfunct.at("cz")) - this->z * trigfunct.at("sx") * trigfunct.at("cy");
+```

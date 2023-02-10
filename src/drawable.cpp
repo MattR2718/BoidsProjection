@@ -53,8 +53,8 @@ void Drawable::rotX(T tx, T ty, T tz, U trigfunct){
 
 template<typename T, typename U>
 void Drawable::rotY(T tx, T ty, T tz, U trigfunct){
-    //x * (sinx * siny * cosx + cosx * sinz) - y * (sinx * siny * sinz - cosx * cosz) - z * sinx * cosy
-    this->py = this->x * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("cx") + trigfunct.at("cx") * trigfunct.at("sz")) + this->y * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("sz") - trigfunct.at("cx") * trigfunct.at("cz")) - this->z * trigfunct.at("sx") * trigfunct.at("cy");
+    //x * (sinx * siny * cosz + cosx * sinz) - y * (sinx * siny * sinz - cosx * cosz) - z * sinx * cosy
+    this->py = this->x * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("cz") + trigfunct.at("cx") * trigfunct.at("sz")) + this->y * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("sz") - trigfunct.at("cx") * trigfunct.at("cz")) - this->z * trigfunct.at("sx") * trigfunct.at("cy");
 }
 
 template<typename T, typename U>

@@ -71,7 +71,28 @@ void Window::pollEvents(Camera& camera){
                 }
                 break;
                 case(sf::Keyboard::Space): {
+                    camera.tx = 15;
+                    camera.ty = 30;
+                    camera.tz = 0;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::X): {
                     camera.tx = 0;
+                    camera.ty = 90;
+                    camera.tz = 0;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Z): {
+                    camera.tx = 0;
+                    camera.ty = 0;
+                    camera.tz = -90;
+                    camera.setTrigValues();
+                }
+                break;
+                case(sf::Keyboard::Y): {
+                    camera.tx = 90;
                     camera.ty = 0;
                     camera.tz = 0;
                     camera.setTrigValues();
