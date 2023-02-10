@@ -229,19 +229,71 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
 
         ImGui::Checkbox("Show Direction Vector", &drawData.drawDirection);
         
-        ImGui::Checkbox("Show Alignment Vector", &drawData.drawAlignment);
-        ImGui::SliderFloat("Alignment Multiplier##Slider", &drawData.alignmentMult, 0.0, 1.0);
-        static char alignBuff[32] = ""; 
-        ImGui::InputText("Alignment Multiplier##Text Box", alignBuff, 32);
-        std::string test = alignBuff;
-        std::cout<<test<<'\n';
-        
-        ImGui::Checkbox("Show Cohesion Vector", &drawData.drawCohesion);
-        ImGui::SliderFloat("Cohesion Multiplier", &drawData.cohesionMult, 0.0, 1.0);
-        
-        ImGui::Checkbox("Show Separation Vector", &drawData.drawSeparation);
-        ImGui::SliderFloat("Separation Multiplier", &drawData.separationMult, 0.0, 0.05);
+        //Behaviour Rules Data
+        //Alignment
+        ImGui::TextColored(ImVec4(0.0, 0.0, 1.0, 1.0), "Alignment");
+        ImGui::PushItemWidth(100);
+        //Checkbox for whether to show the alignment vector
+        ImGui::Checkbox("Show Vector##Alignment", &drawData.drawAlignment);
+        //SLider to allow input of multiplier
+        ImGui::SliderFloat("##AlignmentMultiplierSlider", &drawData.alignmentMult, 0.0, 1.0);
+        //Buffer to store text input
+        static char alignBuff[32] = "";
+        ImGui::SameLine();
+        //Runs whenever text in text box is changed
+        if(ImGui::InputText("Multiplier##Alignment Text Box", alignBuff, 32)){
+            std::string alignString = alignBuff;
+            //Sanitise input
+            sanitise(alignString);
+            //Check whether valid floating point number and if so converts
+            if(floatingPointConversionCheck(alignString)){
+                float alignFloat = std::stof(alignString);
+                //Checks whether input is within the valid ranges,
+                //if so then it sets the multiplier
+                if(rangeCheck(alignFloat)){
+                    drawData.alignmentMult = alignFloat;
+                }
+            }
+        }
+        ImGui::PopItemWidth();
 
+        //Cohesion
+        ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Cohesion");
+        ImGui::PushItemWidth(100);
+        ImGui::Checkbox("Show Vector##Cohesion", &drawData.drawCohesion);
+        ImGui::SliderFloat("##Cohesion Multiplier Slider", &drawData.cohesionMult, 0.0, 1.0);
+        static char cohesionBuff[32] = "";
+        ImGui::SameLine();
+        if(ImGui::InputText("Multiplier##Cohesion Text Box", cohesionBuff, 32)){
+            std::string cohesionString = cohesionBuff;
+            sanitise(cohesionString);
+            if(floatingPointConversionCheck(cohesionString)){
+                float cohesionFloat = std::stof(cohesionString);
+                if(rangeCheck(cohesionFloat)){
+                    drawData.cohesionMult = cohesionFloat;
+                }
+            }
+        }
+        ImGui::PopItemWidth();
+
+        //Separation
+        ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Separation");
+        ImGui::PushItemWidth(100);
+        ImGui::Checkbox("Show Vector##Separation", &drawData.drawSeparation);
+        ImGui::SliderFloat("##MultiplierSeparation", &drawData.separationMult, 0.0, 0.05);
+        static char separationBuff[32] = "";
+        ImGui::SameLine();
+        if(ImGui::InputText("Multiplier##Separation Text Box", separationBuff, 32)){
+            std::string separationString = separationBuff;
+            sanitise(separationString);
+            if(floatingPointConversionCheck(separationString)){
+                float separationFloat = std::stof(separationString);
+                if(rangeCheck(separationFloat)){
+                    drawData.separationMult = separationFloat;
+                }
+            }
+        }
+        ImGui::PopItemWidth();
         
         if(ImGui::Button("Explode##Boids")){
             for(auto& obj : drawObjects){

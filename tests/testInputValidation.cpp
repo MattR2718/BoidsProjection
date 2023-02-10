@@ -39,7 +39,8 @@ TEST(FloatingPointConversionCheck, InvalidConvertions){
         "1.625 ",
         "0.0  56",
         "0.56 a",
-        "0.888 0.898"
+        "0.888 0.898",
+        "1.23-3"
     };
     for(auto& input : testInputs){
         bool out = floatingPointConversionCheck(input);

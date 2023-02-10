@@ -3331,3 +3331,37 @@ bool floatingPointConversionCheck(const std::string& str){
     return std::regex_match(str, ex);
 }
 ```
+
+### __Implemented Sanitisation and Validation__
+This code is the same for all three bahaviour rules.
+```cpp
+//Behaviour Rules
+//Alignment
+ImGui::TextColored(ImVec4(0.0, 0.0, 1.0, 1.0), "Alignment");
+ImGui::PushItemWidth(100);
+//Checkbox for whether to show the alignment vector
+ImGui::Checkbox("Show Vector##Alignment", &drawData.drawAlignment);
+//SLider to allow input of multiplier
+ImGui::SliderFloat("##AlignmentMultiplierSlider", &drawData.alignmentMult, 0.0, 1.0);
+//Buffer to store text input
+static char alignBuff[32] = "";
+ImGui::SameLine();
+//Runs whenever text in text box is changed
+if(ImGui::InputText("Multiplier##Alignment Text Box", alignBuff, 32)){
+    std::string alignString = alignBuff;
+    //Sanitise input
+    sanitise(alignString);
+    //Check whether valid floating point number and if so converts
+    if(floatingPointConversionCheck(alignString)){
+        float alignFloat = std::stof(alignString);
+        //Checks whether input is within the valid ranges,
+        //if so then it sets the multiplier
+        if(rangeCheck(alignFloat)){
+            drawData.alignmentMult = alignFloat;
+        }
+    }
+}
+ImGui::PopItemWidth();
+```
+
+![BehaviourGui](imgs/behaviourGui.JPG)

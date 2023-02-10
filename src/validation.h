@@ -4,6 +4,6 @@
 #include <regex>
 
 bool floatingPointConversionCheck(const std::string& str);
-bool rangeCheck(const float& fl, const float min = -10, const float max = 10);
+bool rangeCheck(const float& fl, const float min = -2, const float max = 2);
 
 #endif
