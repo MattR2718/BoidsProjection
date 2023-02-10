@@ -60,12 +60,12 @@ void Window::pollEvents(Camera& camera){
                     camera.setTrigValues();
                 }
                 break;
-                case(sf::Keyboard::Comma):{
+                case(sf::Keyboard::BackSlash):{
                     camera.tz -= 1;
                     camera.setTrigValues();
                 }
                 break;
-                case(sf::Keyboard::Period):{
+                case(sf::Keyboard::Slash):{
                     camera.tz += 1;
                     camera.setTrigValues();
                 }
@@ -93,7 +93,7 @@ void Window::updateImGui(){
 
 void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, Camera& camera){
     
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 
     //Create ImGui window to contain options
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 10));
@@ -220,7 +220,10 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
 
     if(ImGui::CollapsingHeader("Boids", ImGuiTreeNodeFlags_DefaultOpen)){
         ImGui::ColorEdit3("Fill##Boids", (float*)&drawData.boidFillColour);
-        ImGui::ColorEdit3("Outline##Boids", (float*)&drawData.boidOutlineColour);
+        drawData.boidOutlineColour[0] = drawData.boidFillColour[0];
+        drawData.boidOutlineColour[1] = drawData.boidFillColour[1];
+        drawData.boidOutlineColour[2] = drawData.boidFillColour[2];
+        //ImGui::ColorEdit3("Outline##Boids", (float*)&drawData.boidOutlineColour);
         ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 1500);
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
