@@ -2,12 +2,15 @@
 
 
 Boid::Boid(int x_, int y_, int z_, int dx, int dy, int dz, int width, int height, int r_, int g_, int b_) : Drawable{x_, y_, z_, width, height, r_, g_, b_}{
+    //Point object which will act as the potision of the boid and be drawn to show its position
     this->point = Point(x_, y_, z_, width, height, 3, r_, g_, b_);
         
-    
+    //Vector object to store the direction that the boid moves in and will be used to move the boid
     this->dir = Vector(x_, y_, z_, 
                     dx, dy, dz,
                     width, height, false, 20, true, r_, g_, b_);
+    
+    //Behaviour vectors to calculate and store the effect of the behaviours as well as draw them if needed
     this->cohesion = this->dir;
     this->cohesion.setColour(255, 0, 0);
     this->separation = this->dir;
@@ -21,13 +24,13 @@ Boid::Boid(int x_, int y_, int z_, int dx, int dy, int dz, int width, int height
 
 void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* boidFillColour, float* boidOutlineColour, const bool fill, bool drawCohesion, bool drawAlignment, bool drawSeparation, bool drawDirection, const int camDist){
     this->dir.setColour(boidFillColour[0] * 255, boidFillColour[1] * 255, boidFillColour[2] * 255);
-    //this->dir.setPos(this->x, this->y, this->z, width, height);
     this->dir.move(width, height);
 
     if(drawDirection){
         this->dir.draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
     }
 
+    //Set position of boid to position of the vector after moving it
     auto[dirx, diry, dirz]{this->dir.getXYZ()};
     this->point.setPosition(dirx, diry, dirz);
     
@@ -45,6 +48,7 @@ void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const
         this->alignment.draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
     }
 
+    //Draw boid point
     this->point.quickDraw(pixels, width, height, tx, ty, tz, trigFunct, boidFillColour, boidOutlineColour, fill, camDist);
     this->sortVal = this->point.sortVal;
 }
@@ -54,6 +58,7 @@ void Boid::boundCheck(const int boundingBoxSize, bool wrapAround){
     auto[x, y, z]{this->point.getXYZ()};
     this->setPosition(x, y, z);
     
+    //Lambda function to bounce boids when they reach the edge of the box
     auto bound = [](int& pos, const int& max, int& dir){
         if(pos >= max){
             pos = max - 10;
@@ -64,12 +69,14 @@ void Boid::boundCheck(const int boundingBoxSize, bool wrapAround){
         }
     };
 
+    //Lambda function to wrap boids around to the opposite side if they reach the edge of the box
     auto wrap = [](int& pos, const int& max){
         //if(std::abs(pos) >= max){ pos = -pos; }
         if(pos >= max){ pos = 20 - max; }
         else if(pos <= -max){ pos = max - 20; }
     };
 
+    //Apply bounding on all 3 axis
     if(!wrapAround){
         bound(this->x, max, this->dir.sdx);
         bound(this->y, max, this->dir.sdy);
@@ -80,6 +87,7 @@ void Boid::boundCheck(const int boundingBoxSize, bool wrapAround){
         wrap(this->z, max);
     }
     
+    //set positions after rounding
     this->point.setPosition(this->x, this->y, this->z);
     this->dir.setPosition(this->x, this->y, this->z);
 }
@@ -94,12 +102,6 @@ void Boid::setRadius(const int rad){
     this->point.setRadius(rad);
 }
 
-/* void Boid::setPosition(int x_, int y_, int z_){
-    //this->setPosition(x_, y_, z_);
-    //this->point.setPosition(this->x, this->y, this->z);
-    //this->dir.setPosition(this->x, this->y, this->z);
-} */
-
 void Boid::resetPos(){
     this->x = 0;
     this->y = 0;
@@ -109,7 +111,6 @@ void Boid::resetPos(){
 }
 
 void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult, const int& WIDTH, const int& HEIGHT){
-
     //Lambda function to calculate distance beterrn this boid and a given boid
     //Returns distance squared
     auto dist = [&](auto& b){
@@ -195,14 +196,4 @@ void Boid::behaviours(DrawVariantVector& drawObjects, const float& cohesionMult,
     this->dir.sdx = this->dir.sdx + this->dir.dx;
     this->dir.sdy = this->dir.sdy + this->dir.dy;
     this->dir.sdz = this->dir.sdz + this->dir.dz;
-
-
-    /* std::cout<<"--------------------------------\n";
-    std::cout<<"Direction: "<<this->dir<<'\n';
-    std::cout<<"Cohesion: "<<this->cohesion<<'\n';
-    std::cout<<"Alignment: "<<this->alignment<<'\n';
-    std::cout<<"Separation: "<<this->separation<<'\n';
-    std::cout<<"--------------------------------\n"; */
-
-
 }

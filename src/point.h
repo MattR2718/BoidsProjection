@@ -20,10 +20,9 @@ public:
     void setRadius(int rad_);
     void setFill(bool b);
     void setOutlineColour(int r_, int g_, int b_);
-    /* template<typename T, typename U> */
     void draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct, const int camDist);
 
-    void quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill, const int camDist, bool coords = false);
+    void quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill, const int camDist);
 
 private:
     //Variables

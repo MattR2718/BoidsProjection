@@ -27,7 +27,6 @@ public:
     void boundCheck(const int boundingBoxSize, bool wrapAround);
     void updateSpeedMult(const float boidSpeedMult);
     void setRadius(const int rad);
-    //void setPosition(int x_, int y_, int z_);
     void resetPos();
     void behaviours(DrawVariantVector& drawObjects, const float& cohesionMult, const float& alignmentMult, const float& separationMult, const int& WIDTH, const int& HEIGHT);
 private:

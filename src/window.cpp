@@ -10,10 +10,6 @@ Window::Window(){
     
     ImGui::CreateContext();
     ImPlot::CreateContext();
-
-    //if(!this->font.loadFromFile("../../fonts/arial.ttf")){
-    //    throw std::invalid_argument("FONT NOT FOUND");
-    //}
 }
 
 Window::~Window(){
@@ -230,7 +226,6 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
                         int x = rand() % 50 - 25;
                         int y = rand() % 50 - 25;
                         int z = rand() % 50 - 25;
-                        //std::get<Vector>(obj).setDir(x, y, z, this->WIDTH, this->HEIGHT);
                         std::get<Vector>(obj).setDir(x, y, z);
                     }
                 }
@@ -253,7 +248,6 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         drawData.boidOutlineColour[0] = drawData.boidFillColour[0];
         drawData.boidOutlineColour[1] = drawData.boidFillColour[1];
         drawData.boidOutlineColour[2] = drawData.boidFillColour[2];
-        //ImGui::ColorEdit3("Outline##Boids", (float*)&drawData.boidOutlineColour);
         ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 1500);
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);

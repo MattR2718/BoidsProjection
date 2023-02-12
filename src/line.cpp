@@ -3,7 +3,6 @@
 Line::Line(Point p1_, Point p2_, int width, int height, bool antiAliased_, int r_, int g_, int b_) : Drawable{0, 0, 0, width, height, r_, g_, b_}{
     this->p1 = p1_;
     this->p2 = p2_;
-    //this->setColour(p1_.r, p1_.g, p1_.b);
     this->setColour(r_, g_, b_);
     this->antiAliased = antiAliased_;
 }

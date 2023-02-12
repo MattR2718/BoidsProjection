@@ -52,78 +52,32 @@ void initPixels(sf::Uint8 *arr, const int length){
     }
 }
 
-void drawingThreadOriginal(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+void drawObjectsToPixels(Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
+    //Rotate camera if any auto rotate is set
     camera.autoRotate();
 
+    //sort drawables based on sortval
     std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
         return std::visit([](auto const& e){ return e.sortVal; }, x);
     });
 
+    //variables to store number of objects to keep correct number on screen
     int pointCount = 0;
     int boxCount = 0;
     int boidCount = 0;
 
     //Start by clearing pixels
     initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+    
+
     drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount, boidCount);
 
+    //populate drawobjects with the correct number of each drawable
     drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
     drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
     drawData.populateBoids(drawObjects, boidCount, drawData.numBoids, window.WIDTH, window.HEIGHT);
 
 }
-
-void drawingThread(std::stop_token stop_token, Window& window, Camera& camera, sf::Uint8 *pixels, DrawableData& drawData, DrawVariantVector& drawObjects){
-    window.window->setActive(true);
-    
-    while (!stop_token.stop_requested()){
-        //window.window->setActive(true);
-        //window.pollEvents(camera);
-        window.updateImGui();
-        
-        window.drawImGui(drawData, drawObjects, camera);
-            //Start by clearing pixels
-            //initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
-            
-            camera.autoRotate();
-
-            std::ranges::sort(drawObjects, std::greater(), [](auto const& x){
-                return std::visit([](auto const& e){ return e.sortVal; }, x);
-            });
-
-            int pointCount = 0;
-            int boxCount = 0;
-            int boidCount = 0;
-            
-            //drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount);
-
-            {
-                //smphSignalMainToThread.acquire();
-                //std::lock_guard guard(pixelMutex);
-                //Start by clearing pixels
-                initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
-                drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount, boidCount);
-                //smphSignalThreadToMain.release();
-            }
-
-            drawData.populateDrawPoints(drawObjects, pointCount, drawData.numPoints, window.WIDTH, window.HEIGHT);
-            drawData.populateDrawBox(drawObjects, boxCount, drawData.numBoxes, window.WIDTH, window.HEIGHT);
-            //drawData.populateBoids(drawObjects, boidCount, drawData.numBoids, window.WIDTH, window.HEIGHT)
-
-
-            window.drawPixelArrayToScreen(pixels);
-            window.render();
-
-            //pixelMutex.unlock();
-            //smphSignalThreadToMain.release();
-            //sem.release();
-        //}
-        //window.window->setActive(false);
-    }
-    window.window->close();
-}
-
-
 
 int main(){
 
@@ -135,8 +89,6 @@ int main(){
     sf::Uint8* drawPixels  = new sf::Uint8[window.WIDTH * window.HEIGHT * 4];
     initPixels(drawPixels, window.WIDTH * window.HEIGHT * 4);
 
-    //std::cout<<"INITTED PIXELS\n";
-
     DrawableData drawData;
     Camera camera;
 
@@ -145,11 +97,8 @@ int main(){
     Point X(200, 0, 0, window.WIDTH, window.HEIGHT,  20, 255, 0, 0);
     Point Y(0, 200, 0, window.WIDTH, window.HEIGHT,  20, 0, 255, 0);
     Point Z(0, 0, 200, window.WIDTH, window.HEIGHT,  20, 0, 0, 255);
-    //std::vector<Point> points = { O, X, Y, Z };
-    //populatePoints(points, drawData.numPoints, window.WIDTH, window.HEIGHT);
 
-    //std::cout<<"MADE POINTS\n";
-
+    //Create lines for all 3 axis
     Line l(Point(0, 0, 0, window.WIDTH, window.HEIGHT, 10), Point(282, 282, 282, window.WIDTH, window.HEIGHT, 10), window.WIDTH, window.HEIGHT, drawData.lineAntiAliasing, 255, 255, 255);
     Line xAxis(X, O, window.WIDTH, window.HEIGHT, drawData.lineAntiAliasing, 255, 0, 0);
     xAxis.del = false;
@@ -161,21 +110,12 @@ int main(){
     
     std::vector<Line> axis{xAxis, yAxis, zAxis};
 
-    //std::cout<<"MADE LINES\n";
-
+    //Create bounding box for boids to move around in
     Box boundingBox(0, 0, 0, drawData.boundingBoxSize, window.WIDTH, window.HEIGHT, drawData.boxAntiAliasing, false, 255, 255, 255);
     boundingBox.del = false;
 
-    //std::cout<<"MADE BOUNDING BOX\n";
-
+    //Create vector to store all opbjects that will be drawn to screen
     DrawVariantVector drawObjects = {O, /* X, Y, Z, */ xAxis, yAxis, zAxis, l, boundingBox};
-
-    //std::cout<<"MADE DRAW OBJECTS\n";
-
-    //std::vector<std::reference_wrapper<Boid>> boids;
-    //std::random_device dev;
-    //std::mt19937 rng(dev());
-    //std::uniform_int_distribution<std::mt19937::result_type> rngdist(-(drawData.boundingBoxSize - 20)/2, (drawData.boundingBoxSize - 20)/2);
 
     //create random generator device
     std::random_device dev;
@@ -196,6 +136,7 @@ int main(){
     std::uniform_int_distribution<std::mt19937::result_type> rngdirdist(-10, 10);
 
 
+    //Create all boids
     std::vector<Boid> boids;
     for(int i = 0; i < 50; i++){
 #if 1
@@ -217,66 +158,16 @@ int main(){
         //boids.emplace_back(temp);
     }
 
-    //std::cout<<"ADD BOIDS TO VECTOR\n";
-
-    for(int i = 0; i < 100; i++){
-        drawObjects.push_back(Vector(
-            rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
-            rand() % (window.HEIGHT - 400) - window.HEIGHT / 2 + 200,
-            rand() % (window.WIDTH - 400) - window.WIDTH / 2 + 200,
-            rand() % 50 - 25,
-            rand() % 50 - 25,
-            rand() % 50 - 25,
-            window.WIDTH, window.HEIGHT
-        ));
-    }
-    drawObjects.push_back(Vector(0, 0, 0, 100, 100, 100, window.WIDTH, window.HEIGHT));
-
-    //Vector one{0, 0, 0, 100, 0, 0, window.WIDTH, window.HEIGHT};
-    //Vector two{0, 0, 0, 0, 100, 0, window.WIDTH, window.HEIGHT};
-    //one = one + two;
-    //one.del = false;
-    //one.moveVector = false;
-    //drawObjects.push_back(one);
-
-
-    //std::cout<<"ADD VECTORS TO VECTOR\n";
-
     bool randomise = true;
 
     std::stop_token drawThreadStopToken;
-    //bool stop = false;
-
-    //std::jthread drawThread([&]{drawingThread(drawThreadStopToken, window, camera, drawPixels, drawData, drawObjects);});
-
-    //window.window->setActive(false);
 
     drawObjects.insert(drawObjects.end(), boids.begin(), boids.end());
 
     //Run program while window is open
     while (window.running())
     {
-        //char c;
-        //std::cin>>c;
-
-        //drawObjects.emplace_back(Point(100, 100, 100, window.WIDTH, window.HEIGHT, 20, 255, 0, 0));
-
-        drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
-
-        /* if(!drawData.showDemoObjects){
-            drawObjects.clear();
-            drawObjects.emplace_back(boundingBox);
-            drawObjects.insert(drawObjects.end(), axis.begin(), axis.end());
-            drawObjects.insert(drawObjects.end(), boids.begin(), boids.end());
-            drawObjects.emplace_back(
-                Vector(0, 0, 0, 40, 40, 40, window.WIDTH, window.HEIGHT, false, 1000, false, 255, 0, 0)
-            );
-             drawObjects.emplace_back(Box(100, 100, 100,
-                                        200, window.WIDTH, window.HEIGHT,
-                                        drawData.boxAntiAliasing, true, 
-                                        255, 255, 255)); 
-            //std::get<Vector>(drawObjects[drawObjects.size() - 1]).updateVector(window.WIDTH, window.HEIGHT);
-        } */
+        drawObjectsToPixels(window, camera, pixels, drawData, drawObjects);
 
         if(!drawData.showDemoObjects){
             const auto [first, last] = std::ranges::remove_if(drawObjects, [](auto const& x){
@@ -286,8 +177,6 @@ int main(){
         }
 
         drawData.updateBoids(drawObjects, window);
-
-        //drawData.updateReferenceBoids(boids);
 
         window.pollEvents(camera);
         window.updateImGui();

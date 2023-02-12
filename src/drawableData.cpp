@@ -1,6 +1,6 @@
 #include "drawableData.h"
 
-
+//Add or remove points to make sure that number os correct based on slide rinput
 void DrawableData::populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT){
     if(pointCount < numPoints){
         for(int i = pointCount; i <= numPoints; i++){
@@ -24,7 +24,7 @@ void DrawableData::populateDrawPoints(DrawVariantVector& drawObjects, int pointC
     }
 }
 
-
+//Add or remove boxes to make sure that number os correct based on slide rinput
 void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT){
     if(boxCount < numBoxes){
         for(int i = boxCount; i <= numBoxes; i++){
@@ -50,7 +50,7 @@ void DrawableData::populateDrawBox(DrawVariantVector& drawObjects, int boxCount,
     }
 }
 
-
+//Add or remove boids to make sure that number os correct based on slide rinput
 void DrawableData::populateBoids(DrawVariantVector& drawObjects, int boidCount, const int numBoids, const int WIDTH, const int HEIGHT){
     if(boidCount < numBoids){
         //create random generator device
@@ -93,14 +93,9 @@ void DrawableData::populateBoids(DrawVariantVector& drawObjects, int boidCount, 
     }
 }
 
-
-
-
-
-
+//Draw all objects to screen using respectove draw functions and parameters
+//Loops over drawObjects vector and fetched to correct object from the variant based on the type
 void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Uint8* pixels, Window& window, const Camera& camera, int& pointCount, int& boxCount, int& boidCount){
-    
-    //Draw all objects to screen
     for(auto& obj : drawObjects){
         switch(obj.index()){
             case 0:{ //Drawable
@@ -109,7 +104,7 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
             case 1:{ //Point
                 pointCount++;
                 if(this->showPoints){
-                    std::get<Point>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->pointFillColour, this->pointOutlineColour, this->fill, this->camDistance, true);
+                    std::get<Point>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->pointFillColour, this->pointOutlineColour, this->fill, this->camDistance);
                 }
                 break;
             }

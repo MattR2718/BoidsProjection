@@ -34,7 +34,8 @@ class DrawableData{
         float boidFillColour[3] = {1, 1, 1};
         float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
         float boidOutlineColour[3] = {0, 1, 0};
-        //Store whether to fill points
+        
+        //Store whether to fill points and boids
         bool fill = false;
         bool fillBoids = true;
 
@@ -67,15 +68,21 @@ class DrawableData{
         bool drawAlignment = false;
         bool drawSeparation = false;
 
+        //Multiplier to allow artificially slowing down the boids
         float boidSpeedMult = 1.0;
+        
+        //Radius for the boids point
         int boidSize = 3;
 
+        //Multipliers to determine the impact of each behaviour on the boids direction
         float cohesionMult = 0.1;
         float alignmentMult = 0.75;
         float separationMult = 0.005;
 
+        //Stores whetehr to wrap the boids around or bounce them off when they collide with the bounding box
         bool wrapAround = false;
 
+        //Stores whether to use perspective and if so the distacne of the camera away from the box
         bool perspective = false;
         int camDistance = 3000;
         int camDistanceCache = camDistance;
