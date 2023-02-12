@@ -18,7 +18,7 @@ public:
 
     Box(int x_, int y_, int z_, int size_, int width, int height, bool antiAliased_ = false, bool fixedSize_ = false, int r_ = 255, int g_ = 255, int b_ = 255);
     std::vector<std::tuple<int, int, int>> generateVerticies();
-    void draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints, const int boxSize);
+    void draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints, const int boxSize, const int camDist);
     void setSize(int s);
     bool atOrigin();
 

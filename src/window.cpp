@@ -126,6 +126,15 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     ImGui::Checkbox("Show Demo Objects", &drawData.showDemoObjects);
     ImGui::Checkbox("Show FPS Graph", &this->showFPS);
 
+    ImGui::Checkbox("Use Perspective", &drawData.perspective);
+    if(drawData.perspective){
+        drawData.camDistance = drawData.camDistanceCache;
+        ImGui::SliderInt("Camera Distance", &drawData.camDistance, 0, 5000);
+        drawData.camDistanceCache = drawData.camDistance;
+    }else{
+        drawData.camDistance = 0;
+    }
+
     if(ImGui::CollapsingHeader("Camera")){
         ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
         ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);

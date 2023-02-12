@@ -13,6 +13,12 @@ void Line::setPoints(Point p1_, Point p2_){
     this->p2 = p2_;
 }
 
+std::tuple<int, int, int, int, int, int> Line::getPointPXYZs(){
+    auto[x1, y1, z1]{this->p1.getPXYZ()};
+    auto[x2, y2, z2]{this->p2.getPXYZ()};
+    return std::tuple<int, int, int, int, int, int>{x1, y1, z1, x2, y2, z2};
+}
+
 template <typename T>
 int iPart(T x){
     return floor(x);
@@ -211,10 +217,10 @@ void Line::Bresenham(sf::Uint8 *pixels, const int width, const int height){
 }
 
 
-void Line::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct){
+void Line::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const int camDist){
     //Rotate points at each end of the line
-    this->p1.rotAll(tx, ty, tz, trigfunct);
-    this->p2.rotAll(tx, ty, tz, trigfunct);
+    this->p1.rotAll(tx, ty, tz, trigfunct, camDist);
+    this->p2.rotAll(tx, ty, tz, trigfunct, camDist);
 
     this->sortVal = (this->p1.sortVal < this->p2.sortVal) ? this->p2.sortVal : this->p1.sortVal ;
 
@@ -227,14 +233,14 @@ void Line::draw(sf::Uint8 *pixels, const int width, const int height, const floa
 
     //If boolean is true then draws points at each end of line using point draw function
     if(this->drawPoints){
-        this->p1.rotAll(tx, ty, tz, trigfunct);
-        this->p2.rotAll(tx, ty, tz, trigfunct);
-        this->p1.draw(pixels, width, height, tx, ty, tz, trigfunct);
-        this->p2.draw(pixels, width, height, tx, ty, tz, trigfunct);
+        this->p1.rotAll(tx, ty, tz, trigfunct, camDist);
+        this->p2.rotAll(tx, ty, tz, trigfunct, camDist);
+        this->p1.draw(pixels, width, height, tx, ty, tz, trigfunct, camDist);
+        this->p2.draw(pixels, width, height, tx, ty, tz, trigfunct, camDist);
     }
 }
 
-void Line::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints){
+void Line::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints, const int camDist){
     this->drawPoints = drawLinePoints;
-    this->draw(pixels, width, height, tx, ty, tz, trigfunct);
+    this->draw(pixels, width, height, tx, ty, tz, trigfunct, camDist);
 }

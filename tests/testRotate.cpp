@@ -27,7 +27,7 @@ TEST(Rotate, RotateX0){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -44,7 +44,7 @@ TEST(Rotate, RotateX90){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -61,7 +61,7 @@ TEST(Rotate, RotateX180){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -78,7 +78,7 @@ TEST(Rotate, RotateX360){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -95,7 +95,7 @@ TEST(Rotate, RotateX45){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -112,7 +112,7 @@ TEST(Rotate, RotateY0){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -129,7 +129,7 @@ TEST(Rotate, RotateY90){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -146,7 +146,7 @@ TEST(Rotate, RotateY180){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -163,7 +163,7 @@ TEST(Rotate, RotateY360){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -180,7 +180,7 @@ TEST(Rotate, RotateY45){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -197,7 +197,7 @@ TEST(Rotate, RotateZ0){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -214,7 +214,7 @@ TEST(Rotate, RotateZ90){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -231,7 +231,7 @@ TEST(Rotate, RotateZ180){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -248,7 +248,7 @@ TEST(Rotate, RotateZ360){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -265,7 +265,7 @@ TEST(Rotate, RotateZ45){
                                                     {"cy", std::cos(degToRad(ty))},
                                                     {"cz", std::cos(degToRad(tz))}};
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }

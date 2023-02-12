@@ -64,8 +64,8 @@ void Point::plotCircle(sf::Uint8 *pixels, const int width, const int height, int
 }
 
 /* template<typename T, typename U> */
-void Point::draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct){
-    this->rotAll(tx, ty, tz, trigfunct);
+void Point::draw(sf::Uint8 *pixels, const int width, const int height, float tx, float ty, float tz, std::map<std::string, float> trigfunct, const int camDist){
+    this->rotAll(tx, ty, tz, trigfunct, camDist);
     //Bresenhams circle drawing algorithm
     int x = 0;
     int y = this->rad;
@@ -83,10 +83,18 @@ void Point::draw(sf::Uint8 *pixels, const int width, const int height, float tx,
     }
 }
 
-void Point::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill){
+void Point::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* pointFillColour, float* pointOutlineColour, const bool fill, const int camDist, bool coords){
     this->setColour(round(pointFillColour[0] * 255), round(pointFillColour[1] * 255), round(pointFillColour[2] * 255));
     this->setOutlineColour(round(pointOutlineColour[0] * 255), round(pointOutlineColour[1] * 255), round(pointOutlineColour[2] * 255));
     this->setFill(fill);
-    this->rotAll(tx, ty, tz, trigFunct);
-    this->draw(pixels, width, height, tx, ty, tz, trigFunct);
+    if(coords){
+    auto[cx, cy,cz]{this->getPXYZ()};
+    std::cout<<cx<<' '<<cy<<' '<<cz<<"   ";
+    }
+    this->rotAll(tx, ty, tz, trigFunct, camDist);
+    if(coords){
+    auto[c2x, c2y,c2z]{this->getPXYZ()};
+    std::cout<<c2x<<' '<<c2y<<' '<<c2z<<"\n";
+    }
+    this->draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
 }

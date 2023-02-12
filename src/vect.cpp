@@ -80,14 +80,14 @@ void Vector::updateVector(const int width, const int height){
 }
 
 
-void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct){
+void Vector::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const int camDist){
     this->sortVal = this->p1.sortVal;
     this->p1.setColour(this->r, this->g, this->b);
     this->p2.setColour(this->r, this->g, this->b);
     this->dir.setColour(this->r, this->g, this->b);
     //this->p1.draw(pixels, width, height, tx, ty, tz, trigfunct);
     //this->p2.draw(pixels, width, height, tx, ty, tz, trigfunct);
-    dir.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, false);
+    dir.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, false, camDist);
 }
 
 void Vector::add(const Vector& v){

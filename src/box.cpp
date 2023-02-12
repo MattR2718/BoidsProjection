@@ -50,14 +50,24 @@ void Box::generateLines(const int width, const int height){
     lines.push_back(addLine(3, 7));
 }
 
-void Box::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints, const int boxSize){
+void Box::draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const bool drawLinePoints, const int boxSize, const int camDist){
     this->setSize(boxSize);
-    this->centre.rotAll(tx, ty, tz, trigfunct);
+    
+    //auto[cx, cy,cz]{this->centre.getPXYZ()};
+    //std::cout<<cx<<' '<<cy<<' '<<cz<<"   ";
+    this->centre.rotAll(tx, ty, tz, trigfunct, camDist);
+    //auto[c2x, c2y,c2z]{this->centre.getPXYZ()};
+    //std::cout<<c2x<<' '<<c2y<<' '<<c2z<<"\n";
+    
     this->sortVal = this->centre.sortVal;
     this->lines.clear();
     this->generateLines(width, height);
     for(auto& l : this->lines){
-        l.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, drawLinePoints);
+        //auto[cx1, cy1, cz1, cx2, cy2, cz2]{l.getPointPXYZs()};
+        //std::cout<<cx1<<' '<<cy1<<' '<<cz1<<' '<<cx2<<' '<<cy2<<' '<<cz2<<"\n";
+        l.quickDraw(pixels, width, height, tx, ty, tz, trigfunct, drawLinePoints, camDist);
+        //auto[cx1, cy1, cz1, cx2, cy2, cz2]{l.getPointPXYZs()};
+        //std::cout<<cx1<<' '<<cy1<<' '<<cz1<<' '<<cx2<<' '<<cy2<<' '<<cz2<<"\n";
     }
 }
 

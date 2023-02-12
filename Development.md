@@ -3380,3 +3380,53 @@ To:
 ```cpp
     this->py = this->x * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("cz") + trigfunct.at("cx") * trigfunct.at("sz")) + this->y * (trigfunct.at("sx") * trigfunct.at("sy") * trigfunct.at("sz") - trigfunct.at("cx") * trigfunct.at("cz")) - this->z * trigfunct.at("sx") * trigfunct.at("cy");
 ```
+
+
+
+### __Adding Perspective__
+Perspective code from previous project whwre point(2) is probably the z value and distance is the camera distance
+```cpp
+if (perspective) {
+    float z = 1 / (distance - point(2));
+    Eigen::MatrixXf projectionMatrix{ {z, 0, 0},
+    {0, z, 0} };
+    point = projectionMatrix * point;
+}
+```
+
+To implement perspective I can update the rotAll function in the base Drawable class to take a camera distance value which will affect the x and y positions if set.
+
+```cpp
+void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct, const int camDist){
+    this->rotX(tx, ty, tz, trigfunct);
+    this->rotY(tx, ty, tz, trigfunct);
+    this->rotZ(tx, ty, tz, trigfunct);
+    if(camDist > 0){
+        this->px *= (camDist / (float)(camDist - this->z));
+        this->py *= (camDist / (float)(camDist - this->z));
+    }
+    this->sortVal = this->pz;
+}
+```
+
+This implementation produces perspective, however it is only relative to the z axis.
+
+![PerspectiveAlongZAxis](imgs/perspectiveAlongZAxis.gif)
+
+This was caused by using the wrong z value, using the z value which is the position on the z axis rather than the projected z value which is the distance from the camera.
+
+```cpp
+void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct, const int camDist){
+    this->rotX(tx, ty, tz, trigfunct);
+    this->rotY(tx, ty, tz, trigfunct);
+    this->rotZ(tx, ty, tz, trigfunct);
+    if(camDist > 0){
+        float denom = (camDist + this->pz == 0) ? camDist : (float)(camDist + this->pz);
+        this->px *= (camDist / denom);
+        this->py *= (camDist / denom);
+    }
+    this->sortVal = this->pz;
+}
+```
+
+![Correct Perspective](imgs/workingPerspective.gif)

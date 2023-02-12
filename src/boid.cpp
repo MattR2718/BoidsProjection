@@ -19,13 +19,13 @@ Boid::Boid(int x_, int y_, int z_, int dx, int dy, int dz, int width, int height
 }
 
 
-void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* boidFillColour, float* boidOutlineColour, const bool fill, bool drawCohesion, bool drawAlignment, bool drawSeparation, bool drawDirection){
+void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigFunct, float* boidFillColour, float* boidOutlineColour, const bool fill, bool drawCohesion, bool drawAlignment, bool drawSeparation, bool drawDirection, const int camDist){
     this->dir.setColour(boidFillColour[0] * 255, boidFillColour[1] * 255, boidFillColour[2] * 255);
     //this->dir.setPos(this->x, this->y, this->z, width, height);
     this->dir.move(width, height);
 
     if(drawDirection){
-        this->dir.draw(pixels, width, height, tx, ty, tz, trigFunct);
+        this->dir.draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
     }
 
     auto[dirx, diry, dirz]{this->dir.getXYZ()};
@@ -34,18 +34,18 @@ void Boid::quickDraw(sf::Uint8 *pixels, const int width, const int height, const
     //Draw behaviour vectors
     if(drawCohesion){
         this->cohesion.setPos(dirx, diry, dirz, width, height);
-        this->cohesion.draw(pixels, width, height, tx, ty, tz, trigFunct);
+        this->cohesion.draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
     }
     if(drawSeparation){
         this->separation.setPos(dirx, diry, dirz, width, height);
-        this->separation.draw(pixels, width, height, tx, ty, tz, trigFunct);
+        this->separation.draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
     }
     if(drawAlignment){
         this->alignment.setPos(dirx, diry, dirz, width, height);
-        this->alignment.draw(pixels, width, height, tx, ty, tz, trigFunct);
+        this->alignment.draw(pixels, width, height, tx, ty, tz, trigFunct, camDist);
     }
 
-    this->point.quickDraw(pixels, width, height, tx, ty, tz, trigFunct, boidFillColour, boidOutlineColour, fill);
+    this->point.quickDraw(pixels, width, height, tx, ty, tz, trigFunct, boidFillColour, boidOutlineColour, fill, camDist);
     this->sortVal = this->point.sortVal;
 }
 

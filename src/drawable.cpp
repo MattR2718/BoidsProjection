@@ -65,9 +65,14 @@ void Drawable::rotZ(T tx, T ty, T tz, U trigfunct){
 
 //template<typename T, typename U>
 //void Drawable::rotAll(T tx, T ty, T tz, U  trigfunct){
-void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct){
+void Drawable::rotAll(float tx, float ty, float tz, std::map<std::string, float>  trigfunct, const int camDist){
     this->rotX(tx, ty, tz, trigfunct);
     this->rotY(tx, ty, tz, trigfunct);
     this->rotZ(tx, ty, tz, trigfunct);
+    if(camDist > 0){
+        float denom = (camDist + this->pz == 0) ? camDist : (float)(camDist + this->pz);
+        this->px *= (camDist / denom);
+        this->py *= (camDist / denom);
+    }
     this->sortVal = this->pz;
 }

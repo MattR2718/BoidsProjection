@@ -76,6 +76,10 @@ class DrawableData{
 
         bool wrapAround = false;
 
+        bool perspective = false;
+        int camDistance = 3000;
+        int camDistanceCache = camDistance;
+
         void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
         void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
         void populateBoids(DrawVariantVector& drawObjects, int boidCount, const int numBoids, const int WIDTH, const int HEIGHT);

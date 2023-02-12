@@ -258,6 +258,9 @@ int main(){
     {
         //char c;
         //std::cin>>c;
+
+        //drawObjects.emplace_back(Point(100, 100, 100, window.WIDTH, window.HEIGHT, 20, 255, 0, 0));
+
         drawingThreadOriginal(window, camera, pixels, drawData, drawObjects);
 
         /* if(!drawData.showDemoObjects){

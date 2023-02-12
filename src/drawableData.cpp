@@ -109,20 +109,20 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
             case 1:{ //Point
                 pointCount++;
                 if(this->showPoints){
-                    std::get<Point>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->pointFillColour, this->pointOutlineColour, this->fill);
+                    std::get<Point>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->pointFillColour, this->pointOutlineColour, this->fill, this->camDistance, true);
                 }
                 break;
             }
             case 2:{ //Line
                 if(this->showLines){
-                    std::get<Line>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints);
+                    std::get<Line>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->camDistance);
                 }
                 break;
             };
             case 3:{ //Box
                 boxCount++;
                 if(this->showBoxes){
-                    std::get<Box>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->boundingBoxSize);
+                    std::get<Box>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->boundingBoxSize, this->camDistance);
                 }
                 break;
             }
@@ -131,14 +131,14 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
                     std::get<Vector>(obj).move(window.WIDTH, window.HEIGHT);
                 }
                 if(this->showVectors){
-                    std::get<Vector>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions);
+                    std::get<Vector>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->camDistance);
                 }
                 break;
             }
             case 5:{ //Boid
                 boidCount++;
                 if(this->showBoids){
-                    std::get<Boid>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->boidFillColour, this->boidOutlineColour, this->fillBoids, this->drawCohesion, this->drawAlignment, this->drawSeparation, this->drawDirection);
+                    std::get<Boid>(obj).quickDraw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->boidFillColour, this->boidOutlineColour, this->fillBoids, this->drawCohesion, this->drawAlignment, this->drawSeparation, this->drawDirection, this->camDistance);
                 }
                 break;
             }

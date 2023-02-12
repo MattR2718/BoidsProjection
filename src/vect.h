@@ -24,7 +24,7 @@ public:
     void setDir(int x_, int y_, int z_);
     void updateVector(const int width, const int height);
     void move(const int width, const int height);
-    void draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct);
+    void draw(sf::Uint8 *pixels, const int width, const int height, const float tx, const float ty, const float tz, const std::map<std::string, float>& trigfunct, const int camDist);
     void add(const Vector& v);
 
 
