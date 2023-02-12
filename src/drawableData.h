@@ -34,6 +34,7 @@ class DrawableData{
         float boidFillColour[3] = {1, 1, 1};
         float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
         float boidOutlineColour[3] = {1, 1, 1};
+        float boundingBoxColour[3] = {1, 1, 1};
         
         //Store whether to fill points and boids
         bool fill = false;
@@ -52,7 +53,7 @@ class DrawableData{
         int numBoids = 750;
 
         //Size of bounding box
-        int boundingBoxSize = 750;
+        int boundingBoxSize = 700;
 
         //Draw points at end of lines which mark the start and end
         bool drawLinePoints = false;

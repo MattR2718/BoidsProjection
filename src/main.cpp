@@ -43,11 +43,11 @@ bool runThread = true;
 
 using DrawVariantVector = std::vector<std::variant<Drawable, Point, Line, Box, Vector, Boid>>;
 
-void initPixels(sf::Uint8 *arr, const int length){
+void initPixels(sf::Uint8 *arr, const int length, float* colour){
     for (int i = 0; i < length; i += 4){
-        arr[i] = 0;
-        arr[i + 1] = 0;
-        arr[i + 2] = 0;
+        arr[i] = colour[0] * 255;
+        arr[i + 1] = colour[1] * 255;
+        arr[i + 2] = colour[2] * 255;
         arr[i + 3] = 255;
     }
 }
@@ -67,7 +67,7 @@ void drawObjectsToPixels(Window& window, Camera& camera, sf::Uint8 *pixels, Draw
     int boidCount = 0;
 
     //Start by clearing pixels
-    initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+    initPixels(pixels, window.WIDTH * window.HEIGHT * 4, window.backgroundColour);
     
 
     drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount, boidCount);
@@ -82,15 +82,14 @@ void drawObjectsToPixels(Window& window, Camera& camera, sf::Uint8 *pixels, Draw
 int main(){
 
     Window window;
+    DrawableData drawData;
+    Camera camera;
 
     //Create a pixel array which will contain the pixels drawn to the screen
     sf::Uint8* pixels  = new sf::Uint8[window.WIDTH * window.HEIGHT * 4];
-    initPixels(pixels, window.WIDTH * window.HEIGHT * 4);
+    initPixels(pixels, window.WIDTH * window.HEIGHT * 4, window.backgroundColour);
     sf::Uint8* drawPixels  = new sf::Uint8[window.WIDTH * window.HEIGHT * 4];
-    initPixels(drawPixels, window.WIDTH * window.HEIGHT * 4);
-
-    DrawableData drawData;
-    Camera camera;
+    initPixels(drawPixels, window.WIDTH * window.HEIGHT * 4, window.backgroundColour);
 
     //Create vector and fill with objects to test with
     Point O(0, 0, 0, window.WIDTH, window.HEIGHT, 20);

@@ -117,7 +117,11 @@ void DrawableData::drawAllObjectsToScreen(DrawVariantVector& drawObjects, sf::Ui
             case 3:{ //Box
                 boxCount++;
                 if(this->showBoxes){
-                    std::get<Box>(obj).draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->boundingBoxSize, this->camDistance);
+                    auto box = std::get<Box>(obj);
+                    if(box.atOrigin()){
+                        box.setColour(this->boundingBoxColour[0] * 255, this->boundingBoxColour[1] * 255, this->boundingBoxColour[2] * 255);
+                    }
+                    box.draw(pixels, window.WIDTH, window.HEIGHT, camera.tx, camera.ty, camera.tz, camera.trigFunctions, this->drawLinePoints, this->boundingBoxSize, this->camDistance);
                 }
                 break;
             }

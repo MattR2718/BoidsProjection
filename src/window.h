@@ -35,8 +35,10 @@ class DrawableData;
 
 class Window{
     public:
-        const int WIDTH = 1200;
+        const int WIDTH = 1500;
         const int HEIGHT = 1000;
+
+        float backgroundColour[3] = {0.0, 0.0, 0.0};
 
         sf::RenderWindow* window;
         sf::Clock deltaClock;

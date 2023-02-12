@@ -122,6 +122,8 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     ImGui::Checkbox("Show Demo Objects", &drawData.showDemoObjects);
     ImGui::Checkbox("Show FPS Graph", &this->showFPS);
 
+    ImGui::ColorEdit3("Background Colour", (float*)&this->backgroundColour);
+
     if(ImGui::CollapsingHeader("Camera")){
         ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
         ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
@@ -178,7 +180,8 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     //Create imgui section for boxes
     if(ImGui::CollapsingHeader("Boxes")){
         ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
-        ImGui::SliderInt("Main Box Size", &drawData.boundingBoxSize, 0, 1000);
+        ImGui::SliderInt("Bounding Box Size", &drawData.boundingBoxSize, 0, 1000);
+        ImGui::ColorEdit3("Bounding Box Colour", (float*)&drawData.boundingBoxColour);
         std::string curraa = "Box Antialiasing: ";
         curraa += (drawData.boxAntiAliasing) ? "On" : "Off";
         ImGui::Text("%s", curraa.c_str());
