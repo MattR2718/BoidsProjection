@@ -122,19 +122,19 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     ImGui::Checkbox("Show Demo Objects", &drawData.showDemoObjects);
     ImGui::Checkbox("Show FPS Graph", &this->showFPS);
 
-    ImGui::Checkbox("Use Perspective", &drawData.perspective);
-    if(drawData.perspective){
-        drawData.camDistance = drawData.camDistanceCache;
-        ImGui::SliderInt("Camera Distance", &drawData.camDistance, 0, 5000);
-        drawData.camDistanceCache = drawData.camDistance;
-    }else{
-        drawData.camDistance = 0;
-    }
-
     if(ImGui::CollapsingHeader("Camera")){
         ImGui::Checkbox("Auto Rotate X", &camera.autoRotatex);
         ImGui::Checkbox("Auto Rotate Y", &camera.autoRotatey);
         ImGui::Checkbox("Auto Rotate Z", &camera.autoRotatez);
+
+        ImGui::Checkbox("Perspective", &drawData.perspective);
+        if(drawData.perspective){
+            drawData.camDistance = drawData.camDistanceCache;
+            ImGui::SliderInt("Camera Distance", &drawData.camDistance, 0, 5000);
+            drawData.camDistanceCache = drawData.camDistance;
+        }else{
+            drawData.camDistance = 0;
+        }
     }
 
     //Create imgui section for points
@@ -176,7 +176,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     }
 
     //Create imgui section for boxes
-    if(ImGui::CollapsingHeader("Boxes", ImGuiTreeNodeFlags_DefaultOpen)){
+    if(ImGui::CollapsingHeader("Boxes")){
         ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
         ImGui::SliderInt("Main Box Size", &drawData.boundingBoxSize, 0, 1000);
         std::string curraa = "Box Antialiasing: ";
@@ -243,7 +243,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         }
     }
 
-    if(ImGui::CollapsingHeader("Boids", ImGuiTreeNodeFlags_DefaultOpen)){
+    if(ImGui::CollapsingHeader("Boids")){
         ImGui::ColorEdit3("Fill##Boids", (float*)&drawData.boidFillColour);
         drawData.boidOutlineColour[0] = drawData.boidFillColour[0];
         drawData.boidOutlineColour[1] = drawData.boidFillColour[1];

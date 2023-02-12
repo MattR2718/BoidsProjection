@@ -33,7 +33,7 @@ class DrawableData{
         float pointFillColour[3] = { 1, 1, 1 };
         float boidFillColour[3] = {1, 1, 1};
         float pointOutlineColour[3] = { 0.5, 0.5, 0.5 };
-        float boidOutlineColour[3] = {0, 1, 0};
+        float boidOutlineColour[3] = {1, 1, 1};
         
         //Store whether to fill points and boids
         bool fill = false;
@@ -84,8 +84,8 @@ class DrawableData{
 
         //Stores whether to use perspective and if so the distacne of the camera away from the box
         bool perspective = false;
-        int camDistance = 3000;
-        int camDistanceCache = camDistance;
+        int camDistance = 0;
+        int camDistanceCache = 3000;
 
         void populateDrawPoints(DrawVariantVector& drawObjects, int pointCount, const int numPoints, const int WIDTH, const int HEIGHT);
         void populateDrawBox(DrawVariantVector& drawObjects, int boxCount, const int numBoxes, const int WIDTH, const int HEIGHT);
