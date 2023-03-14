@@ -11,21 +11,34 @@
 
 #define PI 3.14159
 
+float tx = 0, ty = 0, tz = 0;
+auto degToRad = [](float angle){
+        return float(angle) * PI / 180.f;
+};
+
+std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
+                                                {"sy", std::sin(degToRad(ty))},
+                                                {"sz", std::sin(degToRad(tz))},
+                                                {"cx", std::cos(degToRad(tx))},
+                                                {"cy", std::cos(degToRad(ty))},
+                                                {"cz", std::cos(degToRad(tz))}};
+
+void setTrigValues(float x, float y, float z){
+    trigFunctions.at("sx") = std::sin(degToRad(x));
+    trigFunctions.at("sy") = std::sin(degToRad(y));
+    trigFunctions.at("sz") = std::sin(degToRad(z));
+    trigFunctions.at("cx") = std::cos(degToRad(x));
+    trigFunctions.at("cy") = std::cos(degToRad(y));
+    trigFunctions.at("cz") = std::cos(degToRad(z));
+}
+
 TEST(TrueTest, AlwaysTrue){
     EXPECT_EQ(1, 1);
 }
 
 TEST(Rotate, RotateX0){
-    float tx = 0, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
@@ -33,16 +46,8 @@ TEST(Rotate, RotateX0){
 }
 
 TEST(Rotate, RotateX90){
-    float tx = 90, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 90; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
@@ -50,16 +55,8 @@ TEST(Rotate, RotateX90){
 }
 
 TEST(Rotate, RotateX180){
-    float tx = 180, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 180; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
@@ -67,16 +64,8 @@ TEST(Rotate, RotateX180){
 }
 
 TEST(Rotate, RotateX360){
-    float tx = 360, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 360; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
@@ -84,16 +73,8 @@ TEST(Rotate, RotateX360){
 }
 
 TEST(Rotate, RotateX45){
-    float tx = 45, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 45; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
@@ -101,16 +82,8 @@ TEST(Rotate, RotateX45){
 }
 
 TEST(Rotate, RotateY0){
-    float tx = 0, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
@@ -118,16 +91,8 @@ TEST(Rotate, RotateY0){
 }
 
 TEST(Rotate, RotateY90){
-    float tx = 0, ty = 90, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 90; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
@@ -135,16 +100,8 @@ TEST(Rotate, RotateY90){
 }
 
 TEST(Rotate, RotateY180){
-    float tx = 0, ty = 180, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 180; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
@@ -152,16 +109,8 @@ TEST(Rotate, RotateY180){
 }
 
 TEST(Rotate, RotateY360){
-    float tx = 0, ty = 360, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 360; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
@@ -169,16 +118,8 @@ TEST(Rotate, RotateY360){
 }
 
 TEST(Rotate, RotateY45){
-    float tx = 0, ty = 45, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 45; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
@@ -186,16 +127,8 @@ TEST(Rotate, RotateY45){
 }
 
 TEST(Rotate, RotateZ0){
-    float tx = 0, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
@@ -203,16 +136,8 @@ TEST(Rotate, RotateZ0){
 }
 
 TEST(Rotate, RotateZ90){
-    float tx = 0, ty = 0, tz = 90;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 90;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
@@ -220,16 +145,8 @@ TEST(Rotate, RotateZ90){
 }
 
 TEST(Rotate, RotateZ180){
-    float tx = 0, ty = 0, tz = 180;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 180;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
@@ -237,16 +154,8 @@ TEST(Rotate, RotateZ180){
 }
 
 TEST(Rotate, RotateZ360){
-    float tx = 0, ty = 0, tz = 360;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 360;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
@@ -254,16 +163,8 @@ TEST(Rotate, RotateZ360){
 }
 
 TEST(Rotate, RotateZ45){
-    float tx = 0, ty = 0, tz = 45;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                    {"sy", std::sin(degToRad(ty))},
-                                                    {"sz", std::sin(degToRad(tz))},
-                                                    {"cx", std::cos(degToRad(tx))},
-                                                    {"cy", std::cos(degToRad(ty))},
-                                                    {"cz", std::cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 45;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
     p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};

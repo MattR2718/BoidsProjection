@@ -309,7 +309,7 @@ _point.h_
 class Point: public Drawable{
 
 public:
-    //Vaariables
+    //Variables
 
 
     //Methods
@@ -755,7 +755,7 @@ These rotated points are hard to follow if the rotations are correct so I will d
 Currently all points are being drawn from the top left however, I want the center of the screen to be the origin. This means I have to add an offset to the draw function of half the width and half the height.
 
 
-Implementing the offset moves the points to the center of the screen however, the check to make sure nothing is being drawn offscreen and therefore out of the range of the array only works for drawing from top left.
+Implementing the offset moves the points to the center of the screen however, the check to make sure nothing is being drawn offscreen and therefore out of the range of the array only works for drawing from top left
 
 ![Center Drawn Cutoff](imgs/offsetCutoff.JPG)
 
@@ -787,268 +787,171 @@ _testRotate.cpp_
 #include <vector>
 #include <map>
 #include <tuple>
+#include <cmath>
+
 #include <gtest/gtest.h>
 
-#include "../include/drawable.h"
-#include "../include/point.h"
+#include "drawable.h"
+#include "point.h"
 
 #define PI 3.14159
+
+float tx = 0, ty = 0, tz = 0;
+auto degToRad = [](float angle){
+        return float(angle) * PI / 180.f;
+};
+
+std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
+                                                {"sy", std::sin(degToRad(ty))},
+                                                {"sz", std::sin(degToRad(tz))},
+                                                {"cx", std::cos(degToRad(tx))},
+                                                {"cy", std::cos(degToRad(ty))},
+                                                {"cz", std::cos(degToRad(tz))}};
+
+void setTrigValues(float x, float y, float z){
+    trigFunctions.at("sx") = std::sin(degToRad(x));
+    trigFunctions.at("sy") = std::sin(degToRad(y));
+    trigFunctions.at("sz") = std::sin(degToRad(z));
+    trigFunctions.at("cx") = std::cos(degToRad(x));
+    trigFunctions.at("cy") = std::cos(degToRad(y));
+    trigFunctions.at("cz") = std::cos(degToRad(z));
+}
 
 TEST(TrueTest, AlwaysTrue){
     EXPECT_EQ(1, 1);
 }
 
 TEST(Rotate, RotateX0){
-    float tx = 0, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateX90){
-    float tx = 90, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 90; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateX180){
-    float tx = 180, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 180; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateX360){
-    float tx = 360, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 360; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateX45){
-    float tx = 45, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 45; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(100, 0, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {100,0,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateY0){
-    float tx = 0, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateY90){
-    float tx = 0, ty = 90, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 90; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateY180){
-    float tx = 0, ty = 180, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 180; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateY360){
-    float tx = 0, ty = 360, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 360; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateY45){
-    float tx = 0, ty = 45, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 45; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 100, 0, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,-100,0};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateZ0){
-    float tx = 0, ty = 0, tz = 0;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 0;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateZ90){
-    float tx = 0, ty = 0, tz = 90;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 90;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateZ180){
-    float tx = 0, ty = 0, tz = 180;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 180;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateZ360){
-    float tx = 0, ty = 0, tz = 360;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 360;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
 
 TEST(Rotate, RotateZ45){
-    float tx = 0, ty = 0, tz = 45;
-    auto degToRad = [](float angle){
-            return float(angle) * PI / 180.f;
-    };
-    std::map<std::string, float> trigFunctions = {{"sx", sin(degToRad(tx))},
-                                                    {"sy", sin(degToRad(ty))},
-                                                    {"sz", sin(degToRad(tz))},
-                                                    {"cx", cos(degToRad(tx))},
-                                                    {"cy", cos(degToRad(ty))},
-                                                    {"cz", cos(degToRad(tz))}};
+    tx = 0; ty = 0; tz = 45;
+    setTrigValues(tx, ty, tz);
     Point p(0, 0, 100, 0, 0);
-    p.rotAll(tx, ty, tz, trigFunctions);
+    p.rotAll(tx, ty, tz, trigFunctions, 0);
     std::tuple<int, int, int> exp = {0,0,100};
     EXPECT_EQ(exp, p.getPXYZ());
 }
@@ -1148,7 +1051,7 @@ Readding back the random points produces this:
 ---
 ### **Adding Lines**
 
-Lines will consist of two points and be connected using bresenhams line drawing algorithm.
+Lines will consist of two points and be connected using xialoin wus line drawing algorithm.
 
 _line.cpp_
 ```cpp
@@ -2497,7 +2400,7 @@ endif(NOT [PACKAGE]_FOUND)
 
 This works for most of the packages however, ImGui-SFML would fail trying to use find_package(SFML) within its own CMakeLists.txt. Since the package is not downloaded using a package manager, this fails and the build crashes.
 
-![CMakeListsIMGUISFMLFindPackageError](imgs\CMakeListsImGuiSFMLFindPackageError.png)
+![CMakeListsIMGUISFMLFindPackageError](imgs/CMakeListsImGuiSFMLFindPackageError.png)
 
 To fix this I looked into what the CMakeLists was doing:
 
@@ -2806,12 +2709,12 @@ To keep the boids on screen and slow them down to a suitable speed to view them 
 
 ```cpp
 for(auto& obj : drawObjects){
-        if(obj.index() == 5){ //Boid
-            auto& boid = std::get<Boid>(obj);
-            boid.boundCheck(this->boundingBoxSize);
-            boid.updateSpeedMult(this->boidSpeedMult);
-        }
-    }
+	if(obj.index() == 5){ //Boid
+		auto& boid = std::get<Boid>(obj);
+		boid.boundCheck(this->boundingBoxSize);
+		boid.updateSpeedMult(this->boidSpeedMult);
+	}
+}
 ```
 
 BoundCheck takes the size of the bounding box and reverses the motion of the boid based on whether the boid is colliding with or outside the bounding box. When updating the direction of the boid I set the position of the Boid to slightly inside the bounding box so that it cannot clip out by passing the edge of the box and get stuck in a loop of reversing its direction.
@@ -3104,6 +3007,7 @@ bool drawSeparation = false;
 ```
 
 Secondly, the program runs much smoother than I expected so I can increase the maximum number of boids that can be created.
+
 ```cpp
 ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 1500);
 ```
