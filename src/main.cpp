@@ -68,7 +68,6 @@ void drawObjectsToPixels(Window& window, Camera& camera, sf::Uint8 *pixels, Draw
 
     //Start by clearing pixels
     initPixels(pixels, window.WIDTH * window.HEIGHT * 4, window.backgroundColour);
-    
 
     drawData.drawAllObjectsToScreen(drawObjects, pixels, window, camera, pointCount, boxCount, boidCount);
 
