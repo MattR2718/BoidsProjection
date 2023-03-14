@@ -35,8 +35,8 @@ class DrawableData;
 
 class Window{
     public:
-        const int WIDTH = 1500;
-        const int HEIGHT = 1000;
+        const int WIDTH = sf::VideoMode::getDesktopMode().width * 0.95;
+        const int HEIGHT = sf::VideoMode::getDesktopMode().height * 0.95;
 
         float backgroundColour[3] = {0.0, 0.0, 0.0};
 

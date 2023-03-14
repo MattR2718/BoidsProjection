@@ -180,7 +180,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     //Create imgui section for boxes
     if(ImGui::CollapsingHeader("Boxes")){
         ImGui::Checkbox("Show Boxes", &drawData.showBoxes);
-        ImGui::SliderInt("Bounding Box Size", &drawData.boundingBoxSize, 0, 1000);
+        ImGui::SliderInt("Bounding Box Size", &drawData.boundingBoxSize, 0, sf::VideoMode::getDesktopMode().width);
         ImGui::ColorEdit3("Bounding Box Colour", (float*)&drawData.boundingBoxColour);
         std::string curraa = "Box Antialiasing: ";
         curraa += (drawData.boxAntiAliasing) ? "On" : "Off";

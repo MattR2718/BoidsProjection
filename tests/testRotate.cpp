@@ -16,12 +16,12 @@ auto degToRad = [](float angle){
         return float(angle) * PI / 180.f;
 };
 
-std::map<std::string, float> trigFunctions = {{"sx", std::sin(degToRad(tx))},
-                                                {"sy", std::sin(degToRad(ty))},
-                                                {"sz", std::sin(degToRad(tz))},
-                                                {"cx", std::cos(degToRad(tx))},
-                                                {"cy", std::cos(degToRad(ty))},
-                                                {"cz", std::cos(degToRad(tz))}};
+std::map<std::string, float> trigFunctions = {{"sx", (float)std::sin(degToRad(tx))},
+                                                {"sy", (float)std::sin(degToRad(ty))},
+                                                {"sz", (float)std::sin(degToRad(tz))},
+                                                {"cx", (float)std::cos(degToRad(tx))},
+                                                {"cy", (float)std::cos(degToRad(ty))},
+                                                {"cz", (float)std::cos(degToRad(tz))}};
 
 void setTrigValues(float x, float y, float z){
     trigFunctions.at("sx") = std::sin(degToRad(x));
