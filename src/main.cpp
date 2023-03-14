@@ -78,6 +78,7 @@ void drawObjectsToPixels(Window& window, Camera& camera, sf::Uint8 *pixels, Draw
 
 }
 
+
 int main(){
 
     Window window;
