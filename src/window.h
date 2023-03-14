@@ -69,9 +69,10 @@ class Window{
         sf::Clock fpsClock;
         float time = 0;
         float plott = 0;
-        const int fpsWidgetWidth = 400;
-        const int fpsWidgetHeight = 170;
+        const int fpsWidgetWidth = sf::VideoMode::getDesktopMode().width * 0.3;
+        const int fpsWidgetHeight = sf::VideoMode::getDesktopMode().height * 0.15;
         const int fpsWidgetMaxFPS = 60;
+        float imguiWindowFontScale = 2.5;
         bool showFPS = true;
 
 

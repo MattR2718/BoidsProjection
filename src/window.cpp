@@ -118,9 +118,11 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
     ImGui::Begin("Options", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
     ImGui::SetWindowPos(ImVec2(0, 0));
+    ImGui::SetWindowFontScale(imguiWindowFontScale);
     
     ImGui::Checkbox("Show Demo Objects", &drawData.showDemoObjects);
     ImGui::Checkbox("Show FPS Graph", &this->showFPS);
+    ImGui::SliderFloat("Font Scale", &imguiWindowFontScale, 0.25, 5);
 
     ImGui::ColorEdit3("Background Colour", (float*)&this->backgroundColour);
 
@@ -349,7 +351,7 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             plott += ImGui::GetIO().DeltaTime;
             frameData.AddPoint(plott, time);
             static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
-            if(ImPlot::BeginPlot("##", ImVec2(-1, 150))){
+            if(ImPlot::BeginPlot("##", ImVec2(-1, -1))){
                 ImPlot::SetupAxes(NULL, NULL, flags, flags);
                 ImPlot::SetupAxisLimits(ImAxis_X1, plott - 10, plott, ImGuiCond_Always);
                 ImPlot::SetupAxisLimits(ImAxis_Y1,0,fpsWidgetMaxFPS);
