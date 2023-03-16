@@ -345,6 +345,8 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
         ImGui::Begin("Frame Rate", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
             ImGui::SetWindowPos(ImVec2(WIDTH - fpsWidgetWidth, 0));
             ImGui::SetWindowSize(ImVec2(fpsWidgetWidth, fpsWidgetHeight));
+            ImGui::SetWindowFontScale(imguiWindowFontScale);
+
             time = fpsClock.getElapsedTime().asSeconds();
             time = 1.0 / time;
             fpsClock.restart();
@@ -352,10 +354,10 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
             frameData.AddPoint(plott, time);
             static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
             if(ImPlot::BeginPlot("##", ImVec2(-1, -1))){
-                ImPlot::SetupAxes(NULL, NULL, flags, flags);
+                ImPlot::SetupAxes("FPS", "TIME", flags, flags);
                 ImPlot::SetupAxisLimits(ImAxis_X1, plott - 10, plott, ImGuiCond_Always);
                 ImPlot::SetupAxisLimits(ImAxis_Y1,0,fpsWidgetMaxFPS);
-                ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 1, 1));
+                ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1));
                 ImPlot::PlotLine(std::to_string(time).c_str(), &frameData.Data[0].x, &frameData.Data[0].y, frameData.Data.size(), 0, frameData.Offset, 2*sizeof(float));
                 ImPlot::PopStyleColor();
                 ImPlot::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
