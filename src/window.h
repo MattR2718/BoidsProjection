@@ -74,6 +74,7 @@ class Window{
         const int fpsWidgetMaxFPS = 60;
         float imguiWindowFontScale = 2.5;
         bool showFPS = true;
+        int frameRate = 30;
 
 
     protected:
