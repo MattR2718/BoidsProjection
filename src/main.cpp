@@ -30,6 +30,7 @@
 #include "boid.h"
 
 #define PI 3.14159
+#define GRID_OBJECTS false
 
 std::binary_semaphore
     smphSignalMainToThread{1},
@@ -157,6 +158,24 @@ int main(){
         //boids.emplace_back(temp);
     }
 
+#if GRID_OBJECTS
+    std::vector<Point> gridPoints;
+    std::vector<Line> gridLines;
+    int separation = drawData.boundingBoxSize / 10;
+    for(int i = -5; i < 6; i++){
+        for(int j = -5; j < 6; j++){
+            for(int k = -5; k < 6; k++){
+                gridPoints.push_back(Point(i * separation, j * separation, k * separation, window.WIDTH, window.HEIGHT, 20, 0, 255, 0));
+                gridLines.push_back(Line(
+                    Point(0, 0, 0, window.WIDTH, window.HEIGHT),
+                    Point(i * separation, j * separation, k * separation, window.WIDTH, window.HEIGHT),
+                    window.WIDTH, window.HEIGHT
+                ));
+            }
+        }
+    }
+#endif
+
     bool randomise = true;
 
     std::stop_token drawThreadStopToken;
@@ -166,6 +185,11 @@ int main(){
     //Run program while window is open
     while (window.running())
     {
+#if GRID_OBJECTS
+        drawObjects.insert(drawObjects.end(), gridPoints.begin(), gridPoints.end());
+        drawObjects.insert(drawObjects.end(), gridLines.begin(), gridLines.end());
+#endif
+
         drawObjectsToPixels(window, camera, pixels, drawData, drawObjects);
 
         if(!drawData.showDemoObjects){

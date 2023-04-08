@@ -252,10 +252,12 @@ void Window::drawImGui(DrawableData& drawData, DrawVariantVector& drawObjects, C
     }
 
     if(ImGui::CollapsingHeader("Boids")){
-        ImGui::ColorEdit3("Fill##Boids", (float*)&drawData.boidFillColour);
-        drawData.boidOutlineColour[0] = drawData.boidFillColour[0];
+        ImGui::Checkbox("Fill##Boids", &drawData.fillBoids);
+        ImGui::ColorEdit3("Outline Colour##Boids", (float*)&drawData.boidOutlineColour);
+        ImGui::ColorEdit3("Fill Colour##Boids", (float*)&drawData.boidFillColour);
+        /* drawData.boidOutlineColour[0] = drawData.boidFillColour[0];
         drawData.boidOutlineColour[1] = drawData.boidFillColour[1];
-        drawData.boidOutlineColour[2] = drawData.boidFillColour[2];
+        drawData.boidOutlineColour[2] = drawData.boidFillColour[2]; */
         ImGui::SliderInt("Num Boids##Boids", &drawData.numBoids, 0, 1500);
         ImGui::SliderFloat("Speed Multiplier##Boids", &drawData.boidSpeedMult, 0.0, 1.0);
         ImGui::SliderInt("Point Size##Boid", &drawData.boidSize, 0, 20);
